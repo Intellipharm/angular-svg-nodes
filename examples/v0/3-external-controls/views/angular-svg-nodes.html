@@ -1,0 +1,101 @@
+<div class="angular-svg-nodes-wrapper" ng-style="ctrl.wrapper_style">
+
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+         preserveAspectRatio="xMinYMin meet"
+         ng-style="viewport_style"
+         width="100%"
+         svg-vbox="{{ctrl.viewport_viewbox}}">
+
+        <!-- bg column grid -->
+
+        <svg ng-repeat="col in ctrl.bg_col_grid">
+
+            <rect ng-attr-x="{{col.x}}" y="0"
+                  ng-attr-width="{{col.width}}"
+                  height="100%"
+                  class="angular-svg-nodes-bg-col-grid-col"
+                  angular-svg-nodes-bg-col-grid
+                  angular-svg-nodes-bg-col-grid-index="{{col.index}}"
+                  angular-svg-nodes-bg-col-grid-on-mouse-over="ctrl.onBgColGridMouseOver(index)"></rect>
+        </svg>
+
+        <!-- rows -->
+
+        <svg ng-repeat="row in ctrl.blocks" x="0" y="0">
+
+            <!-- columns -->
+
+            <svg ng-repeat="col in row.columns" class="angular-svg-nodes-col">
+
+                <!-- lines -->
+
+                <line ng-repeat="line in col.lines"
+                      class="angular-svg-nodes-line"
+                      ng-class="{
+                      'connected': line.connected,
+                      'active': line.active,
+                      'target': line.target,
+                      'potential_remove': line.potential_remove
+                      }"
+                      angular-svg-nodes-line
+                      angular-svg-nodes-line-coords="line"
+                      angular-svg-nodes-line-col-index="{{col.col_index}}"
+                      angular-svg-nodes-line-row-index="{{col.row_index}}"
+                      angular-svg-nodes-line-line-index="{{$index}}"
+                      angular-svg-nodes-line-on-remove-complete="ctrl.onLineRemoveComplete(source_coords, target_coords, line_index)"
+                      angular-svg-nodes-line-on-draw-complete="ctrl.onLineDrawComplete(source_coords, target_coords, line_index)"></line>
+
+                <!-- blocks -->
+
+                <rect ng-attr-x="{{col.x}}" ng-attr-y="{{col.y}}"
+                      ng-attr-width="{{ctrl.block_width}}" ng-attr-height="{{ctrl.block_height}}"
+                      class="angular-svg-nodes-node"
+                      ng-class="{
+                      'connected': col.connected,
+                      'active': col.active,
+                      'source': col.source,
+                      'source-hover': col.source_hover,
+                      'target': col.target,
+                      'target-hover': col.target_hover,
+                      'potential-target': col.potential_target,
+                      'potential-target-hover': col.potential_target_hover,
+                      'control': col.control,
+                      'control_hover': col.control_hover,
+                      }"
+                      angular-svg-nodes-node
+                      angular-svg-nodes-node-col-index="{{col.col_index}}"
+                      angular-svg-nodes-node-row-index="{{col.row_index}}"
+                      angular-svg-nodes-node-on-select="ctrl.onNodeSelect(col_index, row_index)"
+                      angular-svg-nodes-node-on-deselect="ctrl.onNodeDeselect(col_index, row_index)"
+                      angular-svg-nodes-node-on-mouse-out="ctrl.onNodeMouseOut(col_index, row_index, exit_side)"
+                      angular-svg-nodes-node-on-mouse-over="ctrl.onNodeMouseOver(col_index, row_index)"></rect>
+
+                <!-- control label -->
+
+                <text ng-if="col.control"
+                      class="angular-svg-nodes-node-label"
+                      ng-class="{
+                      'control': col.control,
+                      'control_hover': col.control_hover,
+                      }"
+                      ng-attr-x="{{col.label_x}}" ng-attr-y="{{col.label_y}}"
+                      text-anchor="middle" alignment-baseline="middle">+</text>
+
+                <!-- label -->
+
+                <foreignObject ng-if="!col.control"
+                               ng-attr-x="{{col.label_x}}" ng-attr-y="{{col.label_y}}"
+                               ng-attr-width="{{ctrl.label_width}}" ng-attr-height="{{ctrl.label_height}}"
+                               class="angular-svg-nodes-node-label-foreign-object">
+                    <div xmlns="http://www.w3.org/1999/xhtml" class="angular-svg-nodes-node-label noselect">{{col.label}}</div>
+                </foreignObject>
+
+            </svg>
+        </svg>
+
+        <!--<text x="600" y="200"
+              style="font-size: 20px; color: #000;"
+              text-anchor="middle" alignment-baseline="middle">{{ctrl.selection}}</text>-->
+
+    </svg>
+</div>

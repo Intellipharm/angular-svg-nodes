@@ -1,0 +1,57 @@
+<html>
+<head>
+	<title>AngularSvgNodes : External Controls</title>
+    <link rel="stylesheet" href="../styles/page.css">
+    <link rel="stylesheet" href="../styles/angular-svg-nodes.css">
+</head>
+<body ng-app="App" ng-controller="AppController as app">
+
+<div class="row">
+	<div class="col-xs-12 description">
+
+		<h2>AngularSvgNodes External Controls</h2>
+
+		<br/>
+
+	</div>
+</div><!--/.row-->
+
+<br/>
+<br/>
+
+<div class="row">
+	<div class="col-sm-6 col-sm-offset-3 col-lg-4 col-lg-offset-4 example well">
+
+        <div angular-svg-nodes="app.rows"></div>
+
+        <button class="btn" ng-click="app.addRow()">ADD 1 row</button>
+        <button class="btn" ng-click="app.add2Rows()">ADD 2 rows</button>
+        <button class="btn" ng-click="app.add2RowsWithBlocks()">ADD 2 rows with blocks</button>
+
+	</div>
+</div><!--/.row-->
+
+<!-- dependencies -->
+<script src="../bower_components/lodash/lodash.min.js"></script>
+<script src="../bower_components/angular/angular.min.js"></script>
+<script src="../bower_components/gsap/src/minified/TweenMax.min.js"></script>
+<!--<script src="../../../dist/angular-svg-nodes.tmpl.min.js"></script>-->
+
+<!-- angular-svg-nodes -->
+<script src="../../../src/scripts/angular-svg-nodes.js"></script>
+<script src="../../../src/scripts/svg-vbox-directive.js"></script>
+<script src="../../../src/scripts/angular-svg-nodes-settings.js"></script>
+<script src="../../../src/scripts/angular-svg-nodes-controller.js"></script>
+<script src="../../../src/scripts/angular-svg-nodes-directive.js"></script>
+<script src="../../../src/scripts/angular-svg-nodes-line-directive.js"></script>
+<script src="../../../src/scripts/angular-svg-nodes-node-directive.js"></script>
+<script src="../../../src/scripts/angular-svg-nodes-bg-col-grid-directive.js"></script>
+
+<!-- example app -->
+<script src="scripts/app.js"></script>
+<script src="scripts/app-controller.js"></script>
+<script src="scripts/angular-svg-nodes-settings.js"></script>
+
+</body>
+</html>
+</html>

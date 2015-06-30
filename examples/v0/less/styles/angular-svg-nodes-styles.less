@@ -1,0 +1,173 @@
+.angular-svg-nodes {
+
+    // disable selection
+    user-select: none;
+
+    // disable all text mouse events
+    text {
+        pointer-events: none;
+    }
+
+    // wrapper
+    .angular-svg-nodes-wrapper {
+
+    }
+
+    // bg grid col
+    .angular-svg-nodes-bg-col-grid-col {
+        fill:           @bg-col-grid-fill;
+        stroke:         @bg-col-grid-stroke;
+        stroke-width:   @bg-col-grid-stroke-width;
+    }
+
+    //---------------------
+    // line
+    //---------------------
+
+    .angular-svg-nodes-line {
+
+        // sets stroke, stroke-width & stroke-dasharray
+        .setLineStyles();
+
+        &.target {
+            // sets stroke, stroke-width & stroke-dasharray
+            .setLineStyles('target');
+        }
+        &.potential-remove {
+            // sets stroke, stroke-width & stroke-dasharray
+            .setLineStyles('potential_remove');
+        }
+        &.connected {
+            // sets stroke, stroke-width & stroke-dasharray
+            .setLineStyles('connected');
+        }
+
+        &.active {
+            // sets stroke, stroke-width & stroke-dasharray
+            .setLineStyles('active');
+        }
+    }
+
+    //---------------------
+    // node
+    //---------------------
+
+    .angular-svg-nodes-node {
+
+        cursor: pointer;
+
+        // sets fill, stroke, stroke-width & stroke-dasharray
+        .setNodeStyles();
+
+        &.source {
+            // sets fill, stroke, stroke-width & stroke-dasharray
+            .setNodeStyles('source');
+        }
+        &.source-hover {
+            // sets fill, stroke, stroke-width & stroke-dasharray
+            .setNodeStyles('source_hover');
+        }
+        &.target {
+            // sets fill, stroke, stroke-width & stroke-dasharray
+            .setNodeStyles('target');
+        }
+        &.potential-target {
+            // sets fill, stroke, stroke-width & stroke-dasharray
+            .setNodeStyles('potential_target');
+        }
+        &.potential-target-hover {
+            // sets fill, stroke, stroke-width & stroke-dasharray
+            .setNodeStyles('potential_target');
+        }
+
+        // connected
+
+        &.connected {
+
+            // sets fill, stroke, stroke-width & stroke-dasharray
+            .setNodeStyles('connected');
+
+            &.source {
+                // sets fill, stroke, stroke-width & stroke-dasharray
+                .setNodeStyles('connected_source');
+            }
+            &.source-hover {
+                // sets fill, stroke, stroke-width & stroke-dasharray
+                .setNodeStyles('connected_source');
+            }
+            &.potential-target {
+                // sets fill, stroke, stroke-width & stroke-dasharray
+                .setNodeStyles('connected_potential_target');
+            }
+            &.potential-target-hover {
+                // sets fill, stroke, stroke-width & stroke-dasharray
+                .setNodeStyles('connected_potential_target_hover');
+            }
+            &.target {
+                // sets fill, stroke, stroke-width & stroke-dasharray
+                .setNodeStyles('connected_target');
+            }
+
+            // active
+
+            &.active {
+
+                // sets fill, stroke, stroke-width & stroke-dasharray
+                .setNodeStyles('connected_active');
+
+                &.source {
+                    // sets fill, stroke, stroke-width & stroke-dasharray
+                    .setNodeStyles('connected_active_source');
+                }
+                &.source-hover {
+                    // sets fill, stroke, stroke-width & stroke-dasharray
+                    .setNodeStyles('connected_active_source_hover');
+                }
+                &.potential-target {
+                    // sets fill, stroke, stroke-width & stroke-dasharray
+                    .setNodeStyles('connected_active_potential_target');
+                }
+                &.potential-target-hover {
+                    // sets fill, stroke, stroke-width & stroke-dasharray
+                    .setNodeStyles('connected_active_potential_target_hover');
+                }
+            }
+        }
+
+        // control
+
+        &.control {
+            // sets fill, stroke, stroke-width & stroke-dasharray
+            .setNodeStyles('control');
+        }
+        &.control-hover {
+            // sets fill, stroke, stroke-width & stroke-dasharray
+            .setNodeStyles('control_hover');
+        }
+    }
+
+    //---------------------
+    // label
+    //---------------------
+
+    .angular-svg-nodes-node-label {
+
+        // disable all mouse events
+        pointer-events: none;
+
+        font-size:      @label-font-size;
+        color:          @label-color;
+
+        // control
+
+        &.control {
+            font-size:      @label-control-font-size;
+            font-weight:    @label-control-font-weight;
+            color:          @label-control-color;
+            fill:           @label-control-fill;
+        }
+        &.control_hover {
+            fill:           @label-control_hover-fill;
+        }
+    }
+}

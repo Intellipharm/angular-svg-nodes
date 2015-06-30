@@ -1,0 +1,38 @@
+//---------------------
+// lines
+//---------------------
+
+.setLineStyles() {
+    stroke:             @line-stroke-color;
+    stroke-width:       @line-stroke-width;
+    stroke-dasharray:   @line-stroke-dasharray;
+}
+.setLineStyles(@name) {
+    @stroke-color:      ~"@{line-@{name}-stroke-color}";
+    @stroke-width:      ~"@{line-@{name}-stroke-width}";
+    @stroke-dasharray:  ~"@{line-@{name}-stroke-dasharray}";
+    stroke:             @stroke-color;
+    stroke-width:       @stroke-width;
+    stroke-dasharray:   @stroke-dasharray;
+}
+
+//---------------------
+// nodes
+//---------------------
+
+.setNodeStyles() {
+    fill:               @node-fill-color;
+    stroke:             @node-stroke-color;
+    stroke-width:       @node-stroke-width;
+    stroke-dasharray:   @node-stroke-dasharray;
+}
+.setNodeStyles(@name) {
+    @fill-color:        ~"@{node-@{name}-fill-color}";
+    @stroke-color:      ~"@{node-@{name}-stroke-color}";
+    @stroke-width:      ~"@{node-@{name}-stroke-width}";
+    @stroke-dasharray: ~"@{node-@{name}-stroke-dasharray}";
+    fill:               @fill-color;
+    stroke:             @stroke-color;
+    stroke-width:       @stroke-width;
+    stroke-dasharray:   @stroke-dasharray;
+}
