@@ -99,7 +99,7 @@
 
             // external handler
             if (!_.isUndefined($s.onNodeMouseDown)) {
-                $s.onNodeMouseDown(self.getExtenalEventHandlerData(col_index, row_index));
+                $s.onNodeMouseDown(self.getExternalNodeEventHandlerData(col_index, row_index));
             }
 
             // if control
@@ -125,7 +125,7 @@
 
             // external handler
             if (!_.isUndefined($s.onNodeMouseUp)) {
-                $s.onNodeMouseUp(self.getExtenalEventHandlerData(col_index, row_index));
+                $s.onNodeMouseUp(self.getExternalNodeEventHandlerData(col_index, row_index));
             }
 
             // if control
@@ -642,6 +642,11 @@
                 }
             }
 
+            // external handler
+            if (!_.isUndefined($s.onLineRemove)) {
+                $s.onLineRemove(self.getExternalLineEventHandlerData(source_coords, target_coords, line_index));
+            }
+
             $s.$apply();
         };
 
@@ -679,14 +684,18 @@
         //
         ////////////////////////////////////////////////
 
+        //-----------------------------
+        // data for external event handlers
+        //-----------------------------
+
         /**
-         * getExtenalEventHandlerData
+         * getExternalNodeEventHandlerData
          *
          * @param col_index
          * @param row_index
-         * @returns {{node: *}}
+         * @returns {{node: *, data: null}}
          */
-        this.getExtenalEventHandlerData = function(col_index, row_index) {
+        this.getExternalNodeEventHandlerData = function(col_index, row_index) {
             var data_clone = _.clone($s.rows[row_index].columns[col_index]);
             var node_clone = _.clone(self.blocks[row_index].columns[col_index]);
             var result = {
@@ -697,6 +706,28 @@
                 result.data = data_clone;
             }
             return result;
+        };
+
+        /**
+         * getExternalLineEventHandlerData
+         *
+         * @param source_coords
+         * @param target_coords
+         * @param line_index
+         * @returns {{node: *, data: null}}
+         */
+        this.getExternalLineEventHandlerData = function(source_coords, target_coords, line_index) {
+
+            var source_data = self.getExternalNodeEventHandlerData(source_coords[0], source_coords[1]);
+            var target_data = self.getExternalNodeEventHandlerData(target_coords[0], target_coords[1]);
+
+            return {
+                source_node: source_data.node,
+                source_data: source_data.data,
+                target_node: target_data.node,
+                target_data: target_data.data,
+                line_index: line_index
+            };
         };
 
         //-----------------------------
@@ -1272,12 +1303,13 @@
                     if (!block_has_active_parents) {
 
                         // deactivate block
-                        self.deactivateBlock(target_coords[0], target_coords[1]);
+                        //self.deactivateBlock(target_coords[0], target_coords[1]);
                     }
 
                     // set line properties
                     line.x2 =  target_lock_coords[0];
                     line.y2 =  target_lock_coords[1];
+                    line.previous_to = line.to; // TODO: this feels a bit hacky
                     line.to =  [source_coords[0], source_coords[1]];
                     return false;
                 }
@@ -1293,6 +1325,7 @@
 
             _.forEach(self.blocks[selection[0][1]].columns[selection[0][0]].lines, function (line) {
                 if (!line.connected) {
+                    console.log("CLEAN");
                     self.removeLine(self.selection[0], self.selection[1]);
                 }
             });
@@ -1305,7 +1338,7 @@
          */
         this.setAsConnectedLines = function(selection) {
 
-            _.forEach(self.blocks[selection[0][1]].columns[selection[0][0]].lines, function (line) {
+            _.forEach(self.blocks[selection[0][1]].columns[selection[0][0]].lines, function(line, line_index) {
                 if (!line.connected) {
 
                     // setAsConnected line
@@ -1314,6 +1347,11 @@
                     // setAsConnected blocks
                     self.setAsConnectedBlock(line.from);
                     self.setAsConnectedBlock(line.to);
+
+                    // external handler
+                    if (!_.isUndefined($s.onLineAdd)) {
+                        $s.onLineAdd(self.getExternalLineEventHandlerData(line.from, line.to, line_index));
+                    }
                 }
             });
         };
@@ -1505,7 +1543,7 @@
             }
         }, true);
 
-        $s.$watch('rows', function(newValue, oldValue) {
+        $s.$watch('rows', function(newValue) {
 
             if (!_.isUndefined(newValue)) {
 
@@ -1517,7 +1555,7 @@
                 }
 
                 // update
-                self.update(oldValue, newValue, 'columns');
+                self.update(newValue, 'columns');
             }
         }, true);
 
@@ -1578,7 +1616,7 @@
          * @param data
          * @param column_property_name
          */
-        this.update = function(old_data, data, column_property_name) {
+        this.update = function(data, column_property_name) {
 
             // add controls
             _.forEach(data, function (row, row_index) {
@@ -1626,6 +1664,7 @@
         'COL_SPACING',
         'ROW_SPACING',
         'LABEL_SPACING',
+        'DISABLE_CONTROL_NODES',
         'MAX_VIEWPORT_WIDTH_INCREASE',
         'MAX_VIEWPORT_HEIGHT_INCREASE'
     ];

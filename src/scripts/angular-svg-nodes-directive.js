@@ -12,7 +12,9 @@
             scope: {
                 rows: "=angularSvgNodes",
                 onNodeMouseDown: "&angularSvgNodesNodeMouseDown",
-                onNodeMouseUp: "&angularSvgNodesNodeMouseUp"
+                onNodeMouseUp: "&angularSvgNodesNodeMouseUp",
+                onLineAdd: "&angularSvgNodesLineAdd",
+                onLineRemove: "&angularSvgNodesLineRemove"
             },
             replace: true,
             controller: "AngularSvgNodesController as ctrl",

@@ -26,6 +26,7 @@
                 var is_initialized = false;
                 var source_coords;
                 var target_coords;
+                var previous_target_coords; // TODO: this feels hacky
 
                 ////////////////////////////////////////////////
                 //
@@ -39,6 +40,7 @@
 
                         source_coords = newValue.from;
                         target_coords = newValue.to;
+                        previous_target_coords = newValue.previous_to;
 
                         //console.log("COL: "+oldValue.to[0] +" === "+ newValue.to[0]);
                         //console.log("ROW: "+oldValue.to[1] +" === "+ newValue.to[1]);
@@ -143,7 +145,7 @@
 
                     var line_index = _.parseInt(scope.line_index);
 
-                    scope.onRemoveComplete({source_coords: source_coords, target_coords: target_coords, line_index: line_index});
+                    scope.onRemoveComplete({source_coords: source_coords, target_coords: previous_target_coords, line_index: line_index});
                 };
 
                 //----------------------------------
