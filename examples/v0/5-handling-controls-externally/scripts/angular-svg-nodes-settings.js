@@ -21,7 +21,7 @@
         .constant('COL_SPACING',       20)
         .constant('ROW_SPACING',       40)
         .constant('LABEL_SPACING',     5)
-        .constant('DISABLE_CONTROL_NODES',  false)
+        .constant('DISABLE_CONTROL_NODES',  true)
         .constant('MAX_VIEWPORT_WIDTH_INCREASE',   100)
         .constant('MAX_VIEWPORT_HEIGHT_INCREASE',  100);
 })();

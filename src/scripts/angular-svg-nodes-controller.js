@@ -22,6 +22,7 @@
         COL_SPACING,
         ROW_SPACING,
         LABEL_SPACING,
+        DISABLE_CONTROL_NODES,
         MAX_VIEWPORT_WIDTH_INCREASE,
         MAX_VIEWPORT_HEIGHT_INCREASE
         ) {
@@ -103,7 +104,9 @@
 
             // if control
             if (self.blocks[row_index].columns[col_index].control) {
-                this.onControlNodeSelect(col_index, row_index);
+                if (!DISABLE_CONTROL_NODES) {
+                    this.onControlNodeSelect(col_index, row_index);
+                }
                 return true;
             }
 
@@ -1502,7 +1505,7 @@
             }
         }, true);
 
-        $s.$watchCollection('rows', function(newValue, oldValue) {
+        $s.$watch('rows', function(newValue, oldValue) {
 
             if (!_.isUndefined(newValue)) {
 
@@ -1516,7 +1519,7 @@
                 // update
                 self.update(oldValue, newValue, 'columns');
             }
-        });
+        }, true);
 
         ////////////////////////////////////////////////
         //

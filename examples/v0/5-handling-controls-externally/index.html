@@ -1,6 +1,6 @@
 <html>
 <head>
-	<title>AngularSvgNodes : External Controls</title>
+	<title>AngularSvgNodes : Handling Controls Externally</title>
     <link rel="stylesheet" href="../styles/page.css">
     <link rel="stylesheet" href="../styles/angular-svg-nodes.css">
 </head>
@@ -9,7 +9,7 @@
 <div class="row">
 	<div class="col-xs-12 description">
 
-		<h2>AngularSvgNodes External Controls</h2>
+		<h2>AngularSvgNodes Handling Controls Externally</h2>
 
 		<br/>
 
@@ -22,11 +22,8 @@
 <div class="row">
 	<div class="col-sm-6 col-sm-offset-3 col-lg-4 col-lg-offset-4 example well">
 
-        <div angular-svg-nodes="app.rows"></div>
-
-        <button class="btn" ng-click="app.addRow()">ADD 1 row</button>
-        <button class="btn" ng-click="app.add2Rows()">ADD 2 rows</button>
-        <button class="btn" ng-click="app.add2RowsWithBlocks()">ADD 2 rows with blocks</button>
+        <div angular-svg-nodes="app.rows"
+             angular-svg-nodes-node-mouse-down="app.onNodeMouseDown(node, data)"></div>
 
 	</div>
 </div><!--/.row-->

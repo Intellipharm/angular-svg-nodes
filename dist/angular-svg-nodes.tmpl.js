@@ -4,7 +4,7 @@
  *
  * Copyright 2015 Intellipharm
  *
- * 2015-06-30 09:11:05
+ * 2015-07-01 09:40:08
  *
  */
 (function() {
@@ -111,6 +111,7 @@
         COL_SPACING,
         ROW_SPACING,
         LABEL_SPACING,
+        DISABLE_CONTROL_NODES,
         MAX_VIEWPORT_WIDTH_INCREASE,
         MAX_VIEWPORT_HEIGHT_INCREASE
         ) {
@@ -192,7 +193,9 @@
 
             // if control
             if (self.blocks[row_index].columns[col_index].control) {
-                this.onControlNodeSelect(col_index, row_index);
+                if (!DISABLE_CONTROL_NODES) {
+                    this.onControlNodeSelect(col_index, row_index);
+                }
                 return true;
             }
 
@@ -1591,7 +1594,7 @@
             }
         }, true);
 
-        $s.$watchCollection('rows', function(newValue, oldValue) {
+        $s.$watch('rows', function(newValue, oldValue) {
 
             if (!_.isUndefined(newValue)) {
 
@@ -1605,7 +1608,7 @@
                 // update
                 self.update(oldValue, newValue, 'columns');
             }
-        });
+        }, true);
 
         ////////////////////////////////////////////////
         //
@@ -2066,6 +2069,7 @@
         .constant('COL_SPACING',       20)
         .constant('ROW_SPACING',       40)
         .constant('LABEL_SPACING',     5)
+        .constant('DISABLE_CONTROL_NODES',  true)
         .constant('MAX_VIEWPORT_WIDTH_INCREASE',   100)
         .constant('MAX_VIEWPORT_HEIGHT_INCREASE',  100);
 })();
