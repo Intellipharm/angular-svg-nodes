@@ -1303,7 +1303,7 @@
                     if (!block_has_active_parents) {
 
                         // deactivate block
-                        //self.deactivateBlock(target_coords[0], target_coords[1]);
+                        self.deactivateBlock(target_coords[0], target_coords[1]);
                     }
 
                     // set line properties
