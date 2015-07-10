@@ -4,7 +4,7 @@
  *
  * Copyright 2015 Intellipharm
  *
- * 2015-07-01 11:56:58
+ * 2015-07-10 09:52:37
  *
  */
 (function() {
@@ -1393,7 +1393,7 @@
                     if (!block_has_active_parents) {
 
                         // deactivate block
-                        //self.deactivateBlock(target_coords[0], target_coords[1]);
+                        self.deactivateBlock(target_coords[0], target_coords[1]);
                     }
 
                     // set line properties
@@ -1541,6 +1541,21 @@
             // replace removed block
             if (!_.isUndefined(removed_block)) {
                 self.addControl(removed_block[0].row_index);
+            }
+        };
+
+        /**
+         * updateBlock
+         *
+         * @param col_index
+         * @param row_index
+         * @param label
+         */
+        this.updateBlock = function(col_index, row_index, label) {
+
+            // update label
+            if (!_.isUndefined(label) && self.blocks[row_index].columns[col_index].label !== label) {
+                self.blocks[row_index].columns[col_index].label = label;
             }
         };
 
@@ -1720,6 +1735,9 @@
             // add blocks
             _.forEach(data, function (row, row_index) {
                 _.forEach(row[column_property_name], function (col, col_index) {
+
+                    // update block
+                    self.updateBlock(col_index, row_index, col.label);
 
                     // ... if column index exceeds or equals current UI cols (excluding control)
                     if (col_index >= self.blocks[row_index].columns.length - 1) {

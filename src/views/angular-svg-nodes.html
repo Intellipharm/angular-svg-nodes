@@ -72,7 +72,7 @@
 
                 <!-- control label -->
 
-                <text ng-if="col.control"
+                <text ng-show="col.control"
                       class="angular-svg-nodes-node-label"
                       ng-class="{
                       'control': col.control,
@@ -83,7 +83,7 @@
 
                 <!-- label -->
 
-                <foreignObject ng-if="!col.control"
+                <foreignObject ng-show="!col.control"
                                ng-attr-x="{{col.label_x}}" ng-attr-y="{{col.label_y}}"
                                ng-attr-width="{{ctrl.label_width}}" ng-attr-height="{{ctrl.label_height}}"
                                class="angular-svg-nodes-node-label-foreign-object">

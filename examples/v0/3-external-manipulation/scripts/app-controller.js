@@ -19,6 +19,11 @@
             ]}
         ];
 
+        this.changeLabel = function() {
+            this.rows[0].columns[1].label = "Hello "+Math.floor((Math.random() * 10) + 1);
+
+            console.log(this.rows);
+        };
         this.addRow = function() {
             this.rows.push({columns: []});
         };

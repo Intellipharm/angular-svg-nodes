@@ -76,7 +76,7 @@ angular.module('AngularSvgNodes').run(['$templateCache', function($templateCache
     "\n" +
     "                <!-- control label -->\n" +
     "\n" +
-    "                <text ng-if=\"col.control\"\n" +
+    "                <text ng-show=\"col.control\"\n" +
     "                      class=\"angular-svg-nodes-node-label\"\n" +
     "                      ng-class=\"{\n" +
     "                      'control': col.control,\n" +
@@ -87,7 +87,7 @@ angular.module('AngularSvgNodes').run(['$templateCache', function($templateCache
     "\n" +
     "                <!-- label -->\n" +
     "\n" +
-    "                <foreignObject ng-if=\"!col.control\"\n" +
+    "                <foreignObject ng-show=\"!col.control\"\n" +
     "                               ng-attr-x=\"{{col.label_x}}\" ng-attr-y=\"{{col.label_y}}\"\n" +
     "                               ng-attr-width=\"{{ctrl.label_width}}\" ng-attr-height=\"{{ctrl.label_height}}\"\n" +
     "                               class=\"angular-svg-nodes-node-label-foreign-object\">\n" +
@@ -102,7 +102,7 @@ angular.module('AngularSvgNodes').run(['$templateCache', function($templateCache
     "              text-anchor=\"middle\" alignment-baseline=\"middle\">{{ctrl.selection}}</text>-->\n" +
     "\n" +
     "    </svg>\n" +
-    "</div>"
+    "</div>\n"
   );
 
 }]);
