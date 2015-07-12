@@ -47,8 +47,7 @@
 
                 <!-- blocks -->
 
-                <rect ng-attr-x="{{col.x}}" ng-attr-y="{{col.y}}"
-                      ng-attr-width="{{ctrl.block_width}}" ng-attr-height="{{ctrl.block_height}}"
+                <rect ng-attr-width="{{ctrl.block_width}}" ng-attr-height="{{ctrl.block_height}}"
                       class="angular-svg-nodes-node"
                       ng-class="{
                       'connected': col.connected,
@@ -63,6 +62,7 @@
                       'control-hover': col.control_hover,
                       }"
                       angular-svg-nodes-node
+                      angular-svg-nodes-node-coords="col.coords"
                       angular-svg-nodes-node-col-index="{{col.col_index}}"
                       angular-svg-nodes-node-row-index="{{col.row_index}}"
                       angular-svg-nodes-node-on-select="ctrl.onNodeSelect(col_index, row_index)"
@@ -79,11 +79,15 @@
                       'control_hover': col.control_hover,
                       }"
                       ng-attr-x="{{col.label_x}}" ng-attr-y="{{col.label_y}}"
+                      angular-svg-nodes-label
+                      angular-svg-nodes-label-coords="col"
                       text-anchor="middle" alignment-baseline="middle">+</text>
 
                 <!-- label -->
 
                 <foreignObject ng-show="!col.control"
+                               angular-svg-nodes-label
+                               angular-svg-nodes-label-coords="col"
                                ng-attr-x="{{col.label_x}}" ng-attr-y="{{col.label_y}}"
                                ng-attr-width="{{ctrl.label_width}}" ng-attr-height="{{ctrl.label_height}}"
                                class="angular-svg-nodes-node-label-foreign-object">

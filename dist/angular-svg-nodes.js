@@ -4,7 +4,7 @@
  *
  * Copyright 2015 Intellipharm
  *
- * 2015-07-10 09:52:37
+ * 2015-07-13 09:54:42
  *
  */
 (function() {
@@ -124,6 +124,12 @@
         // vars
         //
         ////////////////////////////////////////////////
+
+        //-----------------------------
+        // api
+        //-----------------------------
+
+        this.api = $s.api || {};
 
         //-----------------------------
         // control
@@ -786,6 +792,7 @@
          * @returns {{node: *, data: null}}
          */
         this.getExternalNodeEventHandlerData = function(col_index, row_index) {
+
             var data_clone = _.clone($s.rows[row_index].columns[col_index]);
             var node_clone = _.clone(self.blocks[row_index].columns[col_index]);
             var result = {
@@ -1520,6 +1527,7 @@
 
             // set block properties
             var block = {
+                coords: top_left_coords,
                 x: top_left_coords[0],
                 y: top_left_coords[1],
                 label_x: top_left_coords[0] + LABEL_SPACING,
@@ -1560,6 +1568,74 @@
         };
 
         /**
+         * removeBlock
+         *
+         * @param col_index
+         * @param row_index
+         */
+        this.removeBlock = function(col_index, row_index) {
+
+            if (row_index >= self.blocks.length) {
+                return true;
+            }
+
+            if (col_index >= self.blocks[row_index].columns.length - 1) {
+                return true;
+            }
+
+            // remove block
+            self.blocks[row_index].columns.splice(col_index, 1);
+
+            // update data
+            $s.rows[row_index].columns.splice(col_index, 1);
+
+            // update siblings
+            for (var i = col_index; i < (self.blocks[row_index].columns.length); i++) {
+                self.updateBlockAfterSiblingRemoved(i, row_index);
+            }
+        };
+
+        /**
+         * updateBlockAfterSiblingRemoved
+         *
+         * @param col_index
+         * @param row_index
+         */
+        this.updateBlockAfterSiblingRemoved = function(col_index, row_index) {
+
+            var top_left_coords     = self.getCoords(col_index, row_index, BLOCK_TOP_LEFT);
+            var center_coords       = self.getCoords(col_index, row_index, BLOCK_CENTER);
+
+            // update block
+
+            self.blocks[row_index].columns[col_index].col_index = col_index;
+            self.blocks[row_index].columns[col_index].coords = top_left_coords;
+            self.blocks[row_index].columns[col_index].x = top_left_coords[0];
+            self.blocks[row_index].columns[col_index].y = top_left_coords[1];
+
+            // update labels
+            // last block has different label position
+            if (col_index === (self.blocks[row_index].columns.length - 1)) {
+                self.blocks[row_index].columns[col_index].label_x = center_coords[0];
+                self.blocks[row_index].columns[col_index].label_y = center_coords[1];
+            } else {
+                self.blocks[row_index].columns[col_index].label_x = top_left_coords[0] + LABEL_SPACING;
+                self.blocks[row_index].columns[col_index].label_y = top_left_coords[1] + LABEL_SPACING;
+            }
+
+            // update lines
+            _.forEach(self.blocks[row_index].columns[col_index].lines, function(line) {
+
+                // get target lock coords
+                var source_lock_coords     = self.getCoords(col_index, row_index, BLOCK_TOP);
+
+                line.from = [col_index, row_index];
+                line.x1 = source_lock_coords[0];
+                line.y1 = source_lock_coords[1];
+            });
+        };
+
+        /**
          * addControl
          *
          * @param row_index
@@ -1584,6 +1660,7 @@
 
             // set block properties
             var block = {
+                coords: top_left_coords,
                 x: top_left_coords[0],
                 y: top_left_coords[1],
                 label_x: center_coords[0],
@@ -1754,6 +1831,23 @@
             // check active
             self.checkActive();
         };
+
+        ////////////////////////////////////////////////
+        //
+        // api
+        //
+        ////////////////////////////////////////////////
+
+        /**
+         * removeBlock
+         *
+         * @param col_index
+         * @param row_index
+         */
+
+        this.api.removeBlock = function(col_index, row_index) {
+            self.removeBlock(col_index, row_index);
+        };
     };
 
     controller.$inject = [
@@ -1797,7 +1891,8 @@
                 onNodeMouseDown: "&angularSvgNodesNodeMouseDown",
                 onNodeMouseUp: "&angularSvgNodesNodeMouseUp",
                 onLineAdd: "&angularSvgNodesLineAdd",
-                onLineRemove: "&angularSvgNodesLineRemove"
+                onLineRemove: "&angularSvgNodesLineRemove",
+                api: "=angularSvgNodesApi"
             },
             replace: true,
             controller: "AngularSvgNodesController as ctrl",
@@ -1850,7 +1945,7 @@
                 row_index:  "@angularSvgNodesLineRowIndex",
                 line_index: "@angularSvgNodesLineLineIndex",
                 onRemoveComplete:   "&angularSvgNodesLineOnRemoveComplete",
-                onMoveComplete:     "&angularSvgNodesLineOnMoveComplete",
+                onMoveLineTargetComplete:     "&angularSvgNodesLineonMoveLineTargetComplete",
                 onDrawComplete:     "&angularSvgNodesLineOnDrawComplete"
             },
             link: function (scope, element) {
@@ -1863,109 +1958,6 @@
                 var source_coords;
                 var target_coords;
                 var previous_target_coords; // TODO: this feels hacky
-
-                ////////////////////////////////////////////////
-                //
-                // watchers
-                //
-                ////////////////////////////////////////////////
-
-                scope.$watch('coords', function(newValue, oldValue) {
-
-                    if (!_.isUndefined(newValue)) {
-
-                        source_coords = newValue.from;
-                        target_coords = newValue.to;
-                        previous_target_coords = newValue.previous_to;
-
-                        //console.log("COL: "+oldValue.to[0] +" === "+ newValue.to[0]);
-                        //console.log("ROW: "+oldValue.to[1] +" === "+ newValue.to[1]);
-                        //console.log("ROW: "+oldValue.y2 +" === "+ newValue.y2);
-
-                        // init
-                        if (!is_initialized) {
-                            scope.drawLine(newValue.x1, newValue.y1, newValue.x2, newValue.y2);
-                            is_initialized = true;
-                        }
-
-                        // if only target col coord has changed
-                        else if (oldValue.to[1] === newValue.to[1] && oldValue.to[0] !== newValue.to[0]) {
-                            scope.moveLine(newValue.x2);
-                        }
-
-                        // if only target row coord has changed
-                        else if (oldValue.to[0] === newValue.to[0] && oldValue.to[1] !== newValue.to[1]) {
-                            scope.removeLine(newValue.x2, newValue.y2);
-                        }
-
-                        // if col & row change
-                        else if (oldValue.to[1] !== newValue.to[1] && oldValue.to[0] !== newValue.to[0]) {
-
-                            // row decrease
-                            if (newValue.to[1] < oldValue.to[1]) {
-                                scope.removeLine(newValue.x2, newValue.y2);
-                            }
-
-                            // row increase
-                            else {
-                                // ???
-                            }
-                        }
-                    }
-                }, true);
-
-                ////////////////////////////////////////////////
-                //
-                // utils
-                //
-                ////////////////////////////////////////////////
-
-                /**
-                 * removeLine
-                 *
-                 * @param x
-                 * @param y
-                 */
-                scope.removeLine = function(x, y) {
-
-                    TweenLite.to(element, ANIM_DURATION, {
-                        attr: {x2: x, y2: y},
-                        ease: Power4.easeOut,
-                        onComplete: onRemoveComplete
-                    });
-                };
-
-                /**
-                 * moveLine
-                 *
-                 * @param x
-                 */
-                scope.moveLine = function(x) {
-
-                    TweenLite.to(element, ANIM_DURATION, {
-                        attr: {x2: x},
-                        ease: Power4.easeOut,
-                        onComplete: onMoveComplete
-                    });
-                };
-
-                /**
-                 * moveLine
-                 *
-                 * @param x1
-                 * @param y1
-                 * @param x2
-                 * @param y2
-                 */
-                scope.drawLine = function(x1, y1, x2, y2) {
-
-                    TweenLite.set(element, {attr: {x1: x1, y1: y1, x2: x1, y2: y1}});
-                    TweenLite.to(element, ANIM_DURATION, {
-                        attr: {x2: x2, y2: y2},
-                        ease: Power4.easeOut,
-                        onComplete: onDrawComplete
-                    });
-                };
 
                 ////////////////////////////////////////////////
                 //
@@ -1985,14 +1977,25 @@
                 };
 
                 //----------------------------------
-                // move complete
+                // move line target complete
                 //----------------------------------
 
-                var onMoveComplete = function() {
+                var onMoveLineTargetComplete = function() {
 
                     var line_index = _.parseInt(scope.line_index);
 
-                    scope.onMoveComplete({source_coords: source_coords, target_coords: target_coords, line_index: line_index});
+                    scope.onMoveLineTargetComplete({source_coords: source_coords, target_coords: target_coords, line_index: line_index});
+                };
+
+                //----------------------------------
+                // move line source complete
+                //----------------------------------
+
+                var onMoveLineSourceComplete = function() {
+
+                    // var line_index = _.parseInt(scope.line_index);
+                    //
+                    // scope.onMoveLineTargetComplete({source_coords: source_coords, target_coords: target_coords, line_index: line_index});
                 };
 
                 //----------------------------------
@@ -2005,6 +2008,130 @@
 
                     scope.onDrawComplete({source_coords: source_coords, target_coords: target_coords, line_index: line_index});
                 };
+
+                ////////////////////////////////////////////////
+                //
+                // utils
+                //
+                ////////////////////////////////////////////////
+
+                /**
+                 * removeLineTarget
+                 *
+                 * @param x
+                 * @param y
+                 */
+                scope.removeLineTarget = function(x, y) {
+
+                    TweenLite.to(element, ANIM_DURATION, {
+                        attr: {x2: x, y2: y},
+                        ease: Power4.easeOut,
+                        onComplete: onRemoveComplete
+                    });
+                };
+
+                /**
+                 * moveLineTarget
+                 *
+                 * @param x
+                 */
+                scope.moveLineTarget = function(x) {
+
+                    TweenLite.to(element, ANIM_DURATION, {
+                        attr: {x2: x},
+                        ease: Power4.easeOut,
+                        onComplete: onMoveLineTargetComplete
+                    });
+                };
+
+                /**
+                 * moveLineSource
+                 *
+                 * @param x
+                 */
+                scope.moveLineSource = function(x) {
+
+                    TweenLite.to(element, ANIM_DURATION, {
+                        attr: {x1: x},
+                        ease: Power4.easeOut,
+                        onComplete: onMoveLineSourceComplete
+                    });
+                };
+
+                /**
+                 * drawLine
+                 *
+                 * @param x1
+                 * @param y1
+                 * @param x2
+                 * @param y2
+                 */
+                scope.drawLine = function(x1, y1, x2, y2) {
+
+                    TweenLite.set(element, {attr: {x1: x1, y1: y1, x2: x1, y2: y1}});
+                    TweenLite.to(element, ANIM_DURATION, {
+                        attr: {x2: x2, y2: y2},
+                        ease: Power4.easeOut,
+                        onComplete: onDrawComplete
+                    });
+                };
+
+                ////////////////////////////////////////////////
+                //
+                // watchers
+                //
+                ////////////////////////////////////////////////
+
+                scope.$watch('coords', function(newValue, oldValue) {
+
+                    if (!_.isUndefined(newValue)) {
+
+                        console.log("CHANGE");
+
+                        source_coords = newValue.from;
+                        target_coords = newValue.to;
+                        previous_target_coords = newValue.previous_to;
+
+                        //console.log("COL: "+oldValue.to[0] +" === "+ newValue.to[0]);
+                        //console.log("ROW: "+oldValue.to[1] +" === "+ newValue.to[1]);
+                        //console.log("ROW: "+oldValue.y2 +" === "+ newValue.y2);
+
+                        // init
+                        if (!is_initialized) {
+                            scope.drawLine(newValue.x1, newValue.y1, newValue.x2, newValue.y2);
+                            is_initialized = true;
+                        }
+
+                        // if only target col coord has changed
+                        else if (oldValue.to[1] === newValue.to[1] && oldValue.to[0] !== newValue.to[0]) {
+                            scope.moveLineTarget(newValue.x2);
+                        }
+
+                        // if only target row coord has changed
+                        else if (oldValue.to[0] === newValue.to[0] && oldValue.to[1] !== newValue.to[1]) {
+                            scope.removeLineTarget(newValue.x2, newValue.y2);
+                        }
+
+                        // if col & row change
+                        else if (oldValue.to[1] !== newValue.to[1] && oldValue.to[0] !== newValue.to[0]) {
+
+                            // row decrease
+                            if (newValue.to[1] < oldValue.to[1]) {
+                                scope.removeLineTarget(newValue.x2, newValue.y2);
+                            }
+
+                            // row increase
+                            else {
+                                // ???
+                            }
+                        }
+                        // if source col change
+                        else if (oldValue.from[0] !== newValue.from[0]) {
+                            scope.moveLineSource(newValue.x1);
+                        }
+                    }
+                }, true);
+
             }
         };
     };
@@ -2024,6 +2151,7 @@
         return {
             restrict: 'EA',
             scope: {
+                coords:         "=angularSvgNodesNodeCoords",
                 col_index:      "@angularSvgNodesNodeColIndex",
                 row_index:      "@angularSvgNodesNodeRowIndex",
                 onSelect:       "&angularSvgNodesNodeOnSelect",
@@ -2032,6 +2160,9 @@
                 onMouseOut:     "&angularSvgNodesNodeOnMouseOut"
             },
             link: function (scope, element) {
+
+                var curr_x = null;
+                var ANIM_DURATION = 0.2;
 
                 ////////////////////////////////////////////////
                 //
@@ -2099,6 +2230,35 @@
 
                     // call external handler
                     scope.onDeselect({col_index: col_index, row_index: row_index});
+                });
+
+                //----------------------------------
+                // position complete
+                //----------------------------------
+
+                var onPositionComplete = function() {
+
+                };
+
+                ////////////////////////////////////////////////
+                //
+                // watchers
+                //
+                ////////////////////////////////////////////////
+
+                scope.$watch('coords', function(newValue) {
+
+                    if (!_.isUndefined(newValue)) {
+                        var duration = _.isNull(curr_x) ? 0 : ANIM_DURATION;
+
+                        TweenLite.to(element, duration, {
+                            x: newValue[0], y: newValue[1],
+                            ease: Power4.easeOut,
+                            onComplete: onPositionComplete
+                        });
+
+                        curr_x = newValue[0];
+                    }
                 });
             }
         };

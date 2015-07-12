@@ -51,8 +51,7 @@ angular.module('AngularSvgNodes').run(['$templateCache', function($templateCache
     "\n" +
     "                <!-- blocks -->\n" +
     "\n" +
-    "                <rect ng-attr-x=\"{{col.x}}\" ng-attr-y=\"{{col.y}}\"\n" +
-    "                      ng-attr-width=\"{{ctrl.block_width}}\" ng-attr-height=\"{{ctrl.block_height}}\"\n" +
+    "                <rect ng-attr-width=\"{{ctrl.block_width}}\" ng-attr-height=\"{{ctrl.block_height}}\"\n" +
     "                      class=\"angular-svg-nodes-node\"\n" +
     "                      ng-class=\"{\n" +
     "                      'connected': col.connected,\n" +
@@ -67,6 +66,7 @@ angular.module('AngularSvgNodes').run(['$templateCache', function($templateCache
     "                      'control-hover': col.control_hover,\n" +
     "                      }\"\n" +
     "                      angular-svg-nodes-node\n" +
+    "                      angular-svg-nodes-node-coords=\"col.coords\"\n" +
     "                      angular-svg-nodes-node-col-index=\"{{col.col_index}}\"\n" +
     "                      angular-svg-nodes-node-row-index=\"{{col.row_index}}\"\n" +
     "                      angular-svg-nodes-node-on-select=\"ctrl.onNodeSelect(col_index, row_index)\"\n" +
@@ -83,11 +83,15 @@ angular.module('AngularSvgNodes').run(['$templateCache', function($templateCache
     "                      'control_hover': col.control_hover,\n" +
     "                      }\"\n" +
     "                      ng-attr-x=\"{{col.label_x}}\" ng-attr-y=\"{{col.label_y}}\"\n" +
+    "                      angular-svg-nodes-label\n" +
+    "                      angular-svg-nodes-label-coords=\"col\"\n" +
     "                      text-anchor=\"middle\" alignment-baseline=\"middle\">+</text>\n" +
     "\n" +
     "                <!-- label -->\n" +
     "\n" +
     "                <foreignObject ng-show=\"!col.control\"\n" +
+    "                               angular-svg-nodes-label\n" +
+    "                               angular-svg-nodes-label-coords=\"col\"\n" +
     "                               ng-attr-x=\"{{col.label_x}}\" ng-attr-y=\"{{col.label_y}}\"\n" +
     "                               ng-attr-width=\"{{ctrl.label_width}}\" ng-attr-height=\"{{ctrl.label_height}}\"\n" +
     "                               class=\"angular-svg-nodes-node-label-foreign-object\">\n" +

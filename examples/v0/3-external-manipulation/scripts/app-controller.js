@@ -8,6 +8,9 @@
 
 	var controller = function () {
 
+
+        this.svg_nodes_api = {};
+
         this.rows = [
             {columns: [
                 {join: [0], label: "Delectus deleniti, doloremque ipsum dolor sit amet adipisicing elit"},
@@ -24,6 +27,10 @@
 
             console.log(this.rows);
         };
+        this.removeBlock = function() {
+            this.svg_nodes_api.removeBlock(0,0);
+            //this.rows[0].columns.splice(0,1);
+        };
         this.addRow = function() {
             this.rows.push({columns: []});
         };
@@ -32,6 +39,17 @@
         };
         this.add2RowsWithBlocks = function() {
             this.rows.push({columns: []}, {columns: [{label: "Block2"}]});
+        };
+
+
+        /**
+         * onNodeMouseDown
+         * @param node
+         * @param data
+         */
+        this.onNodeMouseDown = function(node, data) {
+            console.log(node);
+            console.log(data);
         };
 	};
 

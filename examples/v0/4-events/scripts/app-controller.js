@@ -10,6 +10,8 @@
 
         var self = this;
 
+        this.svg_nodes_api = {};
+
         this.node_event_type;
         this.node_event_node;
         this.node_event_data;
@@ -29,6 +31,11 @@
                 {join: [], label: "Itaque nesciunt obcaecati quidem quo", id: 777},
             ]}
         ];
+
+        this.removeBlock = function() {
+            this.svg_nodes_api.removeBlock(0,0);
+            //this.rows[0].columns.splice(0,1);
+        };
 
         /**
          * onNodeMouseDown

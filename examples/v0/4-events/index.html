@@ -23,6 +23,7 @@
 	<div class="col-sm-6 col-sm-offset-3 col-lg-4 col-lg-offset-4 example well">
 
         <div angular-svg-nodes="app.rows"
+			 angular-svg-nodes-api="app.svg_nodes_api"
              angular-svg-nodes-node-mouse-down="app.onNodeMouseDown(node, data)"
              angular-svg-nodes-node-mouse-up="app.onNodeMouseUp(node, data)"
              angular-svg-nodes-line-add="app.onLineAdd(source_node, source_data, target_node, target_data, line_index)"
@@ -32,6 +33,7 @@
 </div><!--/.row-->
 
 <br/>
+<button class="btn" ng-click="app.removeBlock()">REMOVE block</button>
 
 <div class="row">
 	<div class="col-xs-6 example well">

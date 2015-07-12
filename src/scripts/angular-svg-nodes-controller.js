@@ -36,6 +36,12 @@
         ////////////////////////////////////////////////
 
         //-----------------------------
+        // api
+        //-----------------------------
+
+        this.api = $s.api || {};
+
+        //-----------------------------
         // control
         //-----------------------------
 
@@ -696,6 +702,7 @@
          * @returns {{node: *, data: null}}
          */
         this.getExternalNodeEventHandlerData = function(col_index, row_index) {
+
             var data_clone = _.clone($s.rows[row_index].columns[col_index]);
             var node_clone = _.clone(self.blocks[row_index].columns[col_index]);
             var result = {
@@ -1430,6 +1437,7 @@
 
             // set block properties
             var block = {
+                coords: top_left_coords,
                 x: top_left_coords[0],
                 y: top_left_coords[1],
                 label_x: top_left_coords[0] + LABEL_SPACING,
@@ -1470,6 +1478,74 @@
         };
 
         /**
+         * removeBlock
+         *
+         * @param col_index
+         * @param row_index
+         */
+        this.removeBlock = function(col_index, row_index) {
+
+            if (row_index >= self.blocks.length) {
+                return true;
+            }
+
+            if (col_index >= self.blocks[row_index].columns.length - 1) {
+                return true;
+            }
+
+            // remove block
+            self.blocks[row_index].columns.splice(col_index, 1);
+
+            // update data
+            $s.rows[row_index].columns.splice(col_index, 1);
+
+            // update siblings
+            for (var i = col_index; i < (self.blocks[row_index].columns.length); i++) {
+                self.updateBlockAfterSiblingRemoved(i, row_index);
+            }
+        };
+
+        /**
+         * updateBlockAfterSiblingRemoved
+         *
+         * @param col_index
+         * @param row_index
+         */
+        this.updateBlockAfterSiblingRemoved = function(col_index, row_index) {
+
+            var top_left_coords     = self.getCoords(col_index, row_index, BLOCK_TOP_LEFT);
+            var center_coords       = self.getCoords(col_index, row_index, BLOCK_CENTER);
+
+            // update block
+
+            self.blocks[row_index].columns[col_index].col_index = col_index;
+            self.blocks[row_index].columns[col_index].coords = top_left_coords;
+            self.blocks[row_index].columns[col_index].x = top_left_coords[0];
+            self.blocks[row_index].columns[col_index].y = top_left_coords[1];
+
+            // update labels
+            // last block has different label position
+            if (col_index === (self.blocks[row_index].columns.length - 1)) {
+                self.blocks[row_index].columns[col_index].label_x = center_coords[0];
+                self.blocks[row_index].columns[col_index].label_y = center_coords[1];
+            } else {
+                self.blocks[row_index].columns[col_index].label_x = top_left_coords[0] + LABEL_SPACING;
+                self.blocks[row_index].columns[col_index].label_y = top_left_coords[1] + LABEL_SPACING;
+            }
+
+            // update lines
+            _.forEach(self.blocks[row_index].columns[col_index].lines, function(line) {
+
+                // get target lock coords
+                var source_lock_coords     = self.getCoords(col_index, row_index, BLOCK_TOP);
+
+                line.from = [col_index, row_index];
+                line.x1 = source_lock_coords[0];
+                line.y1 = source_lock_coords[1];
+            });
+        };
+
+        /**
          * addControl
          *
          * @param row_index
@@ -1494,6 +1570,7 @@
 
             // set block properties
             var block = {
+                coords: top_left_coords,
                 x: top_left_coords[0],
                 y: top_left_coords[1],
                 label_x: center_coords[0],
@@ -1663,6 +1740,23 @@
 
             // check active
             self.checkActive();
+        };
+
+        ////////////////////////////////////////////////
+        //
+        // api
+        //
+        ////////////////////////////////////////////////
+
+        /**
+         * removeBlock
+         *
+         * @param col_index
+         * @param row_index
+         */
+
+        this.api.removeBlock = function(col_index, row_index) {
+            self.removeBlock(col_index, row_index);
         };
     };
 

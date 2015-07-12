@@ -14,7 +14,8 @@
                 onNodeMouseDown: "&angularSvgNodesNodeMouseDown",
                 onNodeMouseUp: "&angularSvgNodesNodeMouseUp",
                 onLineAdd: "&angularSvgNodesLineAdd",
-                onLineRemove: "&angularSvgNodesLineRemove"
+                onLineRemove: "&angularSvgNodesLineRemove",
+                api: "=angularSvgNodesApi"
             },
             replace: true,
             controller: "AngularSvgNodesController as ctrl",

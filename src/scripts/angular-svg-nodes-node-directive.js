@@ -9,6 +9,7 @@
         return {
             restrict: 'EA',
             scope: {
+                coords:         "=angularSvgNodesNodeCoords",
                 col_index:      "@angularSvgNodesNodeColIndex",
                 row_index:      "@angularSvgNodesNodeRowIndex",
                 onSelect:       "&angularSvgNodesNodeOnSelect",
@@ -17,6 +18,9 @@
                 onMouseOut:     "&angularSvgNodesNodeOnMouseOut"
             },
             link: function (scope, element) {
+
+                var curr_x = null;
+                var ANIM_DURATION = 0.2;
 
                 ////////////////////////////////////////////////
                 //
@@ -84,6 +88,35 @@
 
                     // call external handler
                     scope.onDeselect({col_index: col_index, row_index: row_index});
+                });
+
+                //----------------------------------
+                // position complete
+                //----------------------------------
+
+                var onPositionComplete = function() {
+
+                };
+
+                ////////////////////////////////////////////////
+                //
+                // watchers
+                //
+                ////////////////////////////////////////////////
+
+                scope.$watch('coords', function(newValue) {
+
+                    if (!_.isUndefined(newValue)) {
+                        var duration = _.isNull(curr_x) ? 0 : ANIM_DURATION;
+
+                        TweenLite.to(element, duration, {
+                            x: newValue[0], y: newValue[1],
+                            ease: Power4.easeOut,
+                            onComplete: onPositionComplete
+                        });
+
+                        curr_x = newValue[0];
+                    }
                 });
             }
         };
