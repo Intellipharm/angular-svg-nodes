@@ -306,10 +306,10 @@
                     self.setNodeClass(col_index, row_index, 'target', false);
 
                     // if  block has no parent connections
-
                     if (!self.doesNodeHaveConnectedParents(col_index, row_index)) {
                         self.setPotentialNodeClasses(col_index, row_index, 'potential_target', false);
                     }
+
                     // check active
                     self.checkActive();
                 }
@@ -334,7 +334,7 @@
 
                     // if target is child then setAsConnected line
                     else {
-                        self.setAsConnectedLines(self.selection);
+                        self.setAsConnectedLines(self.selection, "A");
 
                         // check active
                         self.checkActive();
@@ -634,6 +634,10 @@
          */
         this.onLineRemoveComplete = function(source_coords, target_coords, line_index) {
 
+            // update data
+            $s.rows[source_coords[1]].columns[source_coords[0]].join.splice(line_index, 1);
+
+            // update blocks
             var source = self.blocks[source_coords[1]].columns[source_coords[0]];
 
             // delete line
@@ -1253,6 +1257,11 @@
                 x2: target_lock_coords[0],
                 y2: target_lock_coords[1]
             });
+
+            if (connected) {
+                // update data
+                $s.rows[source_coords[1]].columns[source_coords[0]].join.push(target_coords[0]);
+            }
         };
 
         /**
@@ -1332,7 +1341,6 @@
 
             _.forEach(self.blocks[selection[0][1]].columns[selection[0][0]].lines, function (line) {
                 if (!line.connected) {
-                    console.onMoveLineTargetComplete("CLEAN");
                     self.removeLine(self.selection[0], self.selection[1]);
                 }
             });
@@ -1354,6 +1362,9 @@
                     // setAsConnected blocks
                     self.setAsConnectedBlock(line.from);
                     self.setAsConnectedBlock(line.to);
+
+                    // update data
+                    $s.rows[line.from[1]].columns[line.from[0]].join.splice(line_index, 0, line.to[0]);
 
                     // external handler
                     if (!_.isUndefined($s.onLineAdd)) {
@@ -1432,7 +1443,6 @@
 
                 // set blocks as connected
                 self.blocks_waiting_for_connection.push(line_target_coords);
-                //}
             });
 
             // set block properties
@@ -1475,6 +1485,33 @@
             if (!_.isUndefined(label) && self.blocks[row_index].columns[col_index].label !== label) {
                 self.blocks[row_index].columns[col_index].label = label;
             }
+
+            // // update lines
+            // if (!_.isUndefined(lines)) {
+            //
+            //     var line_source_lock_coords     = self.getCoords(col_index, row_index, BLOCK_BOTTOM);
+            //
+            //     _.forEach(lines, function(line_target_col_index) {
+            //
+            //         var line_target_coords = [line_target_col_index, row_index + 1];
+            //         var line_target_lock_coords     = self.getCoords(line_target_coords[0], line_target_coords[1], BLOCK_TOP);
+            //
+            //         self.blocks[row_index].columns[col_index].lines.push({
+            //             connected: true,
+            //             from: [col_index, row_index],
+            //             to: line_target_coords,
+            //             x1: line_source_lock_coords[0],
+            //             y1: line_source_lock_coords[1],
+            //             x2: line_target_lock_coords[0],
+            //             y2: line_target_lock_coords[1]
+            //         });
+            //
+            //         self.setNodeClass(col_index, row_index, 'connected', true);
+            //
+            //         // set blocks as connected
+            //         self.blocks_waiting_for_connection.push(line_target_coords);
+            //     });
+            // }
         };
 
         /**
@@ -1493,6 +1530,11 @@
                 return true;
             }
 
+            // remove lines
+            _.forEach(self.blocks[row_index].columns[col_index].lines, function(line) {
+                self.removeLine(line.from, line.to);
+            });
+
             // remove block
             self.blocks[row_index].columns.splice(col_index, 1);
 
@@ -1502,6 +1544,55 @@
             // update siblings
             for (var i = col_index; i < (self.blocks[row_index].columns.length); i++) {
                 self.updateBlockAfterSiblingAddedOrRemoved(i, row_index);
+
+                // if not last column (control)
+                if (i < self.blocks[row_index].columns.length - 1) {
+                    $s.rows[row_index].columns[i].data.ui_column_index = i;
+                    $s.rows[row_index].columns[i].data.ui_row_index = row_index;
+                }
+            }
+
+            // update parents
+            if (row_index !== 0) {
+                var parent_row_index = row_index - 1;
+                _.forEach(self.blocks[parent_row_index].columns, function(column, parent_col_index) {
+                    _.forEach(column.lines, function(line, line_index) {
+
+                        // if parent connects to this node
+                        if (_.isEqual(line.to, [col_index, row_index])) {
+                            column.lines.splice(line_index, 1);
+
+                            // update data
+                            $s.rows[parent_row_index].columns[parent_col_index].join.splice(line_index, 1);
+                        }
+
+                        // if parent connects to a sibling (right) then adjust line target col index
+                        if (line.to[0] > col_index) {
+
+                            // update lines target
+                            var new_line_to = [line.to[0] - 1, line.to[1]];
+
+                            // get target lock coords
+                            var target_lock_coords     = self.getCoords(new_line_to[0], new_line_to[1], BLOCK_TOP);
+
+                            line.to = [new_line_to[0], new_line_to[1]];
+                            line.x2 = target_lock_coords[0];
+                            line.y2 = target_lock_coords[1];
+                        }
+                    });
+                });
+            }
+
+            // update children
+            if (row_index !== $s.rows.length - 1) {
+                var children_row_index = row_index + 1;
+                _.forEach(self.blocks[children_row_index].columns, function(column, children_col_index) {
+
+                    // if  block has no parent connections
+                    if (!self.doesNodeHaveConnectedParents(children_col_index, children_row_index)) {
+                        self.setAsNotConnectedBlock([children_col_index, children_row_index]);
+                    }
+                });
             }
         };
 
@@ -1571,7 +1662,37 @@
 
             // update siblings
             for (var i = col_index + 1; i < (self.blocks[row_index].columns.length); i++) {
+
                 self.updateBlockAfterSiblingAddedOrRemoved(i, row_index);
+
+                // if not last column (control)
+                if (i < self.blocks[row_index].columns.length - 1) {
+                    $s.rows[row_index].columns[i].data.ui_column_index = i;
+                    $s.rows[row_index].columns[i].data.ui_row_index = row_index;
+                }
+            }
+
+            // update parents
+            if (row_index !== 0) {
+                var parent_row_index = row_index - 1;
+                _.forEach(self.blocks[parent_row_index].columns, function(column) {
+                    _.forEach(column.lines, function(line) {
+
+                        // if parent connects to a sibling (right) then adjust line target col index
+                        if (line.to[0] >= col_index) {
+
+                            // update lines target
+                            var new_line_to = [line.to[0] + 1, line.to[1]];
+
+                            // get target lock coords
+                            var target_lock_coords     = self.getCoords(new_line_to[0], new_line_to[1], BLOCK_TOP);
+
+                            line.to = [new_line_to[0], new_line_to[1]];
+                            line.x2 = target_lock_coords[0];
+                            line.y2 = target_lock_coords[1];
+                        }
+                    });
+                });
             }
         };
 
@@ -1582,6 +1703,49 @@
          * @param row_index
          */
         this.updateBlockAfterSiblingAddedOrRemoved = function(col_index, row_index) {
+
+            var top_left_coords     = self.getCoords(col_index, row_index, BLOCK_TOP_LEFT);
+            var center_coords       = self.getCoords(col_index, row_index, BLOCK_CENTER);
+
+            // update block
+
+            self.blocks[row_index].columns[col_index].col_index = col_index;
+            self.blocks[row_index].columns[col_index].coords = top_left_coords;
+            self.blocks[row_index].columns[col_index].x = top_left_coords[0];
+            self.blocks[row_index].columns[col_index].y = top_left_coords[1];
+
+            // update labels
+            // last block has different label position
+            if (col_index === (self.blocks[row_index].columns.length - 1)) {
+                self.blocks[row_index].columns[col_index].label_x = center_coords[0];
+                self.blocks[row_index].columns[col_index].label_y = center_coords[1];
+            } else {
+                self.blocks[row_index].columns[col_index].label_x = top_left_coords[0] + LABEL_SPACING;
+                self.blocks[row_index].columns[col_index].label_y = top_left_coords[1] + LABEL_SPACING;
+            }
+
+            // update lines
+            _.forEach(self.blocks[row_index].columns[col_index].lines, function(line) {
+
+                // get target lock coords
+                var source_lock_coords     = self.getCoords(col_index, row_index, BLOCK_TOP);
+
+                line.from = [col_index, row_index];
+                line.x1 = source_lock_coords[0];
+                line.y1 = source_lock_coords[1];
+            });
+
+            // check viewport
+            self.checkViewport(col_index, row_index);
+        };
+
+        /**
+         * updateBlockAfterChildAddedOrRemoved
+         *
+         * @param col_index
+         * @param row_index
+         */
+        this.updateBlockAfterChildAddedOrRemoved = function(col_index, row_index) {
 
             var top_left_coords     = self.getCoords(col_index, row_index, BLOCK_TOP_LEFT);
             var center_coords       = self.getCoords(col_index, row_index, BLOCK_CENTER);
@@ -1772,7 +1936,6 @@
 
             // check active
             self.checkActive();
-
         };
 
         /**
@@ -1822,6 +1985,26 @@
         ////////////////////////////////////////////////
 
         /**
+         * addLine
+         *
+         * @param source_coords
+         * @param target_coords
+         * @param connected
+         */
+
+        this.api.addLine = function(source_coords, target_coords, connected) {
+
+            // style block
+            self.setNodeClass(source_coords[0], source_coords[1], 'connected', true);
+
+            // set target as waiting for connection
+            self.blocks_waiting_for_connection.push(target_coords);
+
+            // add line
+            self.addLine(source_coords, target_coords, connected);
+        };
+
+        /**
          * insertBlock
          *
          * @param col_index
@@ -1839,8 +2022,8 @@
          * @param col_index
          * @param row_index
          */
-
         this.api.removeBlock = function(col_index, row_index) {
+            //console.log(col_index, row_index);
             self.removeBlock(col_index, row_index);
         };
     };

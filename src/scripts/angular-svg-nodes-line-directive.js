@@ -190,6 +190,7 @@
                             // row increase
                             else {
                                 // ???
+                                console.log("row increase");
                             }
                         }
                         // if source col change
