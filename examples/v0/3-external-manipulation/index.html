@@ -22,12 +22,14 @@
 <div class="row">
 	<div class="col-sm-6 col-sm-offset-3 col-lg-4 col-lg-offset-4 example well">
 
+		{{app.rows}}
         <div angular-svg-nodes="app.rows"
              angular-svg-nodes-node-mouse-down="app.onNodeMouseDown(node, data)"
         	 angular-svg-nodes-api="app.svg_nodes_api"></div>
 
         <button class="btn" ng-click="app.changeLabel()">CHANGE label</button>
         <button class="btn" ng-click="app.removeBlock()">REMOVE block</button>
+        <button class="btn" ng-click="app.insertBlock()">INSERT block</button>
         <button class="btn" ng-click="app.addRow()">ADD 1 row</button>
         <button class="btn" ng-click="app.add2Rows()">ADD 2 rows</button>
         <button class="btn" ng-click="app.add2RowsWithBlocks()">ADD 2 rows with blocks</button>

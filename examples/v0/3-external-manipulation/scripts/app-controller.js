@@ -31,6 +31,10 @@
             this.svg_nodes_api.removeBlock(0,0);
             //this.rows[0].columns.splice(0,1);
         };
+        this.insertBlock = function() {
+            this.svg_nodes_api.insertBlock(1,0, {join: [1]});
+            //this.rows[0].columns.splice(0,1);
+        };
         this.addRow = function() {
             this.rows.push({columns: []});
         };

@@ -155,8 +155,6 @@
 
                     if (!_.isUndefined(newValue)) {
 
-                        console.log("CHANGE");
-
                         source_coords = newValue.from;
                         target_coords = newValue.to;
                         previous_target_coords = newValue.previous_to;

@@ -4,7 +4,7 @@
  *
  * Copyright 2015 Intellipharm
  *
- * 2015-07-13 09:54:42
+ * 2015-07-13 11:52:44
  *
  */
 (function() {
@@ -1422,7 +1422,7 @@
 
             _.forEach(self.blocks[selection[0][1]].columns[selection[0][0]].lines, function (line) {
                 if (!line.connected) {
-                    console.log("CLEAN");
+                    console.onMoveLineTargetComplete("CLEAN");
                     self.removeLine(self.selection[0], self.selection[1]);
                 }
             });
@@ -1591,17 +1591,87 @@
 
             // update siblings
             for (var i = col_index; i < (self.blocks[row_index].columns.length); i++) {
-                self.updateBlockAfterSiblingRemoved(i, row_index);
+                self.updateBlockAfterSiblingAddedOrRemoved(i, row_index);
             }
         };
 
         /**
-         * updateBlockAfterSiblingRemoved
+         * insertBlock
+         *
+         * @param col_index
+         * @param row_index
+         * @param data
+         */
+        this.insertBlock = function(col_index, row_index, data) {
+
+            if (row_index >= self.blocks.length) {
+                return true;
+            }
+
+            if (col_index > self.blocks[row_index].columns.length - 1) {
+                return true;
+            }
+
+            // get top left coords
+            var top_left_coords     = self.getCoords(col_index, row_index, BLOCK_TOP_LEFT);
+
+            // lines
+            var block_lines = [];
+            var line_source_lock_coords     = self.getCoords(col_index, row_index, BLOCK_BOTTOM);
+
+            _.forEach(data.join, function(line_target_col_index) {
+
+                var line_target_coords          = [line_target_col_index, row_index + 1];
+                var line_target_lock_coords     = self.getCoords(line_target_coords[0], line_target_coords[1], BLOCK_TOP);
+
+                block_lines.push({
+                    connected: true,
+                    from: [col_index, row_index],
+                    to: line_target_coords,
+                    x1: line_source_lock_coords[0],
+                    y1: line_source_lock_coords[1],
+                    x2: line_target_lock_coords[0],
+                    y2: line_target_lock_coords[1]
+                });
+
+                // set blocks as connected
+                self.blocks_waiting_for_connection.push(line_target_coords);
+            });
+
+            // set block properties
+            var block = {
+                coords: top_left_coords,
+                x: top_left_coords[0],
+                y: top_left_coords[1],
+                label_x: top_left_coords[0] + LABEL_SPACING,
+                label_y: top_left_coords[1] + LABEL_SPACING,
+                label: data.label,
+                connected: block_lines.length > 0,
+                control: false,
+                row_index: row_index,
+                col_index: col_index,
+                lines: block_lines
+            };
+
+            // insert block
+            self.blocks[row_index].columns.splice(col_index, 0, block);
+
+            // update data
+            $s.rows[row_index].columns.splice(col_index, 0, data);
+
+            // update siblings
+            for (var i = col_index + 1; i < (self.blocks[row_index].columns.length); i++) {
+                self.updateBlockAfterSiblingAddedOrRemoved(i, row_index);
+            }
+        };
+
+        /**
+         * updateBlockAfterSiblingAddedOrRemoved
          *
          * @param col_index
          * @param row_index
          */
-        this.updateBlockAfterSiblingRemoved = function(col_index, row_index) {
+        this.updateBlockAfterSiblingAddedOrRemoved = function(col_index, row_index) {
 
             var top_left_coords     = self.getCoords(col_index, row_index, BLOCK_TOP_LEFT);
             var center_coords       = self.getCoords(col_index, row_index, BLOCK_CENTER);
@@ -1633,6 +1703,9 @@
                 line.x1 = source_lock_coords[0];
                 line.y1 = source_lock_coords[1];
             });
+
+            // check viewport
+            self.checkViewport(col_index, row_index);
         };
 
         /**
@@ -1837,6 +1910,18 @@
         // api
         //
         ////////////////////////////////////////////////
+
+        /**
+         * insertBlock
+         *
+         * @param col_index
+         * @param row_index
+         * @param data
+         */
+
+        this.api.insertBlock = function(col_index, row_index, data) {
+            self.insertBlock(col_index, row_index, data);
+        };
 
         /**
          * removeBlock
@@ -2085,8 +2170,6 @@
                 scope.$watch('coords', function(newValue, oldValue) {
 
                     if (!_.isUndefined(newValue)) {
-
-                        console.log("CHANGE");
 
                         source_coords = newValue.from;
                         target_coords = newValue.to;
