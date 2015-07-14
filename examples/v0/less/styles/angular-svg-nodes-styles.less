@@ -107,6 +107,14 @@
                 // sets fill, stroke, stroke-width & stroke-dasharray
                 .setNodeStyles('connected_target');
             }
+            &.highlight {
+                // sets stroke, stroke-width & stroke-dasharray
+                .setNodeStrokeStyles('highlight');
+            }
+            &.selected {
+                // sets stroke, stroke-width & stroke-dasharray
+                .setNodeStrokeStyles('selected');
+            }
 
             // active
 
@@ -131,6 +139,14 @@
                     // sets fill, stroke, stroke-width & stroke-dasharray
                     .setNodeStyles('connected_active_potential_target_hover');
                 }
+                &.highlight {
+                    // sets stroke, stroke-width & stroke-dasharray
+                    .setNodeStrokeStyles('highlight');
+                }
+                &.selected {
+                    // sets stroke, stroke-width & stroke-dasharray
+                    .setNodeStrokeStyles('selected');
+                }
             }
         }
 
@@ -143,6 +159,14 @@
         &.control-hover {
             // sets fill, stroke, stroke-width & stroke-dasharray
             .setNodeStyles('control_hover');
+        }
+        &.highlight {
+            // sets stroke, stroke-width & stroke-dasharray
+            .setNodeStrokeStyles('highlight');
+        }
+        &.selected {
+            // sets stroke, stroke-width & stroke-dasharray
+            .setNodeStrokeStyles('selected');
         }
     }
 

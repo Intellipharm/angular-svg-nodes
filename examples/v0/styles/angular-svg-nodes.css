@@ -110,6 +110,16 @@
   stroke-width: 0;
   stroke-dasharray: 0;
 }
+.angular-svg-nodes .angular-svg-nodes-node.connected.highlight {
+  stroke: green;
+  stroke-width: 1;
+  stroke-dasharray: 0;
+}
+.angular-svg-nodes .angular-svg-nodes-node.connected.selected {
+  stroke: red;
+  stroke-width: 1;
+  stroke-dasharray: 0;
+}
 .angular-svg-nodes .angular-svg-nodes-node.connected.active {
   fill: #d9edc2;
   stroke: transparent;
@@ -140,6 +150,16 @@
   stroke-width: 1;
   stroke-dasharray: 3, 3;
 }
+.angular-svg-nodes .angular-svg-nodes-node.connected.active.highlight {
+  stroke: green;
+  stroke-width: 1;
+  stroke-dasharray: 0;
+}
+.angular-svg-nodes .angular-svg-nodes-node.connected.active.selected {
+  stroke: red;
+  stroke-width: 1;
+  stroke-dasharray: 0;
+}
 .angular-svg-nodes .angular-svg-nodes-node.control {
   fill: #ffffff;
   stroke: transparent;
@@ -150,6 +170,16 @@
   fill: #ffffff;
   stroke: transparent;
   stroke-width: 0;
+  stroke-dasharray: 0;
+}
+.angular-svg-nodes .angular-svg-nodes-node.highlight {
+  stroke: green;
+  stroke-width: 1;
+  stroke-dasharray: 0;
+}
+.angular-svg-nodes .angular-svg-nodes-node.selected {
+  stroke: red;
+  stroke-width: 1;
   stroke-dasharray: 0;
 }
 .angular-svg-nodes .angular-svg-nodes-node-label {

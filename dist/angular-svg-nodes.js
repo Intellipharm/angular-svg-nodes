@@ -4,7 +4,7 @@
  *
  * Copyright 2015 Intellipharm
  *
- * 2015-07-14 08:44:18
+ * 2015-07-14 11:08:32
  *
  */
 (function() {
@@ -115,7 +115,7 @@
         DISABLE_CONTROL_NODES,
         MAX_VIEWPORT_WIDTH_INCREASE,
         MAX_VIEWPORT_HEIGHT_INCREASE
-        ) {
+    ) {
 
         var self = this;
 
@@ -173,6 +173,9 @@
         // node selections
         this.selection = [];
         this.source_exit_side = null;
+
+        // active node
+        this.selected_node    = [];
 
         ////////////////////////////////////////////////
         //
@@ -355,6 +358,7 @@
 
             // set selection
             self.selection = [[col_index, row_index]];
+            self.selected_node = [col_index, row_index];
 
             $s.$apply();
         };
@@ -1654,6 +1658,11 @@
 
                             // update data
                             $s.rows[parent_row_index].columns[parent_col_index].join.splice(line_index, 1);
+
+                            // if parent no longer has any lines
+                            if (column.lines.length === 0) {
+                                self.setAsNotConnectedBlock([parent_col_index, parent_row_index]);
+                            }
                         }
 
                         // if parent connects to a sibling (right) then adjust line target col index
@@ -1789,8 +1798,8 @@
         /**
          * updateBlockAfterSiblingAddedOrRemoved
          *
-         * @param col_index
-         * @param row_index
+         * @param {Integer}    col_index
+         * @param {Integer}    row_index
          */
         this.updateBlockAfterSiblingAddedOrRemoved = function(col_index, row_index) {
 
@@ -1832,8 +1841,8 @@
         /**
          * updateBlockAfterChildAddedOrRemoved
          *
-         * @param col_index
-         * @param row_index
+         * @param {Integer}    col_index
+         * @param {Integer}    row_index
          */
         this.updateBlockAfterChildAddedOrRemoved = function(col_index, row_index) {
 
@@ -1875,7 +1884,7 @@
         /**
          * addControl
          *
-         * @param row_index
+         * @param {Integer}    row_index
          */
         this.addControl = function(row_index) {
 
@@ -1921,7 +1930,7 @@
         /**
          * addBgGridCol
          *
-         * @param index
+         * @param {Integer}    index
          */
         this.addBgGridCol = function(index) {
 
@@ -2077,9 +2086,9 @@
         /**
          * addLine
          *
-         * @param source_coords
-         * @param target_coords
-         * @param connected
+         * @param {Array}    source_coords
+         * @param {Array}    target_coords
+         * @param {Boolean}  connected
          */
 
         this.api.addLine = function(source_coords, target_coords, connected) {
@@ -2097,9 +2106,9 @@
         /**
          * insertBlock
          *
-         * @param col_index
-         * @param row_index
-         * @param data
+         * @param {Integer}    col_index
+         * @param {Integer}    row_index
+         * @param {Object}     data
          */
 
         this.api.insertBlock = function(col_index, row_index, data) {
@@ -2109,12 +2118,41 @@
         /**
          * removeBlock
          *
-         * @param col_index
-         * @param row_index
+         * @param {Integer}    col_index
+         * @param {Integer}    row_index
          */
         this.api.removeBlock = function(col_index, row_index) {
-            //console.log(col_index, row_index);
             self.removeBlock(col_index, row_index);
+        };
+
+        /**
+         * highlightBlock
+         *
+         * @param {Boolean}    value
+         * @param {Integer}    col_index
+         * @param {Integer}    row_index
+         */
+        this.api.highlightBlock = function(value, col_index, row_index) {
+
+            // style block
+            self.setNodeClass(col_index, row_index, 'highlight', value);
+        };
+
+        /**
+         * selectBlock
+         *
+         * @param {Boolean}    value
+         * @param {Integer}    col_index
+         * @param {Integer}    row_index
+         */
+        this.api.selectBlock = function(value, col_index, row_index) {
+
+            if (!_.isUndefined(col_index) && !_.isUndefined(col_index) && value) {
+                self.selected_node = [col_index, row_index];
+                return true;
+            }
+
+            self.selected_node = null;
         };
     };
 

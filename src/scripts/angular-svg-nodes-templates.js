@@ -2,7 +2,7 @@ angular.module('AngularSvgNodes').run(['$templateCache', function($templateCache
   'use strict';
 
   $templateCache.put('views/angular-svg-nodes.html',
-    "<div class=\"angular-svg-nodes\" ng-style=\"ctrl.wrapper_style\">\n" +
+    "<div class=\"angular-svg-nodes-wrapper\" ng-style=\"ctrl.wrapper_style\">\n" +
     "\n" +
     "    <svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\"\n" +
     "         preserveAspectRatio=\"xMinYMin meet\"\n" +
@@ -51,7 +51,8 @@ angular.module('AngularSvgNodes').run(['$templateCache', function($templateCache
     "\n" +
     "                <!-- blocks -->\n" +
     "\n" +
-    "                <rect ng-attr-width=\"{{ctrl.block_width}}\" ng-attr-height=\"{{ctrl.block_height}}\"\n" +
+    "                <rect ng-attr-x=\"{{col.x}}\" ng-attr-y=\"{{col.y}}\"\n" +
+    "                      ng-attr-width=\"{{ctrl.block_width}}\" ng-attr-height=\"{{ctrl.block_height}}\"\n" +
     "                      class=\"angular-svg-nodes-node\"\n" +
     "                      ng-class=\"{\n" +
     "                      'connected': col.connected,\n" +
@@ -63,10 +64,11 @@ angular.module('AngularSvgNodes').run(['$templateCache', function($templateCache
     "                      'potential-target': col.potential_target,\n" +
     "                      'potential-target-hover': col.potential_target_hover,\n" +
     "                      'control': col.control,\n" +
-    "                      'control-hover': col.control_hover,\n" +
+    "                      'control_hover': col.control_hover,\n" +
+    "                      'highlight': col.highlight,\n" +
+    "                      'selected': ($index === ctrl.selected_node[0] && $parent.$index === ctrl.selected_node[1])\n" +
     "                      }\"\n" +
     "                      angular-svg-nodes-node\n" +
-    "                      angular-svg-nodes-node-coords=\"col.coords\"\n" +
     "                      angular-svg-nodes-node-col-index=\"{{col.col_index}}\"\n" +
     "                      angular-svg-nodes-node-row-index=\"{{col.row_index}}\"\n" +
     "                      angular-svg-nodes-node-on-select=\"ctrl.onNodeSelect(col_index, row_index)\"\n" +
@@ -76,22 +78,18 @@ angular.module('AngularSvgNodes').run(['$templateCache', function($templateCache
     "\n" +
     "                <!-- control label -->\n" +
     "\n" +
-    "                <text ng-show=\"col.control\"\n" +
+    "                <text ng-if=\"col.control\"\n" +
     "                      class=\"angular-svg-nodes-node-label\"\n" +
     "                      ng-class=\"{\n" +
     "                      'control': col.control,\n" +
     "                      'control_hover': col.control_hover,\n" +
     "                      }\"\n" +
     "                      ng-attr-x=\"{{col.label_x}}\" ng-attr-y=\"{{col.label_y}}\"\n" +
-    "                      angular-svg-nodes-label\n" +
-    "                      angular-svg-nodes-label-coords=\"col\"\n" +
     "                      text-anchor=\"middle\" alignment-baseline=\"middle\">+</text>\n" +
     "\n" +
     "                <!-- label -->\n" +
     "\n" +
-    "                <foreignObject ng-show=\"!col.control\"\n" +
-    "                               angular-svg-nodes-label\n" +
-    "                               angular-svg-nodes-label-coords=\"col\"\n" +
+    "                <foreignObject ng-if=\"!col.control\"\n" +
     "                               ng-attr-x=\"{{col.label_x}}\" ng-attr-y=\"{{col.label_y}}\"\n" +
     "                               ng-attr-width=\"{{ctrl.label_width}}\" ng-attr-height=\"{{ctrl.label_height}}\"\n" +
     "                               class=\"angular-svg-nodes-node-label-foreign-object\">\n" +

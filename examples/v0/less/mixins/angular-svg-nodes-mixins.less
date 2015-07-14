@@ -36,3 +36,11 @@
     stroke-width:       @stroke-width;
     stroke-dasharray:   @stroke-dasharray;
 }
+.setNodeStrokeStyles(@name) {
+    @stroke-color:      ~"@{node-@{name}-stroke-color}";
+    @stroke-width:      ~"@{node-@{name}-stroke-width}";
+    @stroke-dasharray: ~"@{node-@{name}-stroke-dasharray}";
+    stroke:             @stroke-color;
+    stroke-width:       @stroke-width;
+    stroke-dasharray:   @stroke-dasharray;
+}

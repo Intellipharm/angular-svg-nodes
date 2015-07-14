@@ -4,7 +4,7 @@
  *
  * Copyright 2015 Intellipharm
  *
- * 2015-07-14 08:44:18
+ * 2015-07-14 11:08:32
  *
  */
 (function() {
@@ -115,7 +115,7 @@
         DISABLE_CONTROL_NODES,
         MAX_VIEWPORT_WIDTH_INCREASE,
         MAX_VIEWPORT_HEIGHT_INCREASE
-        ) {
+    ) {
 
         var self = this;
 
@@ -173,6 +173,9 @@
         // node selections
         this.selection = [];
         this.source_exit_side = null;
+
+        // active node
+        this.selected_node    = [];
 
         ////////////////////////////////////////////////
         //
@@ -355,6 +358,7 @@
 
             // set selection
             self.selection = [[col_index, row_index]];
+            self.selected_node = [col_index, row_index];
 
             $s.$apply();
         };
@@ -1654,6 +1658,11 @@
 
                             // update data
                             $s.rows[parent_row_index].columns[parent_col_index].join.splice(line_index, 1);
+
+                            // if parent no longer has any lines
+                            if (column.lines.length === 0) {
+                                self.setAsNotConnectedBlock([parent_col_index, parent_row_index]);
+                            }
                         }
 
                         // if parent connects to a sibling (right) then adjust line target col index
@@ -1789,8 +1798,8 @@
         /**
          * updateBlockAfterSiblingAddedOrRemoved
          *
-         * @param col_index
-         * @param row_index
+         * @param {Integer}    col_index
+         * @param {Integer}    row_index
          */
         this.updateBlockAfterSiblingAddedOrRemoved = function(col_index, row_index) {
 
@@ -1832,8 +1841,8 @@
         /**
          * updateBlockAfterChildAddedOrRemoved
          *
-         * @param col_index
-         * @param row_index
+         * @param {Integer}    col_index
+         * @param {Integer}    row_index
          */
         this.updateBlockAfterChildAddedOrRemoved = function(col_index, row_index) {
 
@@ -1875,7 +1884,7 @@
         /**
          * addControl
          *
-         * @param row_index
+         * @param {Integer}    row_index
          */
         this.addControl = function(row_index) {
 
@@ -1921,7 +1930,7 @@
         /**
          * addBgGridCol
          *
-         * @param index
+         * @param {Integer}    index
          */
         this.addBgGridCol = function(index) {
 
@@ -2077,9 +2086,9 @@
         /**
          * addLine
          *
-         * @param source_coords
-         * @param target_coords
-         * @param connected
+         * @param {Array}    source_coords
+         * @param {Array}    target_coords
+         * @param {Boolean}  connected
          */
 
         this.api.addLine = function(source_coords, target_coords, connected) {
@@ -2097,9 +2106,9 @@
         /**
          * insertBlock
          *
-         * @param col_index
-         * @param row_index
-         * @param data
+         * @param {Integer}    col_index
+         * @param {Integer}    row_index
+         * @param {Object}     data
          */
 
         this.api.insertBlock = function(col_index, row_index, data) {
@@ -2109,12 +2118,41 @@
         /**
          * removeBlock
          *
-         * @param col_index
-         * @param row_index
+         * @param {Integer}    col_index
+         * @param {Integer}    row_index
          */
         this.api.removeBlock = function(col_index, row_index) {
-            //console.log(col_index, row_index);
             self.removeBlock(col_index, row_index);
+        };
+
+        /**
+         * highlightBlock
+         *
+         * @param {Boolean}    value
+         * @param {Integer}    col_index
+         * @param {Integer}    row_index
+         */
+        this.api.highlightBlock = function(value, col_index, row_index) {
+
+            // style block
+            self.setNodeClass(col_index, row_index, 'highlight', value);
+        };
+
+        /**
+         * selectBlock
+         *
+         * @param {Boolean}    value
+         * @param {Integer}    col_index
+         * @param {Integer}    row_index
+         */
+        this.api.selectBlock = function(value, col_index, row_index) {
+
+            if (!_.isUndefined(col_index) && !_.isUndefined(col_index) && value) {
+                self.selected_node = [col_index, row_index];
+                return true;
+            }
+
+            self.selected_node = null;
         };
     };
 
@@ -2567,7 +2605,7 @@ angular.module('AngularSvgNodes').run(['$templateCache', function($templateCache
   'use strict';
 
   $templateCache.put('views/angular-svg-nodes.html',
-    "<div class=\"angular-svg-nodes\" ng-style=\"ctrl.wrapper_style\">\n" +
+    "<div class=\"angular-svg-nodes-wrapper\" ng-style=\"ctrl.wrapper_style\">\n" +
     "\n" +
     "    <svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\"\n" +
     "         preserveAspectRatio=\"xMinYMin meet\"\n" +
@@ -2616,7 +2654,8 @@ angular.module('AngularSvgNodes').run(['$templateCache', function($templateCache
     "\n" +
     "                <!-- blocks -->\n" +
     "\n" +
-    "                <rect ng-attr-width=\"{{ctrl.block_width}}\" ng-attr-height=\"{{ctrl.block_height}}\"\n" +
+    "                <rect ng-attr-x=\"{{col.x}}\" ng-attr-y=\"{{col.y}}\"\n" +
+    "                      ng-attr-width=\"{{ctrl.block_width}}\" ng-attr-height=\"{{ctrl.block_height}}\"\n" +
     "                      class=\"angular-svg-nodes-node\"\n" +
     "                      ng-class=\"{\n" +
     "                      'connected': col.connected,\n" +
@@ -2628,10 +2667,11 @@ angular.module('AngularSvgNodes').run(['$templateCache', function($templateCache
     "                      'potential-target': col.potential_target,\n" +
     "                      'potential-target-hover': col.potential_target_hover,\n" +
     "                      'control': col.control,\n" +
-    "                      'control-hover': col.control_hover,\n" +
+    "                      'control_hover': col.control_hover,\n" +
+    "                      'highlight': col.highlight,\n" +
+    "                      'selected': ($index === ctrl.selected_node[0] && $parent.$index === ctrl.selected_node[1])\n" +
     "                      }\"\n" +
     "                      angular-svg-nodes-node\n" +
-    "                      angular-svg-nodes-node-coords=\"col.coords\"\n" +
     "                      angular-svg-nodes-node-col-index=\"{{col.col_index}}\"\n" +
     "                      angular-svg-nodes-node-row-index=\"{{col.row_index}}\"\n" +
     "                      angular-svg-nodes-node-on-select=\"ctrl.onNodeSelect(col_index, row_index)\"\n" +
@@ -2641,22 +2681,18 @@ angular.module('AngularSvgNodes').run(['$templateCache', function($templateCache
     "\n" +
     "                <!-- control label -->\n" +
     "\n" +
-    "                <text ng-show=\"col.control\"\n" +
+    "                <text ng-if=\"col.control\"\n" +
     "                      class=\"angular-svg-nodes-node-label\"\n" +
     "                      ng-class=\"{\n" +
     "                      'control': col.control,\n" +
     "                      'control_hover': col.control_hover,\n" +
     "                      }\"\n" +
     "                      ng-attr-x=\"{{col.label_x}}\" ng-attr-y=\"{{col.label_y}}\"\n" +
-    "                      angular-svg-nodes-label\n" +
-    "                      angular-svg-nodes-label-coords=\"col\"\n" +
     "                      text-anchor=\"middle\" alignment-baseline=\"middle\">+</text>\n" +
     "\n" +
     "                <!-- label -->\n" +
     "\n" +
-    "                <foreignObject ng-show=\"!col.control\"\n" +
-    "                               angular-svg-nodes-label\n" +
-    "                               angular-svg-nodes-label-coords=\"col\"\n" +
+    "                <foreignObject ng-if=\"!col.control\"\n" +
     "                               ng-attr-x=\"{{col.label_x}}\" ng-attr-y=\"{{col.label_y}}\"\n" +
     "                               ng-attr-width=\"{{ctrl.label_width}}\" ng-attr-height=\"{{ctrl.label_height}}\"\n" +
     "                               class=\"angular-svg-nodes-node-label-foreign-object\">\n" +
