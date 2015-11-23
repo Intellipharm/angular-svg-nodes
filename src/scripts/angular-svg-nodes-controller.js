@@ -1007,7 +1007,9 @@
          * @param value
          */
         this.setNodeClass = function(col_index, row_index, key, value) {
-            self.blocks[row_index].columns[col_index][key] = value;
+            if ( _.has( self.blocks[row_index].columns[col_index], key ) ) {
+                self.blocks[row_index].columns[col_index][key] = value;
+            }
         };
 
         /**
