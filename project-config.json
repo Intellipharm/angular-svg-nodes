@@ -1,0 +1,30 @@
+{
+  "project": {
+    "name": "angular-svg-nodes"
+  },
+  "port": {
+    "browser_sync"    : 9010,
+    "browser_sync_ui" : 9011,
+    "karma"           : 9020
+  },
+  "path": {
+    "dir": {
+      "tests"         : "tests",
+      "source"        : "src",
+      "app"           : "src/app",
+      "build"         : "dist",
+      "coverage"      : "tests/coverage",
+      "jspm_packages" : "src/jspm_packages"
+    },
+    "file": {
+      "rc": {
+        "jshint"  : ".jshintrc",
+        "jscs"    : ".jscsrc"
+      },
+      "config": {
+        "jspm"  : "src/jspm-config.js",
+        "karma" : "tests/karma-config.js"
+      }
+    }
+  }
+}

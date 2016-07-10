@@ -1,0 +1,32 @@
+<div class="card">
+    <div class="card-block">
+        <samp>{{ Example.data | json }}</samp>
+    </div>
+    <div class="card-block noselect">
+        <div angular-svg-nodes="Example.data"
+             angular-svg-nodes-node-mouse-down="Example.onNodeMouseDown(node, data)"></div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-block">
+
+        <h2>Node Selection</h2>
+
+        <table class="table">
+            <tr>
+                <th scope="row" width="200" style="white-space: nowrap;">Row</th>
+                <td><samp>{{Example.selected_node_row_index}}</samp></td>
+            </tr>
+            <tr>
+                <th scope="row" width="200" style="white-space: nowrap;">Column</th>
+                <td><samp>{{Example.selected_node_col_index}}</samp></td>
+            </tr>
+            <tr>
+                <th scope="row" width="200" style="white-space: nowrap;">Is control?</th>
+                <td><samp>{{Example.selected_node_is_control}}</samp></td>
+            </tr>
+        </table>
+
+    </div>
+</div>

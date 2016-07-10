@@ -1,36 +1,82 @@
 {
-    "name": "angular-svg-nodes",
-    "version": "0.0.1",
-    "main": "dist/angular-svg-nodes.tmpl.min.js",
-    "dependencies": {},
+  "name": "angular-svg-nodes",
+  "version": "0.1.1",
+  "main": "dist/angular-svg-nodes.js",
+  "scripts": {
+    "postinstall": "jspm install"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Intellipharm/angular-svg-nodes.git"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "babel-core": "^6.6.4",
+    "babel-plugin-transform-runtime": "^6.6.0",
+    "babel-polyfill": "^6.6.1",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-stage-0": "^6.5.0",
+    "babel-preset-stage-3": "^6.5.0",
+    "babel-register": "^6.6.0",
+    "del": "^2.0.2",
+    "glob": "^7.0.0",
+    "gulp": "^3.9.0",
+    "gulp-babel": "^6.1.1",
+    "gulp-changed": "^1.3.0",
+    "gulp-jscs": "^2.0.0",
+    "gulp-jshint": "^2.0.0",
+    "gulp-ng-annotate": "^2.0.0",
+    "gulp-plumber": "^1.0.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-uglify": "^1.4.1",
+    "gulp-util": "^3.0.7",
+    "isparta": "^4.0.0",
+    "istanbul": "gotwarlost/istanbul.git#source-map",
+    "jasmine": "^2.4.1",
+    "jasmine-core": "~2.4.1",
+    "jshint": "^2.8.0",
+    "jshint-stylish": "^2.1.0",
+    "jspm": "^0.16.30",
+    "karma": "^0.13.21",
+    "karma-babel-preprocessor": "^6.0.1",
+    "karma-coverage": "douglasduteil/karma-coverage#next",
+    "karma-htmlfile-reporter": "^0.3.0",
+    "karma-jasmine": "^1.0.0",
+    "karma-jspm": "^2.0.2",
+    "karma-phantomjs-launcher": "^1.0.0",
+    "karma-source-map-support": "^1.1.0",
+    "karma-sourcemap-loader": "^0.3.5",
+    "karma-spec-reporter": "^0.0.26",
+    "lodash": "^4.6.1",
+    "node-notifier": "^4.2.3",
+    "phantomjs-prebuilt": "^2.1.4",
+    "require-dir": "^0.3.0",
+    "run-sequence": "^1.1.2",
+    "vinyl-paths": "^2.0.0"
+  },
+  "jspm": {
+    "directories": {
+      "baseURL": "src"
+    },
+    "configFile": "src/jspm-config.js",
+    "dependencies": {
+      "angular": "github:angular/bower-angular@^1.5.0",
+      "babel-polyfill": "npm:babel-polyfill@^6.0.0",
+      "blob.js": "github:eligrey/blob.js@master",
+      "css": "github:systemjs/plugin-css@^0.1.16",
+      "json": "github:systemjs/plugin-json@^0.1.0",
+      "lodash": "github:lodash/lodash@^4.0.0",
+      "text": "github:systemjs/plugin-text@^0.0.8"
+    },
     "devDependencies": {
-        "glob": "~5.0.3",
-        "grunt": "~0.4.5",
-        "grunt-angular-templates": "~0.5.7",
-        "grunt-autoprefixer": "~3.0.0",
-        "grunt-contrib-clean": "~0.6.0",
-        "grunt-contrib-concat": "~0.5.0",
-        "grunt-contrib-cssmin": "~0.12.2",
-        "grunt-contrib-jshint": "~0.11.0",
-        "grunt-contrib-less": "~1.0.0",
-        "grunt-contrib-uglify": "~0.9.0",
-        "grunt-contrib-watch": "~0.6.1",
-        "grunt-jscs": "~1.8.0",
-        "grunt-karma": "~0.11.0",
-        "grunt-notify": "~0.4.1",
-        "istanbul": "~0.3.13",
-        "jasmine-core": "~2.3.0",
-        "jshint-stylish": "~2.0.0",
-        "karma": "~0.12.0",
-        "karma-chrome-launcher": "~0.1.7",
-        "karma-coverage": "~0.4.0",
-        "karma-firefox-launcher": "~0.1.0",
-        "karma-jasmine": "~0.3.5",
-        "load-grunt-tasks": "~3.2.0",
-        "time-grunt": "~1.2.0"
-    },
-    "engines": {
-        "node": ">=0.10.0"
-    },
-    "scripts": {}
+      "babel": "npm:babel-core@^6.0.0",
+      "babel-runtime": "npm:babel-runtime@^6.0.0",
+      "core-js": "npm:core-js@^2.1.0",
+      "deep-freeze": "github:substack/deep-freeze@^0.0.1"
+    }
+  }
 }

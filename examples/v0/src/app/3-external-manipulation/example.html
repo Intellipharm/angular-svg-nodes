@@ -1,0 +1,48 @@
+<div class="card">
+
+    <div class="card-block">
+        <div class="btn-group">
+            <button class="btn btn-secondary" ng-click="Example.changeLabel()" ng-disabled="Example.disable_change_label_button">CHANGE label</button>
+            <button class="btn btn-secondary" ng-click="Example.removeBlock()" ng-disabled="Example.disable_remove_block_button">REMOVE block</button>
+            <button class="btn btn-secondary" ng-click="Example.insertBlock()" ng-disabled="Example.disable_insert_block_button">INSERT block</button>
+            <button class="btn btn-secondary" ng-click="Example.highlight()">HIGHLIGHT</button>
+            <button class="btn btn-secondary" ng-click="Example.select()">SELECT 0,1</button>
+            <button class="btn btn-secondary" ng-click="Example.deselect()">DESELECT</button>
+            <button class="btn btn-secondary" ng-click="Example.addRow()">ADD 1 row</button>
+            <button class="btn btn-secondary" ng-click="Example.add2Rows()">ADD 2 rows</button>
+            <button class="btn btn-secondary" ng-click="Example.add2RowsWithBlocks()">ADD 2 rows with blocks</button>
+        </div>
+    </div>
+
+    <div class="card-block">
+        <samp>{{ Example.data | json }}</samp>
+    </div>
+
+    <div class="card-block noselect">
+
+        <div angular-svg-nodes="Example.data"
+             angular-svg-nodes-node-mouse-down="Example.onNodeMouseDown(node, data)"
+             angular-svg-nodes-api="Example.svg_nodes_api">
+        </div>
+
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-block">
+
+        <h2>Node Selection</h2>
+
+        <table class="table">
+            <tr>
+                <th scope="row" width="200" style="white-space: nowrap;">Row</th>
+                <td><samp>{{Example.selected_node_row_index}}</samp></td>
+            </tr>
+            <tr>
+                <th scope="row" width="200" style="white-space: nowrap;">Column</th>
+                <td><samp>{{Example.selected_node_col_index}}</samp></td>
+            </tr>
+        </table>
+
+    </div>
+</div>

@@ -4,10 +4,17 @@ tmp
 .idea
 .DS_Store
 
-#PACKAGE MANAGERS
+# package manager
 node_modules
-bower_components
-npm-debug.log
+jspm_packages
+jspm-config.js
 
-#CUSTOM
+# tests
+tests/karma
+tests/coverage
+tests/protractor
+tests/phantomjs
+
+# misc
 _local
+npm-debug.log

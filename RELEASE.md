@@ -4,10 +4,10 @@
 
 The build steps to releasing a new version. Before you can do this you need to to make sure the node packages are up to date - ``` npm update ```
 
-  * Make sure all tests pass - ``` karma start ``` or ``` grunt test ```
+  * Make sure all tests pass - ``` gulp test ```
   * Commit and push all changes with a meaningful message
   * Update version in bower.json and package.json
-  * Build the dist folder -  ``` grunt build ```
+  * Build the dist folder -  ``` gulp build ```
   * Commit and push with the message "Bumping to v\*.\*.\*"
   * [Create a new release](https://github.com/Intellipharm/angular-svg-nodes/releases/new)
     * Tag version is v\*.\*.\*

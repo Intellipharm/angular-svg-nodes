@@ -4,7 +4,7 @@
     "futurehostile": true,
     "maxdepth": 3,
     "notypeof": true,
-    "unused": true,
+    "unused": false,
     "globals": {
         "angular": true,
         "_": true,
@@ -12,5 +12,7 @@
         "module": true,
         "require": true,
         "process": true
-    }
+    },
+    "es5": false,
+    "esnext": true
 }

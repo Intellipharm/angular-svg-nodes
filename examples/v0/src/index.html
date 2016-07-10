@@ -1,0 +1,46 @@
+<!doctype html>
+<head>
+    <title>AngularSvgNodes examples</title>
+</head>
+<body ng-controller="AppController as App">
+
+<div class="container-fluid">
+
+    <br/>
+
+    <div class="row">
+        <div class="col-xs-12 text-center">
+
+            <h1>{{App.name}}</h1>
+            <h3>{{App.heading}}</h3>
+
+        </div>
+    </div><!--/.row-->
+
+    <br/>
+
+    <div class="row">
+
+        <div class="col-sm-2">
+            <ol class="list-group">
+                <li ng-repeat="(state, label) in App.nav" class="list-group-item">
+                    <a href ui-sref="{{state}}" ui-sref-active="selected">{{label}}</a>
+                </li>
+            </ol>
+        </div>
+
+        <div class="col-sm-10">
+            <div ui-view></div>
+        </div>
+
+    </div><!--/.row-->
+</div>
+
+<script src="jspm_packages/system.js"></script>
+<script src="jspm-config.js"></script>
+<script>
+    System.import('app/app');
+</script>
+
+</body>
+</html>

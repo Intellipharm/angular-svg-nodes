@@ -1,0 +1,76 @@
+<div class="card">
+
+    <div class="card-block">
+        <samp>{{ Example.data | json }}</samp>
+    </div>
+
+    <div class="card-block noselect">
+        <div angular-svg-nodes="Example.data"
+             angular-svg-nodes-api="Example.svg_nodes_api"
+             angular-svg-nodes-node-mouse-down="Example.onNodeMouseDown(node, data)"
+             angular-svg-nodes-node-mouse-up="Example.onNodeMouseUp(node, data)"
+             angular-svg-nodes-line-add="Example.onLineAdd(source_node, source_data | json, target_node, target_data | json, line_index)"
+             angular-svg-nodes-line-remove="Example.onLineRemove(source_node, source_data | json, target_node, target_data | json, line_index)">
+        </div>
+    </div>
+</div>
+
+<div class="card-group">
+
+    <div class="card">
+        <div class="card-block">
+
+            <h2>Node Events</h2>
+
+            <table class="table">
+                <tr>
+                    <th scope="row" width="200" style="white-space: nowrap;">Event Type</th>
+                    <td><samp>{{Example.node_event_type}}</samp></td>
+                </tr>
+                <tr>
+                    <th scope="row" width="200" style="white-space: nowrap;">Event Node</th>
+                    <td><samp>{{Example.node_event_node | json}}</samp></td>
+                </tr>
+                <tr>
+                    <th scope="row" width="200" style="white-space: nowrap;">Event Data</th>
+                    <td><samp>{{Example.node_event_data | json}}</samp></td>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-block">
+
+            <h2>Line Events</h2>
+
+            <table class="table">
+                <tr>
+                    <th scope="row" width="200" style="white-space: nowrap;">Event Type</th>
+                    <td><samp>{{Example.line_event_type}}</samp></td>
+                </tr>
+                <tr>
+                    <th scope="row" width="200" style="white-space: nowrap;">Event Line Index</th>
+                    <td><samp>{{Example.line_event_line_index}}</samp></td>
+                </tr>
+                <tr>
+                    <th scope="row" width="200" style="white-space: nowrap;">Event Source Node</th>
+                    <td><samp>{{Example.line_event_source_node | json}}</samp></td>
+                </tr>
+                <tr>
+                    <th scope="row" width="200" style="white-space: nowrap;">Event Source Data</th>
+                    <td><samp>{{Example.line_event_source_data | json}}</samp></td>
+                </tr>
+                <tr>
+                    <th scope="row" width="200" style="white-space: nowrap;">Event Target Node</th>
+                    <td><samp>{{Example.line_event_target_node | json}}</samp></td>
+                </tr>
+                <tr>
+                    <th scope="row" width="200" style="white-space: nowrap;">Event Target Data</th>
+                    <td><samp>{{Example.line_event_target_data | json}}</samp></td>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+</div>

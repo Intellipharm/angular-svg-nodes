@@ -11,7 +11,7 @@
     "requireCommaBeforeLineBreak": true,
     "requireCurlyBraces": ["if", "else", "else if", "switch"],
     "requireDotNotation": true,
-    "requireLineFeedAtFileEnd": true,
+    "requireLineFeedAtFileEnd": false,
     //"requireSpaceAfterLineComment": true,
     "requireSpaceBeforeBinaryOperators": true,
     "requireSpaceBeforeBlockStatements": true,
@@ -20,7 +20,7 @@
     "requireSpaceBetweenArguments": true,
     "requireSpacesInForStatement": true,
     "safeContextKeyword": ["self"],
-    //"validateLineBreaks": "LF",
+    "validateLineBreaks": "LF",
     "validateParameterSeparator": ", ",
     //"validateQuoteMarks": "'",
     "validateIndentation": 4

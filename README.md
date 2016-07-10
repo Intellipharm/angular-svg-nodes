@@ -9,8 +9,16 @@ An AngularJS SVG node display that allows drag connection between nodes, extensi
 
 ## Installation
 
-coming soon...
+```
+jspm install github:Intellipharm/angular-svg-nodes
+```
 
 ## Getting Started
 
-coming soon...
+```
+import AngularSvgNodes from 'angular-svg-nodes';
+
+var module = angular.module('YourApp', [
+    AngularSvgNodes.name
+]);
+```
