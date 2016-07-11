@@ -1,4 +1,4 @@
-require('require-dir')('gulp/tasks');
+	require('require-dir')('gulp/tasks');
 
 var gulp = require('gulp');
 var runSequence = require('run-sequence');

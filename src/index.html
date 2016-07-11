@@ -1,0 +1,27 @@
+<!doctype html>
+<head>
+    <title>AngularSvgNodes</title>
+</head>
+<body ng-controller="AppController as App">
+
+<div>
+    <samp>{{ App.data | json }}</samp>
+</div>
+<div>
+    <angular-svg-nodes rows="App.data"
+                       api="App.svg_nodes_api"
+                       node-mouse-down="App.onNodeMouseDown(node, data)"
+                       node-mouse-up="App.onNodeMouseUp(node, data)"
+                       line-add="App.onLineAdd(source_node, source_data | json, target_node, target_data | json, line_index)"
+                       line-remove="App.onLineRemove(source_node, source_data | json, target_node, target_data | json, line_index)"
+    ></angular-svg-nodes>
+</div>
+
+<script src="jspm_packages/system.js"></script>
+<script src="jspm-config.js"></script>
+<script>
+    System.import('dev/app');
+</script>
+
+</body>
+</html>

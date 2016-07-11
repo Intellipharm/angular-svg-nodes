@@ -1,5 +1,6 @@
 export default {
-    bindings: {
+    restrict: 'A',
+    scope: {
         index: "@angularSvgNodesBgColGridIndex",
         onMouseOver: "&angularSvgNodesBgColGridOnMouseOver"
     },

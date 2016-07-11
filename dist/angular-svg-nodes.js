@@ -1,44 +1,55 @@
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
-var _angularSvgNodesComponent = require("./angular-svg-nodes-component");
+var _angularSvgNodesDirective = require("./angular-svg-nodes-directive");
 
-var _angularSvgNodesComponent2 = _interopRequireDefault(_angularSvgNodesComponent);
+var _angularSvgNodesDirective2 = _interopRequireDefault(_angularSvgNodesDirective);
 
-var _gridComponent = require("./bg-col-grid/grid-component");
+var _bgColGridDirective = require("./bg-col-grid/bg-col-grid-directive");
 
-var _gridComponent2 = _interopRequireDefault(_gridComponent);
+var _bgColGridDirective2 = _interopRequireDefault(_bgColGridDirective);
 
-var _labelComponent = require("./label/label-component");
+var _labelDirective = require("./label/label-directive");
 
-var _labelComponent2 = _interopRequireDefault(_labelComponent);
+var _labelDirective2 = _interopRequireDefault(_labelDirective);
 
-var _lineComponent = require("./line/line-component");
+var _lineDirective = require("./line/line-directive");
 
-var _lineComponent2 = _interopRequireDefault(_lineComponent);
+var _lineDirective2 = _interopRequireDefault(_lineDirective);
 
-var _nodeComponent = require("./node/node-component");
+var _nodeDirective = require("./node/node-directive");
 
-var _nodeComponent2 = _interopRequireDefault(_nodeComponent);
+var _nodeDirective2 = _interopRequireDefault(_nodeDirective);
 
-var _boxComponent = require("./svg-box/box-component");
+var _svgVboxDirective = require("./svg-box/svg-vbox-directive");
 
-var _boxComponent2 = _interopRequireDefault(_boxComponent);
+var _svgVboxDirective2 = _interopRequireDefault(_svgVboxDirective);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var _module = angular.module('AngularSvgNodes', []);
 
-_module.component('angularSvgNodesBgColGrid', _angularSvgNodesComponent2.default);
-_module.component('angularSvgNodesLabel', _gridComponent2.default);
-_module.component('angularSvgNodesLine', _labelComponent2.default);
-_module.component('angularSvgNodesNode', _nodeComponent2.default);
-_module.component('svgVbox', _boxComponent2.default);
-
-_module.constant('BLOCK_TOP_LEFT', 0).constant('BLOCK_TOP', 1).constant('BLOCK_CENTER', 2).constant('BLOCK_BOTTOM', 3).constant('ACTION_ADD', 0).constant('ACTION_REMOVE', 1).constant('ACTION_UPDATE', 2).constant('INITIAL_GRID_COLS', 4).constant('INITIAL_GRID_ROWS', 2).constant('BLOCK_WIDTH', 80).constant('BLOCK_HEIGHT', 80).constant('COL_SPACING', 20).constant('ROW_SPACING', 40).constant('LABEL_SPACING', 5).constant('DISABLE_CONTROL_NODES', true).constant('MAX_VIEWPORT_WIDTH_INCREASE', 100).constant('MAX_VIEWPORT_HEIGHT_INCREASE', 100);
+_module.directive('angularSvgNodes', function () {
+  return _angularSvgNodesDirective2.default;
+});
+_module.directive('angularSvgNodesBgColGrid', function () {
+  return _bgColGridDirective2.default;
+});
+_module.directive('angularSvgNodesLabel', function () {
+  return _labelDirective2.default;
+});
+_module.directive('angularSvgNodesLine', function () {
+  return _lineDirective2.default;
+});
+_module.directive('angularSvgNodesNode', function () {
+  return _nodeDirective2.default;
+});
+_module.directive('svgVbox', function () {
+  return _svgVboxDirective2.default;
+});
 
 exports.default = _module;
 //# sourceMappingURL=sourcemaps/angular-svg-nodes.js.map

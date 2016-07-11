@@ -1,5 +1,6 @@
 export default {
-    bindings: {
+    restrict: 'A',
+    scope: {
         coords:         "=angularSvgNodesNodeCoords",
         col_index:      "@angularSvgNodesNodeColIndex",
         row_index:      "@angularSvgNodesNodeRowIndex",

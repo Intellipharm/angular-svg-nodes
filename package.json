@@ -3,7 +3,8 @@
   "version": "0.1.1",
   "main": "dist/angular-svg-nodes.js",
   "scripts": {
-    "postinstall": "jspm install"
+    "postinstall": "jspm install",
+    "run": "browser-sync start --config './browser-sync-config.js'"
   },
   "engines": {
     "node": ">=0.10.0"
@@ -19,7 +20,6 @@
     "babel-polyfill": "^6.6.1",
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-stage-0": "^6.5.0",
-    "babel-preset-stage-3": "^6.5.0",
     "babel-register": "^6.6.0",
     "del": "^2.0.2",
     "glob": "^7.0.0",
@@ -65,17 +65,18 @@
     "configFile": "src/jspm-config.js",
     "dependencies": {
       "angular": "github:angular/bower-angular@^1.5.0",
-      "babel-polyfill": "npm:babel-polyfill@^6.0.0",
+      "babel-polyfill": "npm:babel-polyfill@^6.6.1",
       "blob.js": "github:eligrey/blob.js@master",
       "css": "github:systemjs/plugin-css@^0.1.16",
       "json": "github:systemjs/plugin-json@^0.1.0",
       "lodash": "github:lodash/lodash@^4.0.0",
-      "text": "github:systemjs/plugin-text@^0.0.8"
+      "text": "github:systemjs/plugin-text@^0.0.8",
+      "tweenmax": "github:greensock/greensock-js@~1.18.1"
     },
     "devDependencies": {
-      "babel": "npm:babel-core@^6.0.0",
-      "babel-runtime": "npm:babel-runtime@^6.0.0",
-      "core-js": "npm:core-js@^2.1.0",
+      "babel": "npm:babel-core@^5.8.24",
+      "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "core-js": "npm:core-js@^2.4.0",
       "deep-freeze": "github:substack/deep-freeze@^0.0.1"
     }
   }

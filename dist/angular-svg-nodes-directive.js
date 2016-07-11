@@ -15,16 +15,18 @@ var _angularSvgNodes2 = _interopRequireDefault(_angularSvgNodes);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
-    bindings: {
-        rows: "=angularSvgNodes",
-        onNodeMouseDown: "&angularSvgNodesNodeMouseDown",
-        onNodeMouseUp: "&angularSvgNodesNodeMouseUp",
-        onLineAdd: "&angularSvgNodesLineAdd",
-        onLineRemove: "&angularSvgNodesLineRemove",
-        api: "=?angularSvgNodesApi"
+    restrict: 'E',
+    scope: {
+        rows: "=?",
+        onNodeMouseDown: "&nodeMouseDown",
+        onNodeMouseUp: "&nodeMouseUp",
+        onLineAdd: "&lineAdd",
+        onLineRemove: "&lineRemove",
+        api: "=?"
     },
     controller: _angularSvgNodesController2.default,
     controllerAs: "AngularSvgNodes",
+    bindToController: true,
     template: _angularSvgNodes2.default,
     link: function link(scope, element, attrs, controller) {
 
@@ -32,9 +34,9 @@ exports.default = {
 
         element.addClass('angular-svg-nodes');
 
-        element[0].addEventListener("mouseup", controller.onRootDeselect);
+        element[0].addEventListener("mouseup", controller.onRootDeselect.bind(controller));
 
-        element[0].addEventListener("mouseleave", controller.onRootMouseLeave);
+        element[0].addEventListener("mouseleave", controller.onRootMouseLeave.bind(controller));
     }
 };
-//# sourceMappingURL=sourcemaps/angular-svg-nodes-component.js.map
+//# sourceMappingURL=sourcemaps/angular-svg-nodes-directive.js.map

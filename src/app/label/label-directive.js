@@ -1,5 +1,6 @@
 export default {
-    bindings: {
+    restrict: 'A',
+    scope: {
         coords:         "=angularSvgNodesLabelCoords"
     },
     link: function (scope, element) {
