@@ -1,0 +1,8 @@
+body, div, table, p {
+    font-family: Sans-Serif;
+    font-size: 14px;
+}
+samp {
+    font-family: "Source Code Pro";
+    font-size: 12px;
+}

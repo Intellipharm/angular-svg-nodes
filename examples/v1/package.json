@@ -1,0 +1,35 @@
+{
+  "name": "angular-svg-nodes-v1",
+  "version": "0.0.1",
+  "dependencies": {},
+  "devDependencies": {
+    "browser-sync": "^2.12.0",
+    "jspm": "^0.16.30"
+  },
+  "scripts": {
+    "postinstall": "jspm install",
+    "run": "browser-sync start --config './browser-sync-config.js'"
+  },
+  "jspm": {
+    "directories": {
+      "baseURL": "src"
+    },
+    "configFile": "src/jspm-config.js",
+    "dependencies": {
+      "angular": "github:angular/bower-angular@^1.5.0",
+      "angular-svg-nodes": "github:intellipharm/angular-svg-nodes@master",
+      "bootstrap": "github:twbs/bootstrap@4.0.0-alpha",
+      "css": "github:systemjs/plugin-css@^0.1.16",
+      "json": "github:systemjs/plugin-json@^0.1.2",
+      "lodash": "github:lodash/lodash@^4.0.0",
+      "oclazyload-systemjs-router": "github:lookfirst/oclazyload-systemjs-router@^1.2.2",
+      "text": "github:systemjs/plugin-text@^0.0.8",
+      "tweenmax": "github:greensock/greensock-js@~1.18.1"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.8.24",
+      "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "core-js": "npm:core-js@^2.4.0"
+    }
+  }
+}

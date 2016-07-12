@@ -16,7 +16,7 @@ var dir_build 			= project_config.path.dir.build;
 
 gulp.task('compile-es6', function () {
     // return gulp.src( dir_source + "/*.js", {} )
-    return gulp.src( dir_app + "/*.js", {} )
+    return gulp.src( dir_app + "/**/*.js", {} )
         .pipe( plumber({ errorHandler: ErrorHandler }) )
         // .pipe( changed( dir_build, { extension: '.js' }))
         .pipe( sourcemaps.init( { loadMaps: true } ))
