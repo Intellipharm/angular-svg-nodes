@@ -1,0 +1,113 @@
+<div class="card">
+    <div class="card-block">
+
+        <p>In this example we provide callbacks for the following events.</p>
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>callback</th>
+                <th>params</th>
+                <th>description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th scope="row">on-node-selection</th>
+                <td>row_index, col_index</td>
+                <td>Called whenever a node is selected.</td>
+            </tr>
+            <tr>
+                <th scope="row">on-node-connection-change</th>
+                <td>source_row_index, source_col_index, target_row_index, target_col_index, is_connected</td>
+                <td>Called when a connection between two nodes is added or removed.</td>
+            </tr>
+            <tr>
+                <th scope="row">on-node-added</th>
+                <td>row_index, col_index</td>
+                <td>Called when a new node is added.</td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <hr/>
+
+    <div class="card-block">
+
+        <div class="row">
+            <div class="col-sm-4">
+
+                <div class="row">
+                    <div class="col-sm-12"><b>on-node-selection</b></div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-6">row_index</div>
+                    <div class="col-sm-6">{{ Example.selection_row_index }}</div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-6">col_index</div>
+                    <div class="col-sm-6">{{ Example.selection_col_index }}</div>
+                </div><!-- .row -->
+
+                <br/>
+                <hr/>
+                <br/>
+
+                <div class="row">
+                    <div class="col-sm-12"><b>on-node-connection-change</b></div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-6">source_row_index</div>
+                    <div class="col-sm-6">{{ Example.connection_source_row_index }}</div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-6">source_col_index</div>
+                    <div class="col-sm-6">{{ Example.connection_source_col_index }}</div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-6">target_row_index</div>
+                    <div class="col-sm-6">{{ Example.connection_target_row_index }}</div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-6">target_col_index</div>
+                    <div class="col-sm-6">{{ Example.connection_target_col_index }}</div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-6">is_connected</div>
+                    <div class="col-sm-6">{{ Example.connection_is_connected }}</div>
+                </div><!-- .row -->
+
+                <br/>
+                <hr/>
+                <br/>
+
+                <div class="row">
+                    <div class="col-sm-12"><b>on-node-added</b></div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-6">row_index</div>
+                    <div class="col-sm-6">{{ Example.added_row_index }}</div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-6">col_index</div>
+                    <div class="col-sm-6">{{ Example.added_col_index }}</div>
+                </div><!-- .row -->
+
+            </div>
+            <div class="col-sm-8 noselect">
+
+                <angular-svg-nodes initial-state="::Example.svg_nodes_initial_state"
+                                   on-node-selection="Example.onNodeSelection(row_index, col_index)"
+                                   on-node-connection-change="Example.onNodeConnectionChange(source_row_index, source_col_index, target_row_index, target_col_index, is_connected)"
+                                   on-node-added="Example.onNodeAdded(row_index, col_index)"
+                ></angular-svg-nodes>
+
+            </div>
+        </div>
+
+
+
+    </div>
+</div>

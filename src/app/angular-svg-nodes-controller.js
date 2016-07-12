@@ -18,7 +18,7 @@ import {
     MAX_VIEWPORT_HEIGHT_INCREASE
 } from "./angular-svg-nodes-settings";
 
-import * as Utils from './angular-svg-nodes-utils'; 
+import * as Utils from './angular-svg-nodes-utils';
 
 export default class AngularSvgNodesController {
 
@@ -30,7 +30,7 @@ export default class AngularSvgNodesController {
         // directives vars
         //-----------------------------
         //
-        // this.rows
+        // this.initial_state
         // this.api
         //
         //-----------------------------
@@ -40,10 +40,31 @@ export default class AngularSvgNodesController {
         }
 
         //-----------------------------
-        // control
+        // state
         //-----------------------------
 
-        var initialized = false;
+        this.state = [];
+
+        //-----------------------------
+        // config
+        //-----------------------------
+
+        this.config = {
+            initial_grid_cols: !_.isUndefined(this.config_initial_grid_cols) ? this.config_initial_grid_cols : INITIAL_GRID_COLS,
+            initial_grid_rows: !_.isUndefined(this.config_initial_grid_rows) ? this.config_initial_grid_rows : INITIAL_GRID_ROWS,
+            block_width: !_.isUndefined(this.config_block_width) ? this.config_block_width : BLOCK_WIDTH,
+            block_height: !_.isUndefined(this.config_block_height) ? this.config_block_height : BLOCK_HEIGHT,
+            col_spacing: !_.isUndefined(this.config_col_spacing) ? this.config_col_spacing : COL_SPACING,
+            row_spacing: !_.isUndefined(this.config_row_spacing) ? this.config_row_spacing : ROW_SPACING,
+            label_spacing: !_.isUndefined(this.config_label_spacing) ? this.config_label_spacing : LABEL_SPACING,
+            disable_control_nodes: !_.isUndefined(this.config_disable_control_nodes) ? this.config_disable_control_nodes : DISABLE_CONTROL_NODES,
+            max_viewport_width_increase: !_.isUndefined(this.config_max_viewport_width_increase) ? this.config_max_viewport_width_increase : MAX_VIEWPORT_WIDTH_INCREASE,
+            max_viewport_height_increase: !_.isUndefined(this.config_max_viewport_height_increase) ? this.config_max_viewport_height_increase : MAX_VIEWPORT_HEIGHT_INCREASE,
+        };
+
+        //-----------------------------
+        // control
+        //-----------------------------
 
         // an array of block coords that will be set as connected on teh line
         this.blocks_waiting_for_connection = [];
@@ -62,14 +83,10 @@ export default class AngularSvgNodesController {
         this.bg_col_grid_hover_index = null;
 
         // grid dimmensions
-        this.block_width = BLOCK_WIDTH;
-        this.block_height = BLOCK_HEIGHT;
-        this.col_spacing = COL_SPACING;
-        this.row_spacing = ROW_SPACING;
-        this.grid_col_count = INITIAL_GRID_COLS;
-        this.grid_row_count = INITIAL_GRID_ROWS;
-        this.label_width = BLOCK_WIDTH - (LABEL_SPACING * 2);
-        this.label_height = BLOCK_HEIGHT - (LABEL_SPACING * 2);
+        this.grid_col_count = this.config.initial_grid_cols;
+        this.grid_row_count = this.config.initial_grid_rows;
+        this.label_width = this.config.block_width - (this.config.label_spacing * 2);
+        this.label_height = this.config.block_height - (this.config.label_spacing * 2);
 
         // viewport style & bounds
         this.wrapper_style = "";
@@ -115,24 +132,6 @@ export default class AngularSvgNodesController {
             }
         }, true);
 
-        this.$s.$watch('AngularSvgNodes.rows', (newValue) => {
-
-            if (_.isUndefined(newValue)) {
-                return;
-            }
-
-            // init
-            if (!initialized) {
-                this.init(newValue, 'columns');
-                initialized = true;
-                return true;
-            }
-
-            // update
-            this.update(newValue, 'columns');
-
-        }, true);
-
         ////////////////////////////////////////////////
         //
         // api
@@ -140,76 +139,120 @@ export default class AngularSvgNodesController {
         ////////////////////////////////////////////////
 
         /**
-         * addLine
+         * addRow
          *
-         * @param {Array}    source_coords
-         * @param {Array}    target_coords
-         * @param {Boolean}  connected
+         * @param label
          */
-
-        this.api.addLine = (source_coords, target_coords, connected) => {
-
-            // style block
-            this.setNodeClass(source_coords[0], source_coords[1], 'connected', true);
-
-            // set target as waiting for connection
-            this.blocks_waiting_for_connection.push(target_coords);
-
-            // add line
-            this.addLine(source_coords, target_coords, connected);
+        this.api.addRow = (label = "") => {
+            let _row_index = this.blocks.length;
+            let _col_index = 0;
+            this.addBlock(_col_index, _row_index, label, []);
         };
 
         /**
-         * insertBlock
+         * setNodeLabel
          *
-         * @param {Integer}    col_index
-         * @param {Integer}    row_index
-         * @param {Object}     data
+         * @param row_index
+         * @param col_index
+         * @param label
          */
+        this.api.setNodeLabel = (row_index, col_index, label) => {
 
-        this.api.insertBlock = (col_index, row_index, data) => {
-            this.insertBlock(col_index, row_index, data);
-        };
-
-        /**
-         * removeBlock
-         *
-         * @param {Integer}    col_index
-         * @param {Integer}    row_index
-         */
-        this.api.removeBlock = (col_index, row_index) => {
-            this.removeBlock(col_index, row_index);
-        };
-
-        /**
-         * highlightBlock
-         *
-         * @param {Boolean}    value
-         * @param {Integer}    col_index
-         * @param {Integer}    row_index
-         */
-        this.api.highlightBlock = (value, col_index, row_index) => {
-
-            // style block
-            this.setNodeClass(col_index, row_index, 'highlight', value);
-        };
-
-        /**
-         * selectBlock
-         *
-         * @param {Boolean}    value
-         * @param {Integer}    col_index
-         * @param {Integer}    row_index
-         */
-        this.api.selectBlock = (value, col_index, row_index) => {
-
-            if (!_.isUndefined(col_index) && !_.isUndefined(col_index) && value) {
-                this.selected_node = [col_index, row_index];
-                return true;
+            if (row_index >= this.blocks.length) {
+                console.error("AngularSvgNodes Error : invalid row index provided to setNodeLabel");
+                return;
             }
 
-            this.selected_node = null;
+            if (col_index >= this.blocks[row_index].columns.length) {
+                console.error("AngularSvgNodes Error : invalid col index provided to setNodeLabel");
+                return;
+            }
+
+            this.updateBlock(col_index, row_index, label);
         };
+
+        /**
+         * setNodeHighlight
+         *
+         * @param row_index
+         * @param col_index
+         * @param value
+         */
+        this.api.setNodeHighlight = (row_index, col_index, value) => {
+
+            if (row_index >= this.blocks.length) {
+                console.error("AngularSvgNodes Error : invalid row index provided to setNodeHighlight");
+                return;
+            }
+
+            if (col_index >= this.blocks[row_index].columns.length) {
+                console.error("AngularSvgNodes Error : invalid col index provided to setNodeHighlight");
+                return;
+            }
+
+            this.blocks[row_index].columns[col_index].highlight = value;
+        };
+
+        ////////////////////////////////////////////////
+        //
+        // init
+        //
+        ////////////////////////////////////////////////
+
+        this.init();
+    }
+
+    ////////////////////////////////////////////////
+    //
+    // init
+    //
+    ////////////////////////////////////////////////
+
+    /**
+     * init
+     */
+    init() {
+
+        let _column_property_name = 'columns';
+        let _data = !_.isUndefined(this.initial_state) ?  this.initial_state : [];
+
+        // add placeholders
+        for (var row_index = 0; row_index < this.config.initial_grid_rows; row_index++) {
+
+            // add data placeholder
+            if (row_index >= _data.length) {
+                _data.push({columns: []});
+            }
+        }
+
+        // add blocks
+        _.forEach(_data, (row, row_index) => {
+
+            _.forEach(row[ _column_property_name ], (col, col_index) => {
+
+                // add block
+                this.addBlock(col_index, row_index, col.label, col.join);
+            });
+
+            // add control
+            this.addControl(row_index);
+        });
+
+        // add bg_col_grid array
+        _.map(new Array(this.grid_col_count), (col, index) => {
+
+            // add bg grid col
+            this.addBgGridCol(index);
+        });
+
+        // set viewport
+        this.setViewport(this.grid_col_count, this.grid_row_count);
+
+        // check active
+        this.checkActive();
+
+        // update
+        this.update(_data, _column_property_name);
     }
 
     ////////////////////////////////////////////////
@@ -238,7 +281,7 @@ export default class AngularSvgNodesController {
 
         // if control
         if (this.blocks[row_index].columns[col_index].control) {
-            if (!DISABLE_CONTROL_NODES) {
+            if (!this.config.disable_control_nodes) {
                 this.onControlNodeSelect(col_index, row_index);
             }
             return true;
@@ -246,6 +289,10 @@ export default class AngularSvgNodesController {
 
         // if block
         this.onBlockNodeSelect(col_index, row_index);
+
+        if (!_.isUndefined(this.onNodeSelectionCallback)) {
+            this.onNodeSelectionCallback({ col_index, row_index });
+        }
     }
 
     /**
@@ -764,7 +811,7 @@ export default class AngularSvgNodesController {
     onLineRemoveComplete(source_coords, target_coords, line_index) {
 
         // update data
-        this.rows[source_coords[1]].columns[source_coords[0]].join.splice(line_index, 1);
+        //this.state[source_coords[1]].columns[source_coords[0]].join.splice(line_index, 1);
 
         // update blocks
         var source = this.blocks[source_coords[1]].columns[source_coords[0]];
@@ -784,6 +831,18 @@ export default class AngularSvgNodesController {
         // external handler
         if (!_.isUndefined(this.onLineRemove)) {
             this.onLineRemove(this.getExternalLineEventHandlerData(source_coords, target_coords, line_index));
+        }
+
+        // TODO: emit event
+        if (!_.isUndefined(this.onNodeConnectionChangeCallback)) {
+            let _params = {
+                source_row_index: source_coords[1],
+                source_col_index: source_coords[0],
+                target_row_index: target_coords[1],
+                target_col_index: target_coords[0],
+                is_connected: false
+            };
+            this.onNodeConnectionChangeCallback(_params);
         }
 
         this.$s.$apply();
@@ -836,7 +895,7 @@ export default class AngularSvgNodesController {
      */
     getExternalNodeEventHandlerData(col_index, row_index) {
 
-        var data_clone = _.clone(this.rows[row_index].columns[col_index]);
+        var data_clone = _.clone(this.state[row_index].columns[col_index]);
         var node_clone = _.clone(this.blocks[row_index].columns[col_index]);
         var result = {
             node: node_clone,
@@ -1210,8 +1269,8 @@ export default class AngularSvgNodesController {
      */
     setViewport(cols, rows) {
 
-        var total_item_width = BLOCK_WIDTH + COL_SPACING;
-        var total_item_height = BLOCK_HEIGHT + ROW_SPACING;
+        var total_item_width = this.config.block_width + this.config.col_spacing;
+        var total_item_height = this.config.block_height + this.config.row_spacing;
 
         this.viewport_width = total_item_width * cols;
         this.viewport_height = total_item_height * rows;
@@ -1223,9 +1282,9 @@ export default class AngularSvgNodesController {
         };
 
         this.wrapper_style = {
-            'max-width': (this.viewport_width + MAX_VIEWPORT_WIDTH_INCREASE) + "px",
+            'max-width': (this.viewport_width + this.config.max_viewport_width_increase) + "px",
             'min-width': this.viewport_width + "px",
-            'max-height': (this.viewport_height + (MAX_VIEWPORT_HEIGHT_INCREASE * rows)) + "px",
+            'max-height': (this.viewport_height + (this.config.max_viewport_height_increase * rows)) + "px",
             'min-height': this.viewport_height + "px"
         };
 
@@ -1280,8 +1339,8 @@ export default class AngularSvgNodesController {
         if (index === 0) {
             return 0;
         }
-        var first_col_width = BLOCK_WIDTH + (COL_SPACING / 2);
-        var col_width = BLOCK_WIDTH + (COL_SPACING);
+        var first_col_width = this.config.block_width + (this.config.col_spacing / 2);
+        var col_width = this.config.block_width + (this.config.col_spacing);
         return first_col_width + ((index - 1) * col_width);
     }
 
@@ -1291,7 +1350,7 @@ export default class AngularSvgNodesController {
      * @param index
      */
     calculateColWidth(index) {
-        var total_item_width = index === 0 ? BLOCK_WIDTH + (COL_SPACING / 2) : BLOCK_WIDTH + COL_SPACING;
+        var total_item_width = index === 0 ? this.config.block_width + (this.config.col_spacing / 2) : this.config.block_width + this.config.col_spacing;
         return total_item_width;
     }
 
@@ -1301,7 +1360,7 @@ export default class AngularSvgNodesController {
      * @param index
      */
     calculateRowY(index) {
-        var row_height = BLOCK_HEIGHT + ROW_SPACING;
+        var row_height = this.config.block_height + this.config.row_spacing;
         return index * row_height;
     }
 
@@ -1311,7 +1370,7 @@ export default class AngularSvgNodesController {
      * @param index
      */
     calculateRowHeight() {
-        return BLOCK_HEIGHT + ROW_SPACING;
+        return this.config.block_height + this.config.row_spacing;
     }
 
     //-----------------------------
@@ -1332,8 +1391,8 @@ export default class AngularSvgNodesController {
         }
 
         // get coords
-        var source_lock_coords = Utils.getCoords(source_coords[0], source_coords[1], BLOCK_BOTTOM);
-        var target_lock_coords = Utils.getCoords(target_coords[0], target_coords[1], BLOCK_TOP);
+        var source_lock_coords = Utils.getCoords(source_coords[0], source_coords[1], BLOCK_BOTTOM, this.config);
+        var target_lock_coords = Utils.getCoords(target_coords[0], target_coords[1], BLOCK_TOP, this.config);
 
         // add line properties
         this.blocks[source_coords[1]].columns[source_coords[0]].lines.push({
@@ -1348,7 +1407,7 @@ export default class AngularSvgNodesController {
 
         if (connected) {
             // update data
-            this.rows[source_coords[1]].columns[source_coords[0]].join.push(target_coords[0]);
+            // this.state[source_coords[1]].columns[source_coords[0]].join.push(target_coords[0]);
         }
     }
 
@@ -1361,7 +1420,7 @@ export default class AngularSvgNodesController {
     updateLineTarget(source_coords, target_coords) {
 
         // get target lock coords
-        var target_lock_coords = Utils.getCoords(target_coords[0], target_coords[1], BLOCK_TOP);
+        var target_lock_coords = Utils.getCoords(target_coords[0], target_coords[1], BLOCK_TOP, this.config);
 
         // find line
         _.forEach(this.blocks[source_coords[1]].columns[source_coords[0]].lines, (line) => {
@@ -1385,7 +1444,7 @@ export default class AngularSvgNodesController {
     removeLine(source_coords, target_coords) {
 
         // get target lock coords
-        var target_lock_coords = Utils.getCoords(source_coords[0], source_coords[1], BLOCK_BOTTOM);
+        var target_lock_coords = Utils.getCoords(source_coords[0], source_coords[1], BLOCK_BOTTOM, this.config);
 
         // find line
         _.forEach(this.blocks[source_coords[1]].columns[source_coords[0]].lines, (line) => {
@@ -1452,7 +1511,18 @@ export default class AngularSvgNodesController {
                 this.setAsConnectedBlock(line.to);
 
                 // update data
-                this.rows[line.from[1]].columns[line.from[0]].join.splice(line_index, 0, line.to[0]);
+                // TODO: emit event
+                if (!_.isUndefined(this.onNodeConnectionChangeCallback)) {
+                    let _params = {
+                        source_row_index: line.from[1],
+                        source_col_index: line.from[0],
+                        target_row_index: line.to[1],
+                        target_col_index: line.to[0],
+                        is_connected: true
+                    };
+                    this.onNodeConnectionChangeCallback(_params);
+                }
+                // this.state[line.from[1]].columns[line.from[0]].join.splice(line_index, 0, line.to[0]);
 
                 // external handler
                 if (!_.isUndefined(this.onLineAdd)) {
@@ -1508,16 +1578,16 @@ export default class AngularSvgNodesController {
         }
 
         // get top left coords
-        var top_left_coords = Utils.getCoords(col_index, row_index, BLOCK_TOP_LEFT);
+        var top_left_coords = Utils.getCoords(col_index, row_index, BLOCK_TOP_LEFT, this.config);
 
         // lines
         var block_lines = [];
-        var line_source_lock_coords = Utils.getCoords(col_index, row_index, BLOCK_BOTTOM);
+        var line_source_lock_coords = Utils.getCoords(col_index, row_index, BLOCK_BOTTOM, this.config);
 
         _.forEach(lines, (line_target_col_index) => {
 
             var line_target_coords = [line_target_col_index, row_index + 1];
-            var line_target_lock_coords = Utils.getCoords(line_target_coords[0], line_target_coords[1], BLOCK_TOP);
+            var line_target_lock_coords = Utils.getCoords(line_target_coords[0], line_target_coords[1], BLOCK_TOP, this.config);
 
             block_lines.push({
                 connected: true,
@@ -1538,8 +1608,8 @@ export default class AngularSvgNodesController {
             coords: top_left_coords,
             x: top_left_coords[0],
             y: top_left_coords[1],
-            label_x: top_left_coords[0] + LABEL_SPACING,
-            label_y: top_left_coords[1] + LABEL_SPACING,
+            label_x: top_left_coords[0] + this.config.label_spacing,
+            label_y: top_left_coords[1] + this.config.label_spacing,
             label: label,
             connected: block_lines.length > 0,
             control: false,
@@ -1557,6 +1627,11 @@ export default class AngularSvgNodesController {
         // replace removed block
         if (!_.isUndefined(removed_block)) {
             this.addControl(removed_block[0].row_index);
+        }
+
+        // TODO: emit event
+        if (!_.isUndefined(this.onNodeAddedCallback)) {
+            this.onNodeAddedCallback({ row_index, col_index });
         }
     }
 
@@ -1577,12 +1652,12 @@ export default class AngularSvgNodesController {
         // // update lines
         // if (!_.isUndefined(lines)) {
         //
-        //     var line_source_lock_coords     = Utils.getCoords(col_index, row_index, BLOCK_BOTTOM);
+        //     var line_source_lock_coords     = Utils.getCoords(col_index, row_index, BLOCK_BOTTOM, this.config);
         //
         //     _.forEach(lines, (line_target_col_index) => {
         //
         //         var line_target_coords = [line_target_col_index, row_index + 1];
-        //         var line_target_lock_coords     = Utils.getCoords(line_target_coords[0], line_target_coords[1], BLOCK_TOP);
+        //         var line_target_lock_coords     = Utils.getCoords(line_target_coords[0], line_target_coords[1], BLOCK_TOP, this.config);
         //
         //         this.blocks[row_index].columns[col_index].lines.push({
         //             connected: true,
@@ -1627,7 +1702,7 @@ export default class AngularSvgNodesController {
         this.blocks[row_index].columns.splice(col_index, 1);
 
         // update data
-        this.rows[row_index].columns.splice(col_index, 1);
+        // this.state[row_index].columns.splice(col_index, 1);
 
         // update siblings
         for (var i = col_index; i < (this.blocks[row_index].columns.length); i++) {
@@ -1635,8 +1710,9 @@ export default class AngularSvgNodesController {
 
             // if not last column (control)
             if (i < this.blocks[row_index].columns.length - 1) {
-                this.rows[row_index].columns[i].data.ui_column_index = i;
-                this.rows[row_index].columns[i].data.ui_row_index = row_index;
+                // TODO: why not update blocks???
+                // this.state[row_index].columns[i].data.ui_column_index = i;
+                // this.state[row_index].columns[i].data.ui_row_index = row_index;
             }
         }
 
@@ -1651,7 +1727,7 @@ export default class AngularSvgNodesController {
                         column.lines.splice(line_index, 1);
 
                         // update data
-                        this.rows[parent_row_index].columns[parent_col_index].join.splice(line_index, 1);
+                        //this.state[parent_row_index].columns[parent_col_index].join.splice(line_index, 1);
 
                         // if parent no longer has any lines
                         if (column.lines.length === 0) {
@@ -1666,7 +1742,7 @@ export default class AngularSvgNodesController {
                         var new_line_to = [line.to[0] - 1, line.to[1]];
 
                         // get target lock coords
-                        var target_lock_coords = Utils.getCoords(new_line_to[0], new_line_to[1], BLOCK_TOP);
+                        var target_lock_coords = Utils.getCoords(new_line_to[0], new_line_to[1], BLOCK_TOP, this.config);
 
                         line.to = [new_line_to[0], new_line_to[1]];
                         line.x2 = target_lock_coords[0];
@@ -1677,7 +1753,8 @@ export default class AngularSvgNodesController {
         }
 
         // update children
-        if (row_index !== this.rows.length - 1) {
+        // TODO: can we use block???
+        if (row_index !== this.blocks.length - 1) {
             var children_row_index = row_index + 1;
             _.forEach(this.blocks[children_row_index].columns, (column, children_col_index) => {
 
@@ -1707,16 +1784,16 @@ export default class AngularSvgNodesController {
         }
 
         // get top left coords
-        var top_left_coords = Utils.getCoords(col_index, row_index, BLOCK_TOP_LEFT);
+        var top_left_coords = Utils.getCoords(col_index, row_index, BLOCK_TOP_LEFT, this.config);
 
         // lines
         var block_lines = [];
-        var line_source_lock_coords = Utils.getCoords(col_index, row_index, BLOCK_BOTTOM);
+        var line_source_lock_coords = Utils.getCoords(col_index, row_index, BLOCK_BOTTOM, this.config);
 
         _.forEach(data.join, (line_target_col_index) => {
 
             var line_target_coords = [line_target_col_index, row_index + 1];
-            var line_target_lock_coords = Utils.getCoords(line_target_coords[0], line_target_coords[1], BLOCK_TOP);
+            var line_target_lock_coords = Utils.getCoords(line_target_coords[0], line_target_coords[1], BLOCK_TOP, this.config);
 
             block_lines.push({
                 connected: true,
@@ -1737,8 +1814,8 @@ export default class AngularSvgNodesController {
             coords: top_left_coords,
             x: top_left_coords[0],
             y: top_left_coords[1],
-            label_x: top_left_coords[0] + LABEL_SPACING,
-            label_y: top_left_coords[1] + LABEL_SPACING,
+            label_x: top_left_coords[0] + this.config.label_spacing,
+            label_y: top_left_coords[1] + this.config.label_spacing,
             label: data.label,
             connected: block_lines.length > 0,
             control: false,
@@ -1751,7 +1828,7 @@ export default class AngularSvgNodesController {
         this.blocks[row_index].columns.splice(col_index, 0, block);
 
         // update data
-        this.rows[row_index].columns.splice(col_index, 0, data);
+        //this.state[row_index].columns.splice(col_index, 0, data);
 
         // update siblings
         for (var i = col_index + 1; i < (this.blocks[row_index].columns.length); i++) {
@@ -1759,10 +1836,10 @@ export default class AngularSvgNodesController {
             this.updateBlockAfterSiblingAddedOrRemoved(i, row_index);
 
             // if not last column (control)
-            if (i < this.blocks[row_index].columns.length - 1) {
-                this.rows[row_index].columns[i].data.ui_column_index = i;
-                this.rows[row_index].columns[i].data.ui_row_index = row_index;
-            }
+            // if (i < this.blocks[row_index].columns.length - 1) {
+            //     this.state[row_index].columns[i].data.ui_column_index = i;
+            //     this.state[row_index].columns[i].data.ui_row_index = row_index;
+            // }
         }
 
         // update parents
@@ -1778,7 +1855,7 @@ export default class AngularSvgNodesController {
                         var new_line_to = [line.to[0] + 1, line.to[1]];
 
                         // get target lock coords
-                        var target_lock_coords = Utils.getCoords(new_line_to[0], new_line_to[1], BLOCK_TOP);
+                        var target_lock_coords = Utils.getCoords(new_line_to[0], new_line_to[1], BLOCK_TOP, this.config);
 
                         line.to = [new_line_to[0], new_line_to[1]];
                         line.x2 = target_lock_coords[0];
@@ -1797,8 +1874,8 @@ export default class AngularSvgNodesController {
      */
     updateBlockAfterSiblingAddedOrRemoved(col_index, row_index) {
 
-        var top_left_coords = Utils.getCoords(col_index, row_index, BLOCK_TOP_LEFT);
-        var center_coords = Utils.getCoords(col_index, row_index, BLOCK_CENTER);
+        var top_left_coords = Utils.getCoords(col_index, row_index, BLOCK_TOP_LEFT, this.config);
+        var center_coords = Utils.getCoords(col_index, row_index, BLOCK_CENTER, this.config);
 
         // update block
 
@@ -1813,15 +1890,15 @@ export default class AngularSvgNodesController {
             this.blocks[row_index].columns[col_index].label_x = center_coords[0];
             this.blocks[row_index].columns[col_index].label_y = center_coords[1];
         } else {
-            this.blocks[row_index].columns[col_index].label_x = top_left_coords[0] + LABEL_SPACING;
-            this.blocks[row_index].columns[col_index].label_y = top_left_coords[1] + LABEL_SPACING;
+            this.blocks[row_index].columns[col_index].label_x = top_left_coords[0] + this.config.label_spacing;
+            this.blocks[row_index].columns[col_index].label_y = top_left_coords[1] + this.config.label_spacing;
         }
 
         // update lines
         _.forEach(this.blocks[row_index].columns[col_index].lines, (line) => {
 
             // get target lock coords
-            var source_lock_coords = Utils.getCoords(col_index, row_index, BLOCK_TOP);
+            var source_lock_coords = Utils.getCoords(col_index, row_index, BLOCK_TOP, this.config);
 
             line.from = [col_index, row_index];
             line.x1 = source_lock_coords[0];
@@ -1840,8 +1917,8 @@ export default class AngularSvgNodesController {
      */
     updateBlockAfterChildAddedOrRemoved(col_index, row_index) {
 
-        var top_left_coords = Utils.getCoords(col_index, row_index, BLOCK_TOP_LEFT);
-        var center_coords = Utils.getCoords(col_index, row_index, BLOCK_CENTER);
+        var top_left_coords = Utils.getCoords(col_index, row_index, BLOCK_TOP_LEFT, this.config);
+        var center_coords = Utils.getCoords(col_index, row_index, BLOCK_CENTER, this.config);
 
         // update block
 
@@ -1856,15 +1933,15 @@ export default class AngularSvgNodesController {
             this.blocks[row_index].columns[col_index].label_x = center_coords[0];
             this.blocks[row_index].columns[col_index].label_y = center_coords[1];
         } else {
-            this.blocks[row_index].columns[col_index].label_x = top_left_coords[0] + LABEL_SPACING;
-            this.blocks[row_index].columns[col_index].label_y = top_left_coords[1] + LABEL_SPACING;
+            this.blocks[row_index].columns[col_index].label_x = top_left_coords[0] + this.config.label_spacing;
+            this.blocks[row_index].columns[col_index].label_y = top_left_coords[1] + this.config.label_spacing;
         }
 
         // update lines
         _.forEach(this.blocks[row_index].columns[col_index].lines, (line) => {
 
             // get target lock coords
-            var source_lock_coords = Utils.getCoords(col_index, row_index, BLOCK_TOP);
+            var source_lock_coords = Utils.getCoords(col_index, row_index, BLOCK_TOP, this.config);
 
             line.from = [col_index, row_index];
             line.x1 = source_lock_coords[0];
@@ -1895,8 +1972,8 @@ export default class AngularSvgNodesController {
         var col_index = this.blocks[row_index].columns.length;
 
         // get top left coords
-        var top_left_coords = Utils.getCoords(col_index, row_index, BLOCK_TOP_LEFT);
-        var center_coords = Utils.getCoords(col_index, row_index, BLOCK_CENTER);
+        var top_left_coords = Utils.getCoords(col_index, row_index, BLOCK_TOP_LEFT, this.config);
+        var center_coords = Utils.getCoords(col_index, row_index, BLOCK_CENTER, this.config);
 
         // set block properties
         var block = {
@@ -1937,53 +2014,9 @@ export default class AngularSvgNodesController {
 
     ////////////////////////////////////////////////
     //
-    // init / update
+    // update
     //
     ////////////////////////////////////////////////
-
-    /**
-     * init
-     *
-     * @param data
-     * @param column_property_name
-     */
-    init(data, column_property_name) {
-
-        // add placeholders
-        for (var row_index = 0; row_index < INITIAL_GRID_ROWS; row_index++) {
-
-            // add data placeholder
-            if (row_index >= data.length) {
-                data.push({columns: []});
-            }
-        }
-
-        // add blocks
-        _.forEach(data, (row, row_index) => {
-
-            _.forEach(row[column_property_name], (col, col_index) => {
-
-                // add block
-                this.addBlock(col_index, row_index, col.label, col.join);
-            });
-
-            // add control
-            this.addControl(row_index);
-        });
-
-        // add bg_col_grid array
-        _.map(new Array(this.grid_col_count), (col, index) => {
-
-            // add bg grid col
-            this.addBgGridCol(index);
-        });
-
-        // set viewport
-        this.setViewport(this.grid_col_count, this.grid_row_count);
-
-        // check active
-        this.checkActive();
-    }
 
     /**
      * update

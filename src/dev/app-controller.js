@@ -1,53 +1,78 @@
 export default class AppController {
     constructor () {
 
-        this.data = [
+        this.svg_nodes_api = {};
+
+        this.svg_nodes_initial_state = [
             {columns: [
                 {join: [0], label: "A1"},
                 {join: [], label: "A2"},
-                {join: [2,0], label: "A3"},
-                {join: [], label: "A4"},
-                {join: [], label: "A5"},
-                {join: [], label: "A6"}
+                {join: [2,0], label: "A3"}
             ]},
             {columns: [
                 {join: [], label: "B1"},
-                {join: [0, 2], label: "B2"},
+                {join: [], label: "B2"},
                 {join: [], label: "B3"}
-            ]},
-            {columns: [
-                {join: [], label: "C1"},
-                {join: [], label: "C2"},
-                {join: [], label: "C3"},
-                {join: [], label: "C4"}
             ]}
         ];
 
-        this.svg_nodes_api = {};
-
-        this.node_event_type;
-        this.node_event_node;
-        this.node_event_data;
-
-        this.line_event_type;
-        this.line_event_node;
-        this.line_event_data;
-        this.line_event_line_index;
+        this.svg_nodes_config = {
+            block_width:                    40,
+            block_height:                   60,
+            col_spacing:                    5,
+            disable_control_nodes:          true,
+            initial_grid_cols:              8,
+            initial_grid_rows:              2,
+            label_spacing:                  20,
+            max_viewport_width_increase:    200,
+            max_viewport_height_increase:   200,
+            row_spacing:                    15
+        };
     }
 
-    onNodeMouseDown(node, data) {
-        
+    /**
+     * onNodeSelectiond
+     *
+     * @param row_index
+     * @param col_index
+     */
+    onNodeSelection(row_index, col_index) {
+        console.log("onNodeSelection", row_index, col_index);
     }
 
-    onNodeMouseUp(node, data) {
-
+    /**
+     * onNodeConnectionChange
+     *
+     * @param source_row_index
+     * @param source_col_index
+     * @param target_row_index
+     * @param target_col_index
+     * @param is_connected
+     */
+    onNodeConnectionChange(source_row_index, source_col_index, target_row_index, target_col_index, is_connected) {
+        console.log("onNodeConnectionChange", source_row_index, source_col_index, target_row_index, target_col_index, is_connected);
     }
 
-    onLineAdd(source_node, source_data, target_node, target_data, line_index) {
-
+    /**
+     * onNodeAdded
+     *
+     * @param row_index
+     * @param col_index
+     */
+    onNodeAdded(row_index, col_index) {
+        console.log("onNodeAdded", row_index, col_index);
     }
 
-    onLineRemove(source_node, source_data, target_node, target_data, line_index) {
+    addRows() {
+        this.svg_nodes_api.addRow("C1");
+        this.svg_nodes_api.addRow("D1");
+    }
 
+    setNodeLabel() {
+        this.svg_nodes_api.setNodeLabel(0, 1, "NEW NAME");
+    }
+
+    setNodeHighlight() {
+        this.svg_nodes_api.setNodeHighlight(0, 1, true);
     }
 }

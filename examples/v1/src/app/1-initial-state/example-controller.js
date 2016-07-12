@@ -1,6 +1,6 @@
 export default class Controller {
     constructor () {
-        this.data = [
+        this.svg_nodes_initial_state = [
             {columns: [
                 {join: [0], label: "A1"},
                 {join: [], label: "A2"},

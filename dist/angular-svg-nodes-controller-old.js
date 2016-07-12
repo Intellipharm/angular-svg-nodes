@@ -30,18 +30,7 @@ var AngularSvgNodesController = function () {
 
         this.state = [];
 
-        this.config = {
-            initial_grid_cols: !_.isUndefined(this.config_initial_grid_cols) ? this.config_initial_grid_cols : _angularSvgNodesSettings.INITIAL_GRID_COLS,
-            initial_grid_rows: !_.isUndefined(this.config_initial_grid_rows) ? this.config_initial_grid_rows : _angularSvgNodesSettings.INITIAL_GRID_ROWS,
-            block_width: !_.isUndefined(this.config_block_width) ? this.config_block_width : _angularSvgNodesSettings.BLOCK_WIDTH,
-            block_height: !_.isUndefined(this.config_block_height) ? this.config_block_height : _angularSvgNodesSettings.BLOCK_HEIGHT,
-            col_spacing: !_.isUndefined(this.config_col_spacing) ? this.config_col_spacing : _angularSvgNodesSettings.COL_SPACING,
-            row_spacing: !_.isUndefined(this.config_row_spacing) ? this.config_row_spacing : _angularSvgNodesSettings.ROW_SPACING,
-            label_spacing: !_.isUndefined(this.config_label_spacing) ? this.config_label_spacing : _angularSvgNodesSettings.LABEL_SPACING,
-            disable_control_nodes: !_.isUndefined(this.config_disable_control_nodes) ? this.config_disable_control_nodes : _angularSvgNodesSettings.DISABLE_CONTROL_NODES,
-            max_viewport_width_increase: !_.isUndefined(this.config_max_viewport_width_increase) ? this.config_max_viewport_width_increase : _angularSvgNodesSettings.MAX_VIEWPORT_WIDTH_INCREASE,
-            max_viewport_height_increase: !_.isUndefined(this.config_max_viewport_height_increase) ? this.config_max_viewport_height_increase : _angularSvgNodesSettings.MAX_VIEWPORT_HEIGHT_INCREASE
-        };
+        var initialized = false;
 
         this.blocks_waiting_for_connection = [];
 
@@ -54,10 +43,14 @@ var AngularSvgNodesController = function () {
         this.bg_col_grid = [];
         this.bg_col_grid_hover_index = null;
 
-        this.grid_col_count = this.config.initial_grid_cols;
-        this.grid_row_count = this.config.initial_grid_rows;
-        this.label_width = this.config.block_width - this.config.label_spacing * 2;
-        this.label_height = this.config.block_height - this.config.label_spacing * 2;
+        this.block_width = _angularSvgNodesSettings.BLOCK_WIDTH;
+        this.block_height = _angularSvgNodesSettings.BLOCK_HEIGHT;
+        this.col_spacing = _angularSvgNodesSettings.COL_SPACING;
+        this.row_spacing = _angularSvgNodesSettings.ROW_SPACING;
+        this.grid_col_count = _angularSvgNodesSettings.INITIAL_GRID_COLS;
+        this.grid_row_count = _angularSvgNodesSettings.INITIAL_GRID_ROWS;
+        this.label_width = _angularSvgNodesSettings.BLOCK_WIDTH - _angularSvgNodesSettings.LABEL_SPACING * 2;
+        this.label_height = _angularSvgNodesSettings.BLOCK_HEIGHT - _angularSvgNodesSettings.LABEL_SPACING * 2;
 
         this.wrapper_style = "";
         this.viewport_style = "";
@@ -83,81 +76,53 @@ var AngularSvgNodesController = function () {
             }
         }, true);
 
-        this.api.addRow = function () {
-            var label = arguments.length <= 0 || arguments[0] === undefined ? "" : arguments[0];
+        this.$s.$watch('AngularSvgNodes.initial_state', function (newValue) {
 
-            var _row_index = _this.blocks.length;
-            var _col_index = 0;
-            _this.addBlock(_col_index, _row_index, label, []);
+            if (_.isUndefined(newValue)) {
+                return;
+            }
+
+            if (!initialized) {
+                _this.init(newValue, 'columns');
+                initialized = true;
+                return true;
+            }
+
+            _this.update(newValue, 'columns');
+        }, true);
+
+        this.api.addLine = function (source_coords, target_coords, connected) {
+            _this.setNodeClass(source_coords[0], source_coords[1], 'connected', true);
+
+            _this.blocks_waiting_for_connection.push(target_coords);
+
+            _this.addLine(source_coords, target_coords, connected);
         };
 
-        this.api.setNodeLabel = function (row_index, col_index, label) {
-
-            if (row_index >= _this.blocks.length) {
-                console.error("AngularSvgNodes Error : invalid row index provided to setNodeLabel");
-                return;
-            }
-
-            if (col_index >= _this.blocks[row_index].columns.length) {
-                console.error("AngularSvgNodes Error : invalid col index provided to setNodeLabel");
-                return;
-            }
-
-            _this.updateBlock(col_index, row_index, label);
+        this.api.insertBlock = function (col_index, row_index, data) {
+            _this.insertBlock(col_index, row_index, data);
         };
 
-        this.api.setNodeHighlight = function (row_index, col_index, value) {
-
-            if (row_index >= _this.blocks.length) {
-                console.error("AngularSvgNodes Error : invalid row index provided to setNodeHighlight");
-                return;
-            }
-
-            if (col_index >= _this.blocks[row_index].columns.length) {
-                console.error("AngularSvgNodes Error : invalid col index provided to setNodeHighlight");
-                return;
-            }
-
-            _this.blocks[row_index].columns[col_index].highlight = value;
+        this.api.removeBlock = function (col_index, row_index) {
+            _this.removeBlock(col_index, row_index);
         };
 
-        this.init();
+        this.api.highlightBlock = function (value, col_index, row_index) {
+            _this.setNodeClass(col_index, row_index, 'highlight', value);
+        };
+
+        this.api.selectBlock = function (value, col_index, row_index) {
+
+            if (!_.isUndefined(col_index) && !_.isUndefined(col_index) && value) {
+                _this.selected_node = [col_index, row_index];
+                return true;
+            }
+
+            _this.selected_node = null;
+        };
     }
 
     _createClass(AngularSvgNodesController, [{
-        key: "init",
-        value: function init() {
-            var _this2 = this;
-
-            var _column_property_name = 'columns';
-            var _data = !_.isUndefined(this.initial_state) ? this.initial_state : [];
-
-            for (var row_index = 0; row_index < this.config.initial_grid_rows; row_index++) {
-                if (row_index >= _data.length) {
-                    _data.push({ columns: [] });
-                }
-            }
-
-            _.forEach(_data, function (row, row_index) {
-
-                _.forEach(row[_column_property_name], function (col, col_index) {
-                    _this2.addBlock(col_index, row_index, col.label, col.join);
-                });
-
-                _this2.addControl(row_index);
-            });
-
-            _.map(new Array(this.grid_col_count), function (col, index) {
-                _this2.addBgGridCol(index);
-            });
-
-            this.setViewport(this.grid_col_count, this.grid_row_count);
-
-            this.checkActive();
-
-            this.update(_data, _column_property_name);
-        }
-    }, {
         key: "onNodeSelect",
         value: function onNodeSelect(col_index, row_index) {
             if (!_.isUndefined(this.onNodeMouseDown)) {
@@ -165,17 +130,13 @@ var AngularSvgNodesController = function () {
             }
 
             if (this.blocks[row_index].columns[col_index].control) {
-                if (!this.config.disable_control_nodes) {
+                if (!_angularSvgNodesSettings.DISABLE_CONTROL_NODES) {
                     this.onControlNodeSelect(col_index, row_index);
                 }
                 return true;
             }
 
             this.onBlockNodeSelect(col_index, row_index);
-
-            if (!_.isUndefined(this.onNodeSelectionCallback)) {
-                this.onNodeSelectionCallback({ col_index: col_index, row_index: row_index });
-            }
         }
     }, {
         key: "onNodeDeselect",
@@ -456,30 +417,19 @@ var AngularSvgNodesController = function () {
                 this.onLineRemove(this.getExternalLineEventHandlerData(source_coords, target_coords, line_index));
             }
 
-            if (!_.isUndefined(this.onNodeConnectionChangeCallback)) {
-                var _params = {
-                    source_row_index: source_coords[1],
-                    source_col_index: source_coords[0],
-                    target_row_index: target_coords[1],
-                    target_col_index: target_coords[0],
-                    is_connected: false
-                };
-                this.onNodeConnectionChangeCallback(_params);
-            }
-
             this.$s.$apply();
         }
     }, {
         key: "onLineDrawComplete",
         value: function onLineDrawComplete(source_coords, target_coords) {
-            var _this3 = this;
+            var _this2 = this;
 
             var is_block_waiting_for_connection = false;
 
             _.forEach(this.blocks_waiting_for_connection, function (block, index) {
                 if (_.isEqual(block, target_coords)) {
                     is_block_waiting_for_connection = true;
-                    _this3.blocks_waiting_for_connection.splice(index, 1);
+                    _this2.blocks_waiting_for_connection.splice(index, 1);
                     return false;
                 }
             });
@@ -523,7 +473,7 @@ var AngularSvgNodesController = function () {
     }, {
         key: "checkActive",
         value: function checkActive() {
-            var _this4 = this;
+            var _this3 = this;
 
             if (this.blocks.length === 0) {
                 return false;
@@ -531,14 +481,14 @@ var AngularSvgNodesController = function () {
 
             _.forEach(this.blocks[0].columns, function (col, col_index) {
                 if (col.lines.length > 0) {
-                    _this4.activateBlock(col_index, 0);
+                    _this3.activateBlock(col_index, 0);
                 }
             });
         }
     }, {
         key: "activateBlock",
         value: function activateBlock(col_index, row_index) {
-            var _this5 = this;
+            var _this4 = this;
 
             var block = this.blocks[row_index].columns[col_index];
             block.active = true;
@@ -548,14 +498,14 @@ var AngularSvgNodesController = function () {
                 _.forEach(block.lines, function (line) {
                     line.active = true;
 
-                    _this5.activateBlock(line.to[0], line.to[1]);
+                    _this4.activateBlock(line.to[0], line.to[1]);
                 });
             }
         }
     }, {
         key: "deactivateBlock",
         value: function deactivateBlock(col_index, row_index) {
-            var _this6 = this;
+            var _this5 = this;
 
             var block = this.blocks[row_index].columns[col_index];
             block.active = false;
@@ -564,10 +514,10 @@ var AngularSvgNodesController = function () {
                 _.forEach(block.lines, function (line) {
                     line.active = false;
 
-                    var does_parent_have_active_nodes = _this6.doesNodeHaveActiveParents(line.to[0], line.to[1]);
+                    var does_parent_have_active_nodes = _this5.doesNodeHaveActiveParents(line.to[0], line.to[1]);
 
                     if (!does_parent_have_active_nodes) {
-                        _this6.deactivateBlock(line.to[0], line.to[1]);
+                        _this5.deactivateBlock(line.to[0], line.to[1]);
                     }
                 });
             }
@@ -597,7 +547,7 @@ var AngularSvgNodesController = function () {
     }, {
         key: "doesNodeHaveConnectedParents",
         value: function doesNodeHaveConnectedParents(col_index, row_index, exclude_coords) {
-            var _this7 = this;
+            var _this6 = this;
 
             if (row_index === 0) {
                 return false;
@@ -612,7 +562,7 @@ var AngularSvgNodesController = function () {
             var parents = this.blocks[parent_row_index].columns;
 
             _.forEach(parents, function (parent, parent_col_index) {
-                if (!_.isEqual([parent_col_index, parent_row_index], exclude_coords) && _this7.isNodePotential([col_index, row_index], [parent_col_index, parent_row_index])) {
+                if (!_.isEqual([parent_col_index, parent_row_index], exclude_coords) && _this6.isNodePotential([col_index, row_index], [parent_col_index, parent_row_index])) {
 
                     result = true;
                     return false;
@@ -714,11 +664,11 @@ var AngularSvgNodesController = function () {
     }, {
         key: "setPotentialChildNodeClasses",
         value: function setPotentialChildNodeClasses(col_index, row_index, key, value) {
-            var _this8 = this;
+            var _this7 = this;
 
             if (row_index + 1 < this.blocks.length) {
                 _.forEach(this.blocks[row_index + 1].columns, function (child_col, child_col_index) {
-                    if (_this8.isNodePotential([col_index, row_index], [child_col_index, row_index + 1])) {
+                    if (_this7.isNodePotential([col_index, row_index], [child_col_index, row_index + 1])) {
                         child_col[key] = value;
                     }
                 });
@@ -727,11 +677,11 @@ var AngularSvgNodesController = function () {
     }, {
         key: "setPotentialParentNodeClasses",
         value: function setPotentialParentNodeClasses(col_index, row_index, key, value) {
-            var _this9 = this;
+            var _this8 = this;
 
             if (row_index > 0) {
                 _.forEach(this.blocks[row_index - 1].columns, function (parent_col, parent_col_index) {
-                    if (_this9.isNodePotential([col_index, row_index], [parent_col_index, row_index - 1])) {
+                    if (_this8.isNodePotential([col_index, row_index], [parent_col_index, row_index - 1])) {
                         parent_col[key] = value;
                     }
                 });
@@ -741,8 +691,8 @@ var AngularSvgNodesController = function () {
         key: "setViewport",
         value: function setViewport(cols, rows) {
 
-            var total_item_width = this.config.block_width + this.config.col_spacing;
-            var total_item_height = this.config.block_height + this.config.row_spacing;
+            var total_item_width = _angularSvgNodesSettings.BLOCK_WIDTH + _angularSvgNodesSettings.COL_SPACING;
+            var total_item_height = _angularSvgNodesSettings.BLOCK_HEIGHT + _angularSvgNodesSettings.ROW_SPACING;
 
             this.viewport_width = total_item_width * cols;
             this.viewport_height = total_item_height * rows;
@@ -754,9 +704,9 @@ var AngularSvgNodesController = function () {
             };
 
             this.wrapper_style = {
-                'max-width': this.viewport_width + this.config.max_viewport_width_increase + "px",
+                'max-width': this.viewport_width + _angularSvgNodesSettings.MAX_VIEWPORT_WIDTH_INCREASE + "px",
                 'min-width': this.viewport_width + "px",
-                'max-height': this.viewport_height + this.config.max_viewport_height_increase * rows + "px",
+                'max-height': this.viewport_height + _angularSvgNodesSettings.MAX_VIEWPORT_HEIGHT_INCREASE * rows + "px",
                 'min-height': this.viewport_height + "px"
             };
 
@@ -790,26 +740,26 @@ var AngularSvgNodesController = function () {
             if (index === 0) {
                 return 0;
             }
-            var first_col_width = this.config.block_width + this.config.col_spacing / 2;
-            var col_width = this.config.block_width + this.config.col_spacing;
+            var first_col_width = _angularSvgNodesSettings.BLOCK_WIDTH + _angularSvgNodesSettings.COL_SPACING / 2;
+            var col_width = _angularSvgNodesSettings.BLOCK_WIDTH + _angularSvgNodesSettings.COL_SPACING;
             return first_col_width + (index - 1) * col_width;
         }
     }, {
         key: "calculateColWidth",
         value: function calculateColWidth(index) {
-            var total_item_width = index === 0 ? this.config.block_width + this.config.col_spacing / 2 : this.config.block_width + this.config.col_spacing;
+            var total_item_width = index === 0 ? _angularSvgNodesSettings.BLOCK_WIDTH + _angularSvgNodesSettings.COL_SPACING / 2 : _angularSvgNodesSettings.BLOCK_WIDTH + _angularSvgNodesSettings.COL_SPACING;
             return total_item_width;
         }
     }, {
         key: "calculateRowY",
         value: function calculateRowY(index) {
-            var row_height = this.config.block_height + this.config.row_spacing;
+            var row_height = _angularSvgNodesSettings.BLOCK_HEIGHT + _angularSvgNodesSettings.ROW_SPACING;
             return index * row_height;
         }
     }, {
         key: "calculateRowHeight",
         value: function calculateRowHeight() {
-            return this.config.block_height + this.config.row_spacing;
+            return _angularSvgNodesSettings.BLOCK_HEIGHT + _angularSvgNodesSettings.ROW_SPACING;
         }
     }, {
         key: "addLine",
@@ -818,8 +768,8 @@ var AngularSvgNodesController = function () {
                 return false;
             }
 
-            var source_lock_coords = Utils.getCoords(source_coords[0], source_coords[1], _angularSvgNodesSettings.BLOCK_BOTTOM, this.config);
-            var target_lock_coords = Utils.getCoords(target_coords[0], target_coords[1], _angularSvgNodesSettings.BLOCK_TOP, this.config);
+            var source_lock_coords = Utils.getCoords(source_coords[0], source_coords[1], _angularSvgNodesSettings.BLOCK_BOTTOM);
+            var target_lock_coords = Utils.getCoords(target_coords[0], target_coords[1], _angularSvgNodesSettings.BLOCK_TOP);
 
             this.blocks[source_coords[1]].columns[source_coords[0]].lines.push({
                 connected: !_.isUndefined(connected) ? connected : false,
@@ -836,7 +786,7 @@ var AngularSvgNodesController = function () {
     }, {
         key: "updateLineTarget",
         value: function updateLineTarget(source_coords, target_coords) {
-            var target_lock_coords = Utils.getCoords(target_coords[0], target_coords[1], _angularSvgNodesSettings.BLOCK_TOP, this.config);
+            var target_lock_coords = Utils.getCoords(target_coords[0], target_coords[1], _angularSvgNodesSettings.BLOCK_TOP);
 
             _.forEach(this.blocks[source_coords[1]].columns[source_coords[0]].lines, function (line) {
 
@@ -852,25 +802,25 @@ var AngularSvgNodesController = function () {
     }, {
         key: "removeLine",
         value: function removeLine(source_coords, target_coords) {
-            var _this10 = this;
+            var _this9 = this;
 
-            var target_lock_coords = Utils.getCoords(source_coords[0], source_coords[1], _angularSvgNodesSettings.BLOCK_BOTTOM, this.config);
+            var target_lock_coords = Utils.getCoords(source_coords[0], source_coords[1], _angularSvgNodesSettings.BLOCK_BOTTOM);
 
             _.forEach(this.blocks[source_coords[1]].columns[source_coords[0]].lines, function (line) {
 
                 if (_.isEqual(line.from, source_coords) && _.isEqual(line.to, target_coords)) {
 
-                    var block = _this10.blocks[target_coords[1]].columns[target_coords[0]];
-                    var block_has_connected_parents = _this10.doesNodeHaveConnectedParents(target_coords[0], target_coords[1], source_coords);
+                    var block = _this9.blocks[target_coords[1]].columns[target_coords[0]];
+                    var block_has_connected_parents = _this9.doesNodeHaveConnectedParents(target_coords[0], target_coords[1], source_coords);
 
                     if (block.lines.length === 0 && !block_has_connected_parents) {
-                        _this10.setAsNotConnectedBlock(target_coords);
+                        _this9.setAsNotConnectedBlock(target_coords);
                     }
 
-                    var block_has_active_parents = _this10.doesNodeHaveActiveParents(target_coords[0], target_coords[1], source_coords);
+                    var block_has_active_parents = _this9.doesNodeHaveActiveParents(target_coords[0], target_coords[1], source_coords);
 
                     if (!block_has_active_parents) {
-                        _this10.deactivateBlock(target_coords[0], target_coords[1]);
+                        _this9.deactivateBlock(target_coords[0], target_coords[1]);
                     }
 
                     line.x2 = target_lock_coords[0];
@@ -884,39 +834,28 @@ var AngularSvgNodesController = function () {
     }, {
         key: "removeUnconnectedLines",
         value: function removeUnconnectedLines(selection) {
-            var _this11 = this;
+            var _this10 = this;
 
             _.forEach(this.blocks[selection[0][1]].columns[selection[0][0]].lines, function (line) {
                 if (!line.connected) {
-                    _this11.removeLine(_this11.selection[0], _this11.selection[1]);
+                    _this10.removeLine(_this10.selection[0], _this10.selection[1]);
                 }
             });
         }
     }, {
         key: "setAsConnectedLines",
         value: function setAsConnectedLines(selection) {
-            var _this12 = this;
+            var _this11 = this;
 
             _.forEach(this.blocks[selection[0][1]].columns[selection[0][0]].lines, function (line, line_index) {
                 if (!line.connected) {
                     line.connected = true;
 
-                    _this12.setAsConnectedBlock(line.from);
-                    _this12.setAsConnectedBlock(line.to);
+                    _this11.setAsConnectedBlock(line.from);
+                    _this11.setAsConnectedBlock(line.to);
 
-                    if (!_.isUndefined(_this12.onNodeConnectionChangeCallback)) {
-                        var _params = {
-                            source_row_index: line.from[1],
-                            source_col_index: line.from[0],
-                            target_row_index: line.to[1],
-                            target_col_index: line.to[0],
-                            is_connected: true
-                        };
-                        _this12.onNodeConnectionChangeCallback(_params);
-                    }
-
-                    if (!_.isUndefined(_this12.onLineAdd)) {
-                        _this12.onLineAdd(_this12.getExternalLineEventHandlerData(line.from, line.to, line_index));
+                    if (!_.isUndefined(_this11.onLineAdd)) {
+                        _this11.onLineAdd(_this11.getExternalLineEventHandlerData(line.from, line.to, line_index));
                     }
                 }
             });
@@ -934,7 +873,7 @@ var AngularSvgNodesController = function () {
     }, {
         key: "addBlock",
         value: function addBlock(col_index, row_index, label, lines) {
-            var _this13 = this;
+            var _this12 = this;
 
             if (row_index > this.blocks.length) {
                 throw new Error("Invalid row index");
@@ -950,15 +889,15 @@ var AngularSvgNodesController = function () {
                 removed_block = this.blocks[row_index].columns.splice(col_index, 1);
             }
 
-            var top_left_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_TOP_LEFT, this.config);
+            var top_left_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_TOP_LEFT);
 
             var block_lines = [];
-            var line_source_lock_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_BOTTOM, this.config);
+            var line_source_lock_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_BOTTOM);
 
             _.forEach(lines, function (line_target_col_index) {
 
                 var line_target_coords = [line_target_col_index, row_index + 1];
-                var line_target_lock_coords = Utils.getCoords(line_target_coords[0], line_target_coords[1], _angularSvgNodesSettings.BLOCK_TOP, _this13.config);
+                var line_target_lock_coords = Utils.getCoords(line_target_coords[0], line_target_coords[1], _angularSvgNodesSettings.BLOCK_TOP);
 
                 block_lines.push({
                     connected: true,
@@ -970,15 +909,15 @@ var AngularSvgNodesController = function () {
                     y2: line_target_lock_coords[1]
                 });
 
-                _this13.blocks_waiting_for_connection.push(line_target_coords);
+                _this12.blocks_waiting_for_connection.push(line_target_coords);
             });
 
             var block = {
                 coords: top_left_coords,
                 x: top_left_coords[0],
                 y: top_left_coords[1],
-                label_x: top_left_coords[0] + this.config.label_spacing,
-                label_y: top_left_coords[1] + this.config.label_spacing,
+                label_x: top_left_coords[0] + _angularSvgNodesSettings.LABEL_SPACING,
+                label_y: top_left_coords[1] + _angularSvgNodesSettings.LABEL_SPACING,
                 label: label,
                 connected: block_lines.length > 0,
                 control: false,
@@ -994,10 +933,6 @@ var AngularSvgNodesController = function () {
             if (!_.isUndefined(removed_block)) {
                 this.addControl(removed_block[0].row_index);
             }
-
-            if (!_.isUndefined(this.onNodeAddedCallback)) {
-                this.onNodeAddedCallback({ row_index: row_index, col_index: col_index });
-            }
         }
     }, {
         key: "updateBlock",
@@ -1009,7 +944,7 @@ var AngularSvgNodesController = function () {
     }, {
         key: "removeBlock",
         value: function removeBlock(col_index, row_index) {
-            var _this14 = this;
+            var _this13 = this;
 
             if (row_index >= this.blocks.length) {
                 return true;
@@ -1020,7 +955,7 @@ var AngularSvgNodesController = function () {
             }
 
             _.forEach(this.blocks[row_index].columns[col_index].lines, function (line) {
-                _this14.removeLine(line.from, line.to);
+                _this13.removeLine(line.from, line.to);
             });
 
             this.blocks[row_index].columns.splice(col_index, 1);
@@ -1039,14 +974,14 @@ var AngularSvgNodesController = function () {
                             column.lines.splice(line_index, 1);
 
                             if (column.lines.length === 0) {
-                                _this14.setAsNotConnectedBlock([parent_col_index, parent_row_index]);
+                                _this13.setAsNotConnectedBlock([parent_col_index, parent_row_index]);
                             }
                         }
 
                         if (line.to[0] > col_index) {
                             var new_line_to = [line.to[0] - 1, line.to[1]];
 
-                            var target_lock_coords = Utils.getCoords(new_line_to[0], new_line_to[1], _angularSvgNodesSettings.BLOCK_TOP, _this14.config);
+                            var target_lock_coords = Utils.getCoords(new_line_to[0], new_line_to[1], _angularSvgNodesSettings.BLOCK_TOP);
 
                             line.to = [new_line_to[0], new_line_to[1]];
                             line.x2 = target_lock_coords[0];
@@ -1059,8 +994,8 @@ var AngularSvgNodesController = function () {
             if (row_index !== this.blocks.length - 1) {
                 var children_row_index = row_index + 1;
                 _.forEach(this.blocks[children_row_index].columns, function (column, children_col_index) {
-                    if (!_this14.doesNodeHaveConnectedParents(children_col_index, children_row_index)) {
-                        _this14.setAsNotConnectedBlock([children_col_index, children_row_index]);
+                    if (!_this13.doesNodeHaveConnectedParents(children_col_index, children_row_index)) {
+                        _this13.setAsNotConnectedBlock([children_col_index, children_row_index]);
                     }
                 });
             }
@@ -1068,7 +1003,7 @@ var AngularSvgNodesController = function () {
     }, {
         key: "insertBlock",
         value: function insertBlock(col_index, row_index, data) {
-            var _this15 = this;
+            var _this14 = this;
 
             if (row_index >= this.blocks.length) {
                 return true;
@@ -1078,15 +1013,15 @@ var AngularSvgNodesController = function () {
                 return true;
             }
 
-            var top_left_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_TOP_LEFT, this.config);
+            var top_left_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_TOP_LEFT);
 
             var block_lines = [];
-            var line_source_lock_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_BOTTOM, this.config);
+            var line_source_lock_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_BOTTOM);
 
             _.forEach(data.join, function (line_target_col_index) {
 
                 var line_target_coords = [line_target_col_index, row_index + 1];
-                var line_target_lock_coords = Utils.getCoords(line_target_coords[0], line_target_coords[1], _angularSvgNodesSettings.BLOCK_TOP, _this15.config);
+                var line_target_lock_coords = Utils.getCoords(line_target_coords[0], line_target_coords[1], _angularSvgNodesSettings.BLOCK_TOP);
 
                 block_lines.push({
                     connected: true,
@@ -1098,15 +1033,15 @@ var AngularSvgNodesController = function () {
                     y2: line_target_lock_coords[1]
                 });
 
-                _this15.blocks_waiting_for_connection.push(line_target_coords);
+                _this14.blocks_waiting_for_connection.push(line_target_coords);
             });
 
             var block = {
                 coords: top_left_coords,
                 x: top_left_coords[0],
                 y: top_left_coords[1],
-                label_x: top_left_coords[0] + this.config.label_spacing,
-                label_y: top_left_coords[1] + this.config.label_spacing,
+                label_x: top_left_coords[0] + _angularSvgNodesSettings.LABEL_SPACING,
+                label_y: top_left_coords[1] + _angularSvgNodesSettings.LABEL_SPACING,
                 label: data.label,
                 connected: block_lines.length > 0,
                 control: false,
@@ -1129,7 +1064,7 @@ var AngularSvgNodesController = function () {
                         if (line.to[0] >= col_index) {
                             var new_line_to = [line.to[0] + 1, line.to[1]];
 
-                            var target_lock_coords = Utils.getCoords(new_line_to[0], new_line_to[1], _angularSvgNodesSettings.BLOCK_TOP, _this15.config);
+                            var target_lock_coords = Utils.getCoords(new_line_to[0], new_line_to[1], _angularSvgNodesSettings.BLOCK_TOP);
 
                             line.to = [new_line_to[0], new_line_to[1]];
                             line.x2 = target_lock_coords[0];
@@ -1142,10 +1077,9 @@ var AngularSvgNodesController = function () {
     }, {
         key: "updateBlockAfterSiblingAddedOrRemoved",
         value: function updateBlockAfterSiblingAddedOrRemoved(col_index, row_index) {
-            var _this16 = this;
 
-            var top_left_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_TOP_LEFT, this.config);
-            var center_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_CENTER, this.config);
+            var top_left_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_TOP_LEFT);
+            var center_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_CENTER);
 
             this.blocks[row_index].columns[col_index].col_index = col_index;
             this.blocks[row_index].columns[col_index].coords = top_left_coords;
@@ -1156,12 +1090,12 @@ var AngularSvgNodesController = function () {
                 this.blocks[row_index].columns[col_index].label_x = center_coords[0];
                 this.blocks[row_index].columns[col_index].label_y = center_coords[1];
             } else {
-                this.blocks[row_index].columns[col_index].label_x = top_left_coords[0] + this.config.label_spacing;
-                this.blocks[row_index].columns[col_index].label_y = top_left_coords[1] + this.config.label_spacing;
+                this.blocks[row_index].columns[col_index].label_x = top_left_coords[0] + _angularSvgNodesSettings.LABEL_SPACING;
+                this.blocks[row_index].columns[col_index].label_y = top_left_coords[1] + _angularSvgNodesSettings.LABEL_SPACING;
             }
 
             _.forEach(this.blocks[row_index].columns[col_index].lines, function (line) {
-                var source_lock_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_TOP, _this16.config);
+                var source_lock_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_TOP);
 
                 line.from = [col_index, row_index];
                 line.x1 = source_lock_coords[0];
@@ -1173,10 +1107,9 @@ var AngularSvgNodesController = function () {
     }, {
         key: "updateBlockAfterChildAddedOrRemoved",
         value: function updateBlockAfterChildAddedOrRemoved(col_index, row_index) {
-            var _this17 = this;
 
-            var top_left_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_TOP_LEFT, this.config);
-            var center_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_CENTER, this.config);
+            var top_left_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_TOP_LEFT);
+            var center_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_CENTER);
 
             this.blocks[row_index].columns[col_index].col_index = col_index;
             this.blocks[row_index].columns[col_index].coords = top_left_coords;
@@ -1187,12 +1120,12 @@ var AngularSvgNodesController = function () {
                 this.blocks[row_index].columns[col_index].label_x = center_coords[0];
                 this.blocks[row_index].columns[col_index].label_y = center_coords[1];
             } else {
-                this.blocks[row_index].columns[col_index].label_x = top_left_coords[0] + this.config.label_spacing;
-                this.blocks[row_index].columns[col_index].label_y = top_left_coords[1] + this.config.label_spacing;
+                this.blocks[row_index].columns[col_index].label_x = top_left_coords[0] + _angularSvgNodesSettings.LABEL_SPACING;
+                this.blocks[row_index].columns[col_index].label_y = top_left_coords[1] + _angularSvgNodesSettings.LABEL_SPACING;
             }
 
             _.forEach(this.blocks[row_index].columns[col_index].lines, function (line) {
-                var source_lock_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_TOP, _this17.config);
+                var source_lock_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_TOP);
 
                 line.from = [col_index, row_index];
                 line.x1 = source_lock_coords[0];
@@ -1214,8 +1147,8 @@ var AngularSvgNodesController = function () {
 
             var col_index = this.blocks[row_index].columns.length;
 
-            var top_left_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_TOP_LEFT, this.config);
-            var center_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_CENTER, this.config);
+            var top_left_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_TOP_LEFT);
+            var center_coords = Utils.getCoords(col_index, row_index, _angularSvgNodesSettings.BLOCK_CENTER);
 
             var block = {
                 coords: top_left_coords,
@@ -1246,24 +1179,52 @@ var AngularSvgNodesController = function () {
             });
         }
     }, {
-        key: "update",
-        value: function update(data, column_property_name) {
-            var _this18 = this;
+        key: "init",
+        value: function init(data, column_property_name) {
+            var _this15 = this;
+
+            for (var row_index = 0; row_index < _angularSvgNodesSettings.INITIAL_GRID_ROWS; row_index++) {
+                if (row_index >= data.length) {
+                    data.push({ columns: [] });
+                }
+            }
 
             _.forEach(data, function (row, row_index) {
-                if (row_index >= _this18.blocks.length) {
-                    _this18.addControl(row_index);
+
+                _.forEach(row[column_property_name], function (col, col_index) {
+                    _this15.addBlock(col_index, row_index, col.label, col.join);
+                });
+
+                _this15.addControl(row_index);
+            });
+
+            _.map(new Array(this.grid_col_count), function (col, index) {
+                _this15.addBgGridCol(index);
+            });
+
+            this.setViewport(this.grid_col_count, this.grid_row_count);
+
+            this.checkActive();
+        }
+    }, {
+        key: "update",
+        value: function update(data, column_property_name) {
+            var _this16 = this;
+
+            _.forEach(data, function (row, row_index) {
+                if (row_index >= _this16.blocks.length) {
+                    _this16.addControl(row_index);
                 }
             });
 
             _.forEach(data, function (row, row_index) {
                 _.forEach(row[column_property_name], function (col, col_index) {
-                    _this18.updateBlock(col_index, row_index, col.label);
+                    _this16.updateBlock(col_index, row_index, col.label);
 
-                    if (col_index >= _this18.blocks[row_index].columns.length - 1) {
+                    if (col_index >= _this16.blocks[row_index].columns.length - 1) {
                         var label = _.has(col, 'label') ? col.label : "";
                         var lines = _.has(col, 'join') ? col.join : [];
-                        _this18.addBlock(col_index, row_index, label, lines);
+                        _this16.addBlock(col_index, row_index, label, lines);
                     }
                 });
             });
@@ -1281,4 +1242,4 @@ exports.default = AngularSvgNodesController;
 
 
 AngularSvgNodesController.$inject = ['$scope'];
-//# sourceMappingURL=sourcemaps/angular-svg-nodes-controller.js.map
+//# sourceMappingURL=sourcemaps/angular-svg-nodes-controller-old.js.map

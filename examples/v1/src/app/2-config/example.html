@@ -1,0 +1,33 @@
+<div class="card">
+    <div class="card-block">
+        <p>In this example we configure how the SVG Nodes component looks and behaves.</p>
+        <p>We are providing it with the following settings:</p>
+        <dl class="dl-horizontal row">
+            <dt class="col-sm-4">block_width:</dt><dd class="col-sm-8">40</dd>
+            <dt class="col-sm-4">block_height:</dt><dd class="col-sm-8">60</dd>
+            <dt class="col-sm-4">col_spacing:</dt><dd class="col-sm-8">5</dd>
+            <dt class="col-sm-4">disable_control_nodes:</dt><dd class="col-sm-8">true</dd>
+            <dt class="col-sm-4">initial_grid_cols:</dt><dd class="col-sm-8">8</dd>
+            <dt class="col-sm-4">initial_grid_rows:</dt><dd class="col-sm-8">2</dd>
+            <dt class="col-sm-4">label_spacing:</dt><dd class="col-sm-8">20</dd>
+            <dt class="col-sm-4">max_viewport_width_increase:</dt><dd class="col-sm-8">200</dd>
+            <dt class="col-sm-4">max_viewport_height_increase:</dt><dd class="col-sm-8">200</dd>
+            <dt class="col-sm-4">row_spacing:</dt><dd class="col-sm-8">15</dd>
+        </dl>
+    </div>
+    <div class="card-block noselect">
+        <angular-svg-nodes initial-state="::Example.svg_nodes_initial_state"
+                           block-width="::Example.svg_nodes_config.block_width"
+                           block-height="::Example.svg_nodes_config.block_height"
+                           col-spacing="::Example.svg_nodes_config.col_spacing"
+                           disable-control-nodes="::Example.svg_nodes_config.disable_control_nodes"
+                           initial-grid-cols="::Example.svg_nodes_config.initial_grid_cols"
+                           initial-grid-rows="::Example.svg_nodes_config.initial_grid_rows"
+                           label-spacing="::Example.svg_nodes_config.label_spacing"
+                           max-viewport-width-increase="::Example.svg_nodes_config.max_viewport_width_increase"
+                           max-viewport-height-increase="::Example.svg_nodes_config.max_viewport_height_increase"
+                           row-spacing="::Example.svg_nodes_config.row_spacing"
+        ></angular-svg-nodes>
+
+    </div>
+</div>

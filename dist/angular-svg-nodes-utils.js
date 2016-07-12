@@ -7,13 +7,13 @@ exports.getCoords = getCoords;
 
 var _angularSvgNodesSettings = require("./angular-svg-nodes-settings");
 
-function getCoords(col_index, row_index, position) {
+function getCoords(col_index, row_index, position, config) {
 
-    var total_width = _angularSvgNodesSettings.BLOCK_WIDTH + _angularSvgNodesSettings.COL_SPACING;
-    var total_height = _angularSvgNodesSettings.BLOCK_HEIGHT + _angularSvgNodesSettings.ROW_SPACING;
+    var _total_width = config.block_width + config.col_spacing;
+    var _total_height = config.block_height + config.row_spacing;
 
-    var x = (col_index + 1) * total_width - total_width;
-    var y = (row_index + 1) * total_height - total_height;
+    var x = (col_index + 1) * _total_width - _total_width;
+    var y = (row_index + 1) * _total_height - _total_height;
 
     var result = null;
 
@@ -23,19 +23,19 @@ function getCoords(col_index, row_index, position) {
             break;
 
         case _angularSvgNodesSettings.BLOCK_TOP:
-            x += _angularSvgNodesSettings.BLOCK_WIDTH / 2;
+            x += config.block_width / 2;
             result = [x, y];
             break;
 
         case _angularSvgNodesSettings.BLOCK_CENTER:
-            x += _angularSvgNodesSettings.BLOCK_WIDTH / 2;
-            y += _angularSvgNodesSettings.BLOCK_HEIGHT / 2;
+            x += config.block_width / 2;
+            y += config.block_height / 2;
             result = [x, y];
             break;
 
         case _angularSvgNodesSettings.BLOCK_BOTTOM:
-            x += _angularSvgNodesSettings.BLOCK_WIDTH / 2;
-            y += _angularSvgNodesSettings.BLOCK_HEIGHT;
+            x += config.block_width / 2;
+            y += config.block_height;
             result = [x, y];
             break;
     }

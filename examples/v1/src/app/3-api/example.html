@@ -1,0 +1,121 @@
+<div class="card">
+    <div class="card-block">
+
+        <p>In this example we manipulate the SVG Nodes component externally using the following exposed API methods.</p>
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>method</th>
+                <th>params</th>
+                <th>description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th scope="row">addRow</th>
+                <td>label</td>
+                <td>Adds a new row with one node and the given label.</td>
+            </tr>
+            <tr>
+                <th scope="row">setNodeLabel</th>
+                <td>row_index, col_index, label</td>
+                <td>Sets the label for the targeted node</td>
+            </tr>
+            <tr>
+                <th scope="row">setNodeHighlight</th>
+                <td>row_index, col_index, label</td>
+                <td>Add/removes the class 'highlight' to the target node</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="card-block">
+
+        <div class="row">
+            <div class="col-sm-4">
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <button class="btn btn-primary" ng-click="Example.addRows()">Add Row</button>
+                    </div>
+                </div><!-- .row -->
+
+                <br/>
+                <hr/>
+                <br/>
+
+                <div class="row">
+                    <div class="col-sm-12"><b>Set Node Label</b></div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-4">row</div>
+                    <div class="col-sm-8">
+                        <input type="range" min="0" max="4" step="1" ng-model="Example.label_row_index"> {{ Example.label_row_index }}
+                    </div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-4">column</div>
+                    <div class="col-sm-8">
+                        <input type="range" min="0" max="4" step="1" ng-model="Example.label_col_index"> {{ Example.label_col_index }}
+                    </div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-4">label</div>
+                    <div class="col-sm-8"><input type="text" ng-model="Example.label"></div>
+                </div><!-- .row -->
+
+                <br/>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <button class="btn btn-primary" ng-click="Example.setNodeLabel()">Set Node Label</button>
+                    </div>
+                </div><!-- .row -->
+
+                <br/>
+                <hr/>
+                <br/>
+
+                <div class="row">
+                    <div class="col-sm-12"><b>Set Node Highlight</b></div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-4">row</div>
+                    <div class="col-sm-8">
+                        <input type="range" min="0" max="4" step="1" ng-model="Example.highlight_row_index"> {{ Example.highlight_row_index }}
+                    </div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-4">column</div>
+                    <div class="col-sm-8">
+                        <input type="range" min="0" max="4" step="1" ng-model="Example.highlight_col_index"> {{ Example.highlight_col_index }}
+                    </div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-4">highlight</div>
+                    <div class="col-sm-8"><input type="checkbox" ng-model="Example.should_highlight"></div>
+                </div><!-- .row -->
+
+                <br/>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <button class="btn btn-primary" ng-click="Example.setNodeHighlight()">Set Node Highlight</button>
+                    </div>
+                </div><!-- .row -->
+
+            </div>
+            <div class="col-sm-8 noselect">
+
+                <angular-svg-nodes api="::Example.svg_nodes_api"
+                                   initial-state="::Example.svg_nodes_initial_state"
+                ></angular-svg-nodes>
+
+            </div>
+        </div>
+
+
+
+    </div>
+</div>

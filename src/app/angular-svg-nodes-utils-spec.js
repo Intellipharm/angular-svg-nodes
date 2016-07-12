@@ -8,7 +8,6 @@ describe("AngualrSvgNodes Utils", () => {
             let _r = Utils.getCoords(0, 0, 0);
             expect(_r).toEqual([ 0, 0 ]);
         });
-    
-    });
 
+    });
 });

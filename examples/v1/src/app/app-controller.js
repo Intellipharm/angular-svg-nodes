@@ -5,15 +5,14 @@ export default class AppController {
         this.name = "AngularSvgNodes";
         this.heading = "Examples";
         this.nav = {
-            simple: "Simple",
-            // empty: "Empty",
-            // external_manipulation: "External Manipulation",
-            // events: "Events",
-            // handling_controls_externally: "Handling Controls Externally"
+            initial_state: "Initial State",
+            config: "Config",
+            api: "API",
+            callbacks: "Callbacks"
         };
 
         $rootScope.$on('$stateChangeSuccess', (event, to_state) => {
-            this.heading = this.nav[ to_state.name ] + " Example";
+            this.heading = this.nav[ to_state.name ];
         });
     }
 }

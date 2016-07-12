@@ -4,12 +4,21 @@ import _template from "./angular-svg-nodes.html!text";
 export default {
     restrict: 'E',
     scope: {
-        rows:               "=?",
-        onNodeMouseDown:    "&nodeMouseDown",
-        onNodeMouseUp:      "&nodeMouseUp",
-        onLineAdd:          "&lineAdd",
-        onLineRemove:       "&lineRemove",
-        api:                "=?"
+        api:                                    "<?",
+        config_block_width:                     "<?blockWidth",
+        config_block_height:                    "<?blockHeight",
+        config_col_spacing:                     "<?colSpacing",
+        config_disable_control_nodes:           "<?disableControlNodes",
+        config_initial_grid_cols:               "<?initialGridCols",
+        config_initial_grid_rows:               "<?initialGridRows",
+        config_label_spacing:                   "<?labelSpacing",
+        config_max_viewport_width_increase:     "<?maxViewportWidthIncrease",
+        config_max_viewport_height_increase:    "<?maxViewportHeightIncrease",
+        config_row_spacing:                     "<?rowSpacing",
+        initial_state:                          "<?initialState",
+        onNodeSelectionCallback:                "&onNodeSelection",
+        onNodeConnectionChangeCallback:         "&onNodeConnectionChange",
+        onNodeAddedCallback:                    "&onNodeAdded"
     },
     controller:     _controller,
     controllerAs:   "AngularSvgNodes",

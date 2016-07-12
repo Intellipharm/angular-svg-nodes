@@ -1,11 +1,11 @@
 module.exports = {
     files: [],
-    port: 9010,
+    port: 9020,
     server: {
         baseDir: "src",
         index: "index.html"
     },
     ui: {
-        port: 9011
+        port: 9021
     }
 };
