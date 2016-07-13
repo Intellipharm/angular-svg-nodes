@@ -124,7 +124,7 @@ _config.proxies = {
 // karma config : files
 //-------------------------
 
-var sut_dir = "app/";
+var sut_dir = "app/**/";
 
 _config.jspm.loadFiles = [ sut_dir + "*spec.js" ]; // load spec
 _config.jspm.serveFiles = [ sut_dir + "!(*spec).js" ]; // serve js

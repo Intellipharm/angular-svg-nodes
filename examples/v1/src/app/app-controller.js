@@ -8,7 +8,8 @@ export default class AppController {
             initial_state: "Initial State",
             config: "Config",
             api: "API",
-            callbacks: "Callbacks"
+            callbacks: "Callbacks",
+            transformer: "Transformer"
         };
 
         $rootScope.$on('$stateChangeSuccess', (event, to_state) => {

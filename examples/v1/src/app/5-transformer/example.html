@@ -1,0 +1,21 @@
+<div class="card">
+    <div class="card-block">
+
+        <p>In this example we use transformer service to prepare database data for use as SVG Node initial state data.</p>
+
+        <h4>Database Data:</h4>
+        <p>{{ Example.database_data | json }}</p>
+
+        <h4>Transformed Database Data (passed to SVG Node as initial-state param):</h4>
+        <p>{{ Example.svg_nodes_initial_state | json }}</p>
+
+    </div>
+
+    <hr/>
+
+    <div class="card-block">
+
+        <angular-svg-nodes initial-state="::Example.svg_nodes_initial_state"></angular-svg-nodes>
+
+    </div>
+</div>

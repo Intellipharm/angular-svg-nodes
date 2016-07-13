@@ -1,8 +1,8 @@
 import angular from 'angular';
-import 'angular-svg-nodes';
 import 'lodash';
 import router from 'oclazyload-systemjs-router';
 import 'tweenmax';
+import * as AngularSvgNodes from 'angular-svg-nodes';
 
 import 'bootstrap/css/bootstrap.css!';
 import './app.css!';
@@ -16,7 +16,7 @@ import * as Router from './app-router';
 // module
 
 let _module = angular.module('AngularSVGNodesExamples', [
-    'AngularSvgNodes'
+    AngularSvgNodes.module.name
 ]);
 
 _module.controller('AppController', _controller);

@@ -6,7 +6,8 @@ import example_api_template from './3-api/example.html!text';
 import example_api_controller from './3-api/example-controller';
 import example_callbacks_template from './4-callbacks/example.html!text';
 import example_callbacks_controller from './4-callbacks/example-controller';
-
+import example_transformer_template from './5-transformer/example.html!text';
+import example_transformer_controller from './5-transformer/example-controller';
 
 export function configureRoutes($stateProvider) {
 	$stateProvider
@@ -32,6 +33,12 @@ export function configureRoutes($stateProvider) {
 	        url: '/callbacks',
 			template: example_callbacks_template,
 			controller: example_callbacks_controller,
+			controllerAs: 'Example'
+		})
+		.state('transformer', {
+	        url: '/transformer',
+			template: example_transformer_template,
+			controller: example_transformer_controller,
 			controllerAs: 'Example'
 		})
     ;

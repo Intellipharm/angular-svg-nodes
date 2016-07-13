@@ -35,16 +35,45 @@ jspm install github:Intellipharm/angular-svg-nodes
 
 JavaScript
 ```
-import AngularSvgNodes from 'angular-svg-nodes';
+import * as AngularSvgNodes from 'angular-svg-nodes';
 
 var module = angular.module('YourApp', [
-    AngularSvgNodes.name
+    AngularSvgNodes.module.name
 ]);
 ```
 
 HTML
 ```
 <angular-svg-nodes initial-state="::App.data_array"></angular-svg-nodes>
+```
+
+#### Transformer
+
+To create initial-state data from database, use the transformIn method exposed via AngularSvgNodes.Transformer.
+
+JavaScript
+```
+import * as AngularSvgNodes from 'angular-svg-nodes';
+
+let _initial_state = AngularSvgNodes.Transformer.transformIn( my_compatible_database_data );
+```
+
+#### Transformer Config
+
+To configure transformer, pass it an instance of AngularSvgNodes.TransformerConfig.
+
+JavaScript
+```
+import * as AngularSvgNodes from 'angular-svg-nodes';
+
+let _transformer_config = new AngularSvgNodes.TransformerConfig({
+    row_index_field: 'my_row_index',
+    col_index_field: 'my_column_index',
+    label_field: 'my_label',
+    connection_field: 'my_connections'
+});
+let _initial_state = AngularSvgNodes.Transformer.transformIn( my_compatible_database_data, _transformer_config );
+```
 
 ## Examples
 
@@ -53,4 +82,11 @@ for complete examples:
 ```
 cd examples/v1
 npm run run
+```
+
+## Tests
+
+to run tests:
+```
+gulp tdd
 ```

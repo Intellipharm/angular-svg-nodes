@@ -31,7 +31,7 @@ gulp.task( 'run', [	'build' ], function ( callback ) {
 // test
 //---------------------------------
 
-gulp.task( 'test', [], function ( callback ) {
+gulp.task( 'tdd', [], function ( callback ) {
 	return runSequence(
 		[ 'lint-js', 'code-style-js' ],
 		'unit-test-js-watch',

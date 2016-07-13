@@ -3,6 +3,58 @@ export default class AppController {
 
         this.svg_nodes_api = {};
 
+        this.data = [
+            {
+                id: 1,
+                label: "A2",
+                col_index: 1,
+                row_index: 0,
+                connections: []
+            },
+            {
+                id: 2,
+                label: "A1",
+                col_index: 0,
+                row_index: 0,
+                connections: [ 5 ]
+            },
+            {
+                id: 4,
+                label: "A3",
+                col_index: 0,
+                row_index: 0,
+                connections: [ 7, 5 ]
+            },
+            {
+                id: 5,
+                label: "B1",
+                col_index: 1,
+                row_index: 1,
+                connections: []
+            },
+            {
+                id: 6,
+                label: "B2",
+                col_index: 1,
+                row_index: 1,
+                connections: [ 8 ]
+            },
+            {
+                id: 7,
+                label: "B3",
+                col_index: 2,
+                row_index: 1,
+                connections: []
+            },
+            {
+                id: 8,
+                label: "C1",
+                col_index: 0,
+                row_index: 2,
+                connections: []
+            }
+        ];
+
         this.svg_nodes_initial_state = [
             {columns: [
                 {join: [0], label: "A1"},
@@ -11,8 +63,11 @@ export default class AppController {
             ]},
             {columns: [
                 {join: [], label: "B1"},
-                {join: [], label: "B2"},
+                {join: [0], label: "B2"},
                 {join: [], label: "B3"}
+            ]},
+            {columns: [
+                {join: [], label: "C1"}
             ]}
         ];
 
