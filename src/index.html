@@ -9,6 +9,9 @@
     <button ng-click="App.addRows()">Add Rows</button>
     <button ng-click="App.setNodeLabel()">Set Node Label</button>
     <button ng-click="App.setNodeHighlight()">Set Node Highlight</button>
+    <button ng-click="App.removeNode()">Remove Node</button>
+    <button ng-click="App.insertNode()">Insert Node</button>
+    <button ng-click="App.updateNodeConnections()">Update Node Connections</button>
 
 </div>
 
@@ -16,11 +19,14 @@
 
 <div>
 
-    {{ App.data }}
+    {{ App.svg_nodes_initial_state | json }}
 
     <angular-svg-nodes api="::App.svg_nodes_api"
-                       initial-state="::App.svg_nodes_initial_state"
+                       initial-state="App.svg_nodes_initial_state"
+                       highlight-node-on="::App.svg_nodes_config.highlight_node_on"
+                       new-node-label="::App.svg_nodes_config.new_node_label"
                        on-node-selection="App.onNodeSelection(row_index, col_index)"
+                       on-node-deselection="App.onNodeDeselection(row_index, col_index)"
                        on-node-connection-change="App.onNodeConnectionChange(source_row_index, source_col_index, target_row_index, target_col_index, is_connected)"
                        on-node-added="App.onNodeAdded(row_index, col_index)"
     ></angular-svg-nodes>

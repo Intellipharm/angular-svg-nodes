@@ -24,6 +24,9 @@ export default class Controller {
         this.highlight_row_index = 0;
         this.highlight_col_index = 0;
         this.should_highlight = true;
+
+        this.remove_row_index = 0;
+        this.remove_col_index = 0;
     }
 
     addRows() {
@@ -36,5 +39,9 @@ export default class Controller {
 
     setNodeHighlight() {
         this.svg_nodes_api.setNodeHighlight(this.highlight_row_index, this.highlight_col_index, this.should_highlight);
+    }
+
+    removeNode() {
+        this.svg_nodes_api.removeNode(this.remove_row_index, this.remove_col_index);
     }
 }

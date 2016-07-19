@@ -5,13 +5,13 @@ export default class Controller {
                 {join: [0], label: "A1"},
                 {join: [], label: "A2"},
                 {join: [2,0], label: "A3"},
-                {join: [], label: "A4"},
-                {join: [], label: "A5"},
+                {join: [], label: "A4", highlight: true},
+                {join: [], label: "A5", highlight: true},
                 {join: [], label: "A6"}
             ]},
             {columns: [
                 {join: [], label: "B1"},
-                {join: [0, 2], label: "B2"},
+                {join: [0, 2], label: "B2", selected: true},
                 {join: [], label: "B3"}
             ]},
             {columns: [

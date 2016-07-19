@@ -8,6 +8,8 @@ import example_callbacks_template from './4-callbacks/example.html!text';
 import example_callbacks_controller from './4-callbacks/example-controller';
 import example_transformer_template from './5-transformer/example.html!text';
 import example_transformer_controller from './5-transformer/example-controller';
+import example_reinitialisation_template from './6-reinitialisation/example.html!text';
+import example_reinitialisation_controller from './6-reinitialisation/example-controller';
 
 export function configureRoutes($stateProvider) {
 	$stateProvider
@@ -39,6 +41,12 @@ export function configureRoutes($stateProvider) {
 	        url: '/transformer',
 			template: example_transformer_template,
 			controller: example_transformer_controller,
+			controllerAs: 'Example'
+		})
+		.state('reinitialisation', {
+	        url: '/reinitialisation',
+			template: example_reinitialisation_template,
+			controller: example_reinitialisation_controller,
 			controllerAs: 'Example'
 		})
     ;

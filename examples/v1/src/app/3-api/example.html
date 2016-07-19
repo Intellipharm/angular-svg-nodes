@@ -105,10 +105,43 @@
                     </div>
                 </div><!-- .row -->
 
+                <br/>
+                <hr/>
+                <br/>
+
+                <div class="row">
+                    <div class="col-sm-12"><b>Remove Node</b></div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-4">row</div>
+                    <div class="col-sm-8">
+                        <input type="range" min="0" max="4" step="1" ng-model="Example.highlight_row_index"> {{ Example.remove_row_index }}
+                    </div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-4">column</div>
+                    <div class="col-sm-8">
+                        <input type="range" min="0" max="4" step="1" ng-model="Example.highlight_col_index"> {{ Example.remove_col_index }}
+                    </div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-4">highlight</div>
+                    <div class="col-sm-8"><input type="checkbox" ng-model="Example.should_highlight"></div>
+                </div><!-- .row -->
+
+                <br/>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <button class="btn btn-primary" ng-click="Example.removeNode()">Remove Node</button>
+                    </div>
+                </div><!-- .row -->
+
             </div>
             <div class="col-sm-8 noselect">
 
-                <angular-svg-nodes api="::Example.svg_nodes_api"
+                <angular-svg-nodes api="Example.svg_nodes_api"
+                                   highlight-node-on="select"
                                    initial-state="::Example.svg_nodes_initial_state"
                 ></angular-svg-nodes>
 

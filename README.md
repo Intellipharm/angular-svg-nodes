@@ -81,6 +81,7 @@ for complete examples:
 
 ```
 cd examples/v1
+npm install
 npm run run
 ```
 

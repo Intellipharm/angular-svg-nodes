@@ -1,5 +1,5 @@
 export default class AppController {
-    constructor () {
+    constructor ($timeout) {
 
         this.svg_nodes_api = {};
 
@@ -55,21 +55,27 @@ export default class AppController {
             }
         ];
 
-        this.svg_nodes_initial_state = [
-            {columns: [
-                {join: [0], label: "A1"},
-                {join: [], label: "A2"},
-                {join: [2,0], label: "A3"}
-            ]},
-            {columns: [
-                {join: [], label: "B1"},
-                {join: [0], label: "B2"},
-                {join: [], label: "B3"}
-            ]},
-            {columns: [
-                {join: [], label: "C1"}
-            ]}
-        ];
+        this.svg_nodes_initial_state = [];
+
+        $timeout(() => {
+
+            this.svg_nodes_initial_state = [
+                {columns: [
+                    {join: [0], label: "A1", highlight: true},
+                    {join: [], label: "A2", selected: true},
+                    {join: [2,0], label: "A3"}
+                ]},
+                {columns: [
+                    {join: [], label: "B1"},
+                    {join: [0], label: "B2"},
+                    {join: [], label: "B3"}
+                ]},
+                {columns: [
+                    {join: [], label: "C1"}
+                ]}
+            ];
+
+        }, 1);
 
         this.svg_nodes_config = {
             block_width:                    40,
@@ -81,18 +87,33 @@ export default class AppController {
             label_spacing:                  20,
             max_viewport_width_increase:    200,
             max_viewport_height_increase:   200,
-            row_spacing:                    15
+            // new_node_label:                 "ABC",
+            new_node_label:                 (row_index, col_index) => {
+                return row_index % 2 ? "New Action" : "New Trigger"
+            },
+            row_spacing:                    15,
+            highlight_node_on:              [ "deselect", "add" ] // select | deselect | add
         };
     }
 
     /**
-     * onNodeSelectiond
-     *
+     * onNodeSelection
+     * 
      * @param row_index
      * @param col_index
      */
     onNodeSelection(row_index, col_index) {
         console.log("onNodeSelection", row_index, col_index);
+    }
+
+    /**
+     * onNodeDeselection
+     *
+     * @param row_index
+     * @param col_index
+     */
+    onNodeDeselection(row_index, col_index) {
+        console.log("onNodeDeselection", row_index, col_index);
     }
 
     /**
@@ -130,4 +151,18 @@ export default class AppController {
     setNodeHighlight() {
         this.svg_nodes_api.setNodeHighlight(0, 1, true);
     }
+
+    removeNode() {
+        this.svg_nodes_api.removeNode(1, 1);
+    }
+
+    insertNode() {
+        this.svg_nodes_api.insertNode(1, 1, "ABC", [0]);
+    }
+
+    updateNodeConnections() {
+        this.svg_nodes_api.updateNodeConnections(0, 1, [0, 1]);
+    }
 }
+
+AppController.$inject = ['$timeout'];

@@ -1,7 +1,8 @@
 import angular from 'angular';
-import AngularSvgNodes from '../app/angular-svg-nodes';
 import 'lodash';
 import 'tweenmax';
+
+import * as AngularSvgNodes from '../app/angular-svg-nodes';
 
 import './app.css!'
 import './angular-svg-nodes.css!';
@@ -13,7 +14,7 @@ import _controller from './app-controller';
 // module
 
 let _module = angular.module('AngularSVGNodesDev', [
-    AngularSvgNodes.name
+    AngularSvgNodes.module.name
 ]);
 
 _module.controller('AppController', _controller);

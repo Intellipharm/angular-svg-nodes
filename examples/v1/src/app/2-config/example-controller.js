@@ -28,12 +28,14 @@ export default class Controller {
             block_height:                   60,
             col_spacing:                    5,
             disable_control_nodes:          true,
+            row_spacing:                    15,
             initial_grid_cols:              8,
             initial_grid_rows:              4,
             label_spacing:                  20,
             max_viewport_width_increase:    200,
             max_viewport_height_increase:   200,
-            row_spacing:                    15
+            new_node_label:                 "XXX",
+            highlight_node_on:              [ "select", "add" ], // select | deselect | add
         };
     }
 }

@@ -15,17 +15,22 @@
             <tr>
                 <th scope="row">on-node-selection</th>
                 <td>row_index, col_index</td>
-                <td>Called whenever a node is selected.</td>
+                <td>Called whenever a node is selected (on mouse down).</td>
+            </tr>
+            <tr>
+                <th scope="row">on-node-deselection</th>
+                <td>row_index, col_index</td>
+                <td>Called whenever a node is deselected (on mouse up). Not called when on-node-connection-change has just been called.</td>
             </tr>
             <tr>
                 <th scope="row">on-node-connection-change</th>
                 <td>source_row_index, source_col_index, target_row_index, target_col_index, is_connected</td>
-                <td>Called when a connection between two nodes is added or removed.</td>
+                <td>Called when a connection between two nodes is added or removed. Takes</td>
             </tr>
             <tr>
                 <th scope="row">on-node-added</th>
                 <td>row_index, col_index</td>
-                <td>Called when a new node is added.</td>
+                <td>Called when a new node is added. Not called during initialisation.</td>
             </tr>
             </tbody>
         </table>
@@ -49,6 +54,22 @@
                 <div class="row">
                     <div class="col-sm-6">col_index</div>
                     <div class="col-sm-6">{{ Example.selection_col_index }}</div>
+                </div><!-- .row -->
+
+                <br/>
+                <hr/>
+                <br/>
+
+                <div class="row">
+                    <div class="col-sm-12"><b>on-node-deselection</b></div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-6">row_index</div>
+                    <div class="col-sm-6">{{ Example.deselection_row_index }}</div>
+                </div><!-- .row -->
+                <div class="row">
+                    <div class="col-sm-6">col_index</div>
+                    <div class="col-sm-6">{{ Example.deselection_col_index }}</div>
                 </div><!-- .row -->
 
                 <br/>
@@ -98,8 +119,10 @@
             </div>
             <div class="col-sm-8 noselect">
 
-                <angular-svg-nodes initial-state="::Example.svg_nodes_initial_state"
+                <angular-svg-nodes initial-state="Example.svg_nodes_initial_state"
+                                   highlight-node-on="deselect"
                                    on-node-selection="Example.onNodeSelection(row_index, col_index)"
+                                   on-node-deselection="Example.onNodeDeselection(row_index, col_index)"
                                    on-node-connection-change="Example.onNodeConnectionChange(source_row_index, source_col_index, target_row_index, target_col_index, is_connected)"
                                    on-node-added="Example.onNodeAdded(row_index, col_index)"
                 ></angular-svg-nodes>
