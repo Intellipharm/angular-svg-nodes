@@ -27,6 +27,14 @@ export default class Controller {
 
         this.remove_row_index = 0;
         this.remove_col_index = 0;
+
+        this.insert_row_index = 0;
+        this.insert_col_index = 0;
+        this.insert_label = "NEW NAME";
+
+        this.connect_source_row_index = 0;
+        this.connect_source_col_index = 0;
+        this.connect_target_col_index = 0;
     }
 
     addRows() {
@@ -34,14 +42,27 @@ export default class Controller {
     }
 
     setNodeLabel() {
-        this.svg_nodes_api.setNodeLabel(this.label_row_index, this.label_col_index, this.label);
+        this.svg_nodes_api.setNodeLabel(_.parseInt(this.label_row_index), _.parseInt(this.label_col_index), this.label);
     }
 
     setNodeHighlight() {
-        this.svg_nodes_api.setNodeHighlight(this.highlight_row_index, this.highlight_col_index, this.should_highlight);
+        this.svg_nodes_api.setNodeHighlight(_.parseInt(this.highlight_row_index), _.parseInt(this.highlight_col_index), this.should_highlight);
     }
 
     removeNode() {
-        this.svg_nodes_api.removeNode(this.remove_row_index, this.remove_col_index);
+        this.svg_nodes_api.removeNode(_.parseInt(this.remove_row_index), _.parseInt(this.remove_col_index));
+    }
+
+    insertNode() {
+        let _connections = [];
+        this.svg_nodes_api.insertNode(_.parseInt(this.insert_row_index), _.parseInt(this.insert_col_index), this.insert_label, _connections);
+    }
+
+    connectNodes() {
+        let _source_row_index = _.parseInt(this.connect_source_row_index);
+        let _source_col_index = _.parseInt(this.connect_source_col_index);
+        let _target_col_index = _.parseInt(this.connect_target_col_index);
+        let _connections = [ _target_col_index ];
+        this.svg_nodes_api.updateNodeConnections(_source_row_index, _source_col_index, _connections);
     }
 }

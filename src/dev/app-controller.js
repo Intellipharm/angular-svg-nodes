@@ -9,7 +9,7 @@ export default class AppController {
                 label: "A2",
                 col_index: 1,
                 row_index: 0,
-                connections: []
+                connections: [ 6 ]
             },
             {
                 id: 2,
@@ -62,7 +62,7 @@ export default class AppController {
             this.svg_nodes_initial_state = [
                 {columns: [
                     {join: [0], label: "A1", highlight: true},
-                    {join: [], label: "A2", selected: true},
+                    {join: [1,2], label: "A2", selected: true},
                     {join: [2,0], label: "A3"}
                 ]},
                 {columns: [
@@ -158,10 +158,11 @@ export default class AppController {
 
     insertNode() {
         this.svg_nodes_api.insertNode(1, 1, "ABC", [0]);
+        this.svg_nodes_api.updateNodeConnections(0, 1, [1]);
     }
 
     updateNodeConnections() {
-        this.svg_nodes_api.updateNodeConnections(0, 1, [0, 1]);
+        this.svg_nodes_api.updateNodeConnections(this.connect_source_row_index, this.connect_source_column_index, [ this.connect_target_column_index ]);
     }
 }
 

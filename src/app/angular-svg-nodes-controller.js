@@ -170,9 +170,12 @@ export default class AngularSvgNodesController {
          * @param label
          */
         this.api.addRow = (label = "") => {
+
             let _row_index = this.blocks.length;
             let _col_index = 0;
+
             this.addBlock(_col_index, _row_index, label, []);
+            this.addControl(_row_index);
         };
 
         /**
@@ -181,8 +184,15 @@ export default class AngularSvgNodesController {
          * @param _row_index
          * @param _col_index
          */
-        this.api.removeNode = (_row_index, _col_index) => {
-            this.removeBlock(_col_index, _row_index);
+        this.api.removeNode = (row_index, col_index) => {
+
+            let _v = this.areApiCoordsValid(row_index, col_index);
+
+            if (!this.areApiCoordsValid(row_index, col_index)) {
+                return;
+            }
+
+            this.removeBlock(col_index, row_index);
         };
 
         /**
@@ -194,6 +204,14 @@ export default class AngularSvgNodesController {
          * @param connections
          */
         this.api.insertNode = (row_index, col_index, label, connections) => {
+
+            if (!this.areApiCoordsValidForInsert(row_index, col_index)) {
+                return;
+            }
+            if (!this.areApiConnectionsValid(row_index - 1, connections)) {
+                return;
+            }
+
             this.insertBlock(col_index, row_index, label, connections);
         };
 
@@ -206,13 +224,20 @@ export default class AngularSvgNodesController {
          */
         this.api.updateNodeConnections = (row_index, col_index, connections) => {
 
+            if (!this.areApiCoordsValid(row_index, col_index)) {
+                return;
+            }
+            if (!this.areApiConnectionsValid(row_index, connections)) {
+                return;
+            }
+
             let _label = this.blocks[row_index].columns[col_index].label;
             let _lines = _.map(this.blocks[row_index].columns[col_index].lines, (line) => {
                 return _.has(line, 'to') ? line.to[0] : line;
             });
-            let _connetions = _.uniq([..._lines, ...connections]);
+            let _connections = _.uniq([..._lines, ...connections]);
 
-            this.updateBlock(col_index, row_index, _label, _connetions);
+            this.updateBlock(col_index, row_index, _label, _connections);
         };
 
         /**
@@ -224,13 +249,7 @@ export default class AngularSvgNodesController {
          */
         this.api.setNodeLabel = (row_index, col_index, label) => {
 
-            if (row_index >= this.blocks.length) {
-                console.error("AngularSvgNodes Error : invalid row index provided to setNodeLabel");
-                return;
-            }
-
-            if (col_index >= this.blocks[row_index].columns.length) {
-                console.error("AngularSvgNodes Error : invalid col index provided to setNodeLabel");
+            if (!this.areApiCoordsValid(row_index, col_index)) {
                 return;
             }
 
@@ -246,18 +265,95 @@ export default class AngularSvgNodesController {
          */
         this.api.setNodeHighlight = (row_index, col_index, value) => {
 
-            if (row_index >= this.blocks.length) {
-                console.error("AngularSvgNodes Error : invalid row index provided to setNodeHighlight");
-                return;
-            }
-
-            if (col_index >= this.blocks[row_index].columns.length) {
-                console.error("AngularSvgNodes Error : invalid col index provided to setNodeHighlight");
+            if (!this.areApiCoordsValid(row_index, col_index)) {
                 return;
             }
 
             this.blocks[row_index].columns[col_index].highlight = value;
         };
+    }
+
+    ////////////////////////////////////////////////
+    //
+    // API : Utils
+    //
+    ////////////////////////////////////////////////
+
+    /**
+     * areApiCoordsValid
+     *
+     * @param row_index
+     * @param col_index
+     * @returns {boolean}
+     */
+    areApiCoordsValid(row_index, col_index) {
+
+        if (row_index >= this.blocks.length) {
+            console.error("AngularSvgNodes Error : invalid row index provided");
+            return false;
+        }
+
+        // controls are nodes too, so check against length - 1
+        if (col_index >= this.blocks[row_index].columns.length - 1) {
+            console.error("AngularSvgNodes Error : invalid column index provided");
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * areApiCoordsValidForInsert
+     *
+     * @param row_index
+     * @param col_index
+     * @returns {boolean}
+     */
+    areApiCoordsValidForInsert(row_index, col_index) {
+
+        if (row_index !== 0 && row_index > this.blocks.length) {
+            console.error("AngularSvgNodes Error : invalid row index provided");
+            return false;
+        }
+
+        // controls are nodes too, so check against length - 1
+        if (col_index !== 0 && col_index > this.blocks[row_index].columns.length - 1) {
+            console.error("AngularSvgNodes Error : invalid column index provided");
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * areApiConnectionsValid
+     *
+     * @param row_index
+     * @param connections
+     * @returns {boolean}
+     */
+    areApiConnectionsValid(row_index, connections) {
+
+        if (_.isEmpty(connections)) {
+            return true;
+        }
+
+        // last row cannot have connections
+        if (row_index === this.blocks.length - 1) {
+            console.error("AngularSvgNodes Error : invalid connections provided");
+            return false;
+        }
+
+        return _.reduce(connections, (result, connection_col_index) => {
+
+            // controls are nodes too, so check against length - 1
+            if (connection_col_index >= this.blocks[row_index + 1].columns.length - 1) {
+                console.error("AngularSvgNodes Error : invalid connections provided");
+                result = false;
+            }
+
+            return result;
+        }, true);
     }
 
     ////////////////////////////////////////////////
@@ -426,6 +522,7 @@ export default class AngularSvgNodesController {
         // external callback
         // ... if connection change callback was not just called
         // ... and connection change is not busy (happens on line remove)
+
         if (!_.isUndefined(this.onNodeDeselectionCallback) && !_is_new_node && !this.was_connection_change_called && !this.is_connection_change_busy) {
             this.onNodeDeselectionCallback({ col_index, row_index });
         }
@@ -995,6 +1092,9 @@ export default class AngularSvgNodesController {
 
             // connect block
             this.setAsConnectedBlock(target_coords);
+
+            // check active
+            this.checkActive();
         }
 
         this.$s.$apply();
@@ -1564,10 +1664,13 @@ export default class AngularSvgNodesController {
      *
      * @param source_coords
      * @param target_coords
+     * @param set_as_busy
      */
-    removeLine(source_coords, target_coords) {
+    removeLine(source_coords, target_coords, set_as_busy) {
 
-        this.is_connection_change_busy = true;
+        if (set_as_busy) {
+            this.is_connection_change_busy = true;
+        }
 
         // get target lock coords
         var target_lock_coords = Utils.getCoords(source_coords[0], source_coords[1], BLOCK_BOTTOM, this.config);
@@ -1611,7 +1714,6 @@ export default class AngularSvgNodesController {
      * @param selection
      */
     removeUnconnectedLines(selection) {
-
         _.forEach(this.blocks[selection[0][1]].columns[selection[0][0]].lines, (line) => {
             if (!line.connected) {
                 this.removeLine(this.selection[0], this.selection[1]);
@@ -1691,10 +1793,6 @@ export default class AngularSvgNodesController {
      * @returns {boolean}
      */
     addBlock(col_index, row_index, label, lines, data) {
-
-        if (row_index > this.blocks.length) {
-            throw new Error("Invalid row index");
-        }
 
         // create row if it doesn't exist
         if (row_index === this.blocks.length) {
@@ -1860,17 +1958,18 @@ export default class AngularSvgNodesController {
      */
     removeBlock(col_index, row_index) {
 
-        if (row_index >= this.blocks.length) {
-            return true;
-        }
-
-        if (col_index >= this.blocks[row_index].columns.length - 1) {
-            return true;
-        }
+        // if (row_index >= this.blocks.length) {
+        //     return true;
+        // }
+        //
+        // if (col_index >= this.blocks[row_index].columns.length - 1) {
+        //     return true;
+        // }
 
         // remove lines
+        let _set_as_busy = false;
         _.forEach(this.blocks[row_index].columns[col_index].lines, (line) => {
-            this.removeLine(line.from, line.to);
+            this.removeLine(line.from, line.to, _set_as_busy);
         });
 
         // remove block
@@ -1894,12 +1993,22 @@ export default class AngularSvgNodesController {
         // update parents
         if (row_index !== 0) {
             var parent_row_index = row_index - 1;
+            let remove_lines = [];
+
             _.forEach(this.blocks[parent_row_index].columns, (column, parent_col_index) => {
                 _.forEach(column.lines, (line, line_index) => {
 
                     // if parent connects to this node
                     if (_.isEqual(line.to, [col_index, row_index])) {
-                        column.lines.splice(line_index, 1);
+
+                        // column.lines.splice(line_index, 1);
+
+                        // mark lines for removal
+                        remove_lines.push({
+                            row_index: parent_row_index,
+                            col_index: parent_col_index,
+                            line_index: line_index
+                        });
 
                         // update data
                         //this.state[parent_row_index].columns[parent_col_index].join.splice(line_index, 1);
@@ -1924,6 +2033,11 @@ export default class AngularSvgNodesController {
                         line.y2 = target_lock_coords[1];
                     }
                 });
+            });
+
+            // remove lines
+            _.map(remove_lines, (data) => {
+                this.blocks[data.row_index].columns[data.col_index].lines.splice(data.line_index, 1);
             });
         }
 
@@ -1952,13 +2066,13 @@ export default class AngularSvgNodesController {
      */
     insertBlock(col_index, row_index, label, joins) {
 
-        if (row_index >= this.blocks.length) {
-            return true;
-        }
-
-        if (col_index > this.blocks[row_index].columns.length - 1) {
-            return true;
-        }
+        // if (row_index >= this.blocks.length) {
+        //     return true;
+        // }
+        //
+        // if (col_index > this.blocks[row_index].columns.length - 1) {
+        //     return true;
+        // }
 
         // get top left coords
         var top_left_coords = Utils.getCoords(col_index, row_index, BLOCK_TOP_LEFT, this.config);
