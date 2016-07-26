@@ -2,10 +2,10 @@ import _ from "lodash";
 
 // local: constants
 import {
-    BLOCK_TOP_LEFT,
-    BLOCK_TOP,
-    BLOCK_CENTER,
-    BLOCK_BOTTOM
+    NODE_TOP_LEFT,
+    NODE_TOP,
+    NODE_CENTER,
+    NODE_BOTTOM
 } from "./angular-svg-nodes-settings";
 
 /**
@@ -19,29 +19,29 @@ import {
  */
 export function getNodeCoords(row_index, col_index, position, config) {
 
-    let _total_width = config.block_width + config.col_spacing;
-    let _total_height = config.block_height + config.row_spacing;
+    let _total_width = config.node_width + config.col_spacing;
+    let _total_height = config.node_height + config.row_spacing;
 
     let x = ( col_index + 1 ) * _total_width - _total_width;
     let y = ( row_index + 1 ) * _total_height - _total_height;
 
     switch (position) {
         default:
-        case BLOCK_TOP_LEFT:
+        case NODE_TOP_LEFT:
             break;
 
-        case BLOCK_TOP:
-            x += config.block_width / 2;
+        case NODE_TOP:
+            x += config.node_width / 2;
             break;
 
-        case BLOCK_CENTER:
-            x += config.block_width / 2;
-            y += config.block_height / 2;
+        case NODE_CENTER:
+            x += config.node_width / 2;
+            y += config.node_height / 2;
             break;
 
-        case BLOCK_BOTTOM:
-            x += config.block_width / 2;
-            y += config.block_height;
+        case NODE_BOTTOM:
+            x += config.node_width / 2;
+            y += config.node_height;
             break;
     }
 

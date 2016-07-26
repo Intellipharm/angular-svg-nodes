@@ -18,8 +18,8 @@ exports.default = {
     restrict: 'E',
     scope: {
         api: "<?",
-        config_block_width: "<?blockWidth",
-        config_block_height: "<?blockHeight",
+        config_node_width: "<?nodeWidth",
+        config_node_height: "<?nodeHeight",
         config_col_spacing: "<?colSpacing",
         config_disable_control_nodes: "<?disableControlNodes",
         config_highlight_node_on: "<?highlightNodeOn",
@@ -47,7 +47,6 @@ exports.default = {
         element.addClass('angular-svg-nodes');
 
         element[0].addEventListener("mouseup", controller.onRootDeselect.bind(controller));
-
         element[0].addEventListener("mouseleave", controller.onRootMouseLeave.bind(controller));
     }
 };

@@ -1,8 +1,8 @@
 // helpers
-export const BLOCK_TOP_LEFT                 = 0;
-export const BLOCK_TOP                      = 1;
-export const BLOCK_CENTER                   = 2;
-export const BLOCK_BOTTOM                   = 3;
+export const NODE_TOP_LEFT                 = 0;
+export const NODE_TOP                      = 1;
+export const NODE_CENTER                   = 2;
+export const NODE_BOTTOM                   = 3;
 export const HIGHLIGHT_NODE_ON_SELECT       = "select";
 export const HIGHLIGHT_NODE_ON_DESELECT     = "deselect";
 export const HIGHLIGHT_NODE_ON_ADD          = "add";
@@ -11,8 +11,8 @@ export const HIGHLIGHT_NODE_ON_ADD          = "add";
 export const DEFAULT_NEW_NODE_LABEL                 = "New Node";
 export const DEFAULT_INITIAL_GRID_COLS              = 4;
 export const DEFAULT_INITIAL_GRID_ROWS              = 2;
-export const DEFAULT_BLOCK_WIDTH                    = 80;
-export const DEFAULT_BLOCK_HEIGHT                   = 80;
+export const DEFAULT_NODE_WIDTH                    = 80;
+export const DEFAULT_NODE_HEIGHT                   = 80;
 export const DEFAULT_COL_SPACING                    = 20;
 export const DEFAULT_ROW_SPACING                    = 40;
 export const DEFAULT_LABEL_SPACING                  = 5;

@@ -29,11 +29,11 @@ var _svgVboxDirective = require("./svg-box/svg-vbox-directive");
 
 var _svgVboxDirective2 = _interopRequireDefault(_svgVboxDirective);
 
-var _transformer = require("./transformer/transformer");
+var _angularSvgNodesTransformer = require("./angular-svg-nodes-transformer");
 
-var Transformer = _interopRequireWildcard(_transformer);
+var Transformer = _interopRequireWildcard(_angularSvgNodesTransformer);
 
-var _transformerConfigModel = require("./transformer/transformer-config-model");
+var _transformerConfigModel = require("./transformer-config/transformer-config-model");
 
 var _transformerConfigModel2 = _interopRequireDefault(_transformerConfigModel);
 

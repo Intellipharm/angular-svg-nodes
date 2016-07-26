@@ -2,10 +2,10 @@ import deepFreeze from 'deep-freeze';
 
 // local: constants
 import {
-    BLOCK_TOP_LEFT,
-    BLOCK_TOP,
-    BLOCK_CENTER,
-    BLOCK_BOTTOM
+    NODE_TOP_LEFT,
+    NODE_TOP,
+    NODE_CENTER,
+    NODE_BOTTOM
 } from "./angular-svg-nodes-settings";
 
 // SUT
@@ -25,12 +25,12 @@ describe("AngualrSvgNodes Utils", () => {
 
                 let _col_index = 0;
                 let _row_index = 0;
-                let _position = BLOCK_TOP_LEFT; // BLOCK_TOP_LEFT, BLOCK_TOP, BLOCK_CENTER, BLOCK_BOTTOM
+                let _position = NODE_TOP_LEFT; // NODE_TOP_LEFT, NODE_TOP, NODE_CENTER, NODE_BOTTOM
                 let _config = {
                     col_spacing: 0,
                     row_spacing: 0,
-                    block_width: 10,
-                    block_height: 10
+                    node_width: 10,
+                    node_height: 10
                 };
 
                 let _result = Utils.getNodeCoords(_row_index, _col_index, _position, _config);
@@ -38,16 +38,16 @@ describe("AngualrSvgNodes Utils", () => {
                 expect(_result).toEqual([ 0, 0 ]);
             });
 
-            it("should take block width & height into account and return 15,10 for first node 1,1", () => {
+            it("should take node width & height into account and return 15,10 for first node 1,1", () => {
 
                 let _col_index = 1;
                 let _row_index = 1;
-                let _position = BLOCK_TOP_LEFT; // BLOCK_TOP_LEFT, BLOCK_TOP, BLOCK_CENTER, BLOCK_BOTTOM
+                let _position = NODE_TOP_LEFT; // NODE_TOP_LEFT, NODE_TOP, NODE_CENTER, NODE_BOTTOM
                 let _config = {
                     col_spacing: 0,
                     row_spacing: 0,
-                    block_width: 15,
-                    block_height: 10
+                    node_width: 15,
+                    node_height: 10
                 };
 
                 let _result = Utils.getNodeCoords(_row_index, _col_index, _position, _config);
@@ -59,12 +59,12 @@ describe("AngualrSvgNodes Utils", () => {
 
                 let _col_index = 1;
                 let _row_index = 1;
-                let _position = BLOCK_TOP_LEFT; // BLOCK_TOP_LEFT, BLOCK_TOP, BLOCK_CENTER, BLOCK_BOTTOM
+                let _position = NODE_TOP_LEFT; // NODE_TOP_LEFT, NODE_TOP, NODE_CENTER, NODE_BOTTOM
                 let _config = {
                     col_spacing: 2,
                     row_spacing: 3,
-                    block_width: 15,
-                    block_height: 10
+                    node_width: 15,
+                    node_height: 10
                 };
 
                 let _result = Utils.getNodeCoords(_row_index, _col_index, _position, _config);

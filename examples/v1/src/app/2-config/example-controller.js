@@ -24,11 +24,11 @@ export default class Controller {
         ];
 
         this.svg_nodes_config = {
-            block_width:                    40,
-            block_height:                   60,
-            col_spacing:                    5,
+            node_width:                     40,
+            node_height:                    60,
+            col_spacing:                    35,
             disable_control_nodes:          true,
-            row_spacing:                    15,
+            row_spacing:                    45,
             initial_grid_cols:              8,
             initial_grid_rows:              4,
             label_spacing:                  20,
