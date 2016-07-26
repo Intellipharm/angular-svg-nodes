@@ -16,14 +16,14 @@ export default class AppController {
                 label: "A1",
                 col_index: 0,
                 row_index: 0,
-                connections: [ 5 ]
+                connections: []//[ 5 ]
             },
             {
                 id: 4,
                 label: "A3",
                 col_index: 0,
                 row_index: 0,
-                connections: [ 7, 5 ]
+                connections: []//[ 7, 5 ]
             },
             {
                 id: 5,
@@ -62,8 +62,8 @@ export default class AppController {
             this.svg_nodes_initial_state = [
                 {columns: [
                     {join: [0], label: "A1", highlight: true},
-                    {join: [1,2], label: "A2", selected: true},
-                    {join: [2,0], label: "A3"}
+                    {join: [1], label: "A2", selected: true},
+                    {join: [], label: "A3"}
                 ]},
                 {columns: [
                     {join: [], label: "B1"},
@@ -96,45 +96,18 @@ export default class AppController {
         };
     }
 
-    /**
-     * onNodeSelection
-     * 
-     * @param row_index
-     * @param col_index
-     */
     onNodeSelection(row_index, col_index) {
         console.log("onNodeSelection", row_index, col_index);
     }
 
-    /**
-     * onNodeDeselection
-     *
-     * @param row_index
-     * @param col_index
-     */
     onNodeDeselection(row_index, col_index) {
         console.log("onNodeDeselection", row_index, col_index);
     }
 
-    /**
-     * onNodeConnectionChange
-     *
-     * @param source_row_index
-     * @param source_col_index
-     * @param target_row_index
-     * @param target_col_index
-     * @param is_connected
-     */
     onNodeConnectionChange(source_row_index, source_col_index, target_row_index, target_col_index, is_connected) {
         console.log("onNodeConnectionChange", source_row_index, source_col_index, target_row_index, target_col_index, is_connected);
     }
 
-    /**
-     * onNodeAdded
-     *
-     * @param row_index
-     * @param col_index
-     */
     onNodeAdded(row_index, col_index) {
         console.log("onNodeAdded", row_index, col_index);
     }
@@ -162,7 +135,7 @@ export default class AppController {
     }
 
     updateNodeConnections() {
-        this.svg_nodes_api.updateNodeConnections(this.connect_source_row_index, this.connect_source_column_index, [ this.connect_target_column_index ]);
+        this.svg_nodes_api.updateNodeConnections(0, 2, [ 2 ]);
     }
 }
 

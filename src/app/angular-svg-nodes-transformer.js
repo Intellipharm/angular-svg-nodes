@@ -1,11 +1,14 @@
 import _ from "lodash";
 
-import AngularSvgNodeRow from '../row/row-model';
-import AngularSvgNode from '../node/node-model';
-import AngularSvgNodeTransformerConfig from './transformer-config-model';
+// local: models
+import AngularSvgNodeRow from './row/row-model';
+import AngularSvgNode from './node/node-model';
+import AngularSvgNodeTransformerConfig from './transformer-config/transformer-config-model';
+
+// local: services
+import * as Utils from './angular-svg-nodes-utils';
 
 /**
- * transformIn
  * transforms compatible database data for use as AngularSvgNodes initial state data
  *
  * @param data
@@ -39,11 +42,11 @@ export function transformIn(data, config = new AngularSvgNodeTransformerConfig({
                 result[ _rowi - 1 ] = this.transformRow(data, result[ _rowi - 1 ], col[ config.connection_field ], _coli, config);
             }
 
-            let _r = new AngularSvgNode({
+            let _result = new AngularSvgNode({
                 label: col[ config.label_field ]
             });
 
-            return _r;
+            return _result;
 
         }, result);
 
@@ -53,10 +56,9 @@ export function transformIn(data, config = new AngularSvgNodeTransformerConfig({
             ...[ new AngularSvgNodeRow({ columns }) ]
         ];
     }, []);
-};
+}
 
 /**
- * transformRow
  * returns new AngularSvgNodeRow with updated column joins by appending source_col_index to columns that match target_ids
  *
  * @param data (the database data we will use to find target col index using target_ids)
@@ -78,7 +80,7 @@ export function transformRow(data, row, target_ids, source_col_index, config = n
     }
 
     // get col indices of target nodes by ids
-    let _target_col_indices = this.getValuesForKeyByIds(data, target_ids, config.col_index_field);
+    let _target_col_indices = Utils.getValuesForKeyByIds(data, target_ids, config.col_index_field);
 
     let columns = _.map(row.columns, (col, coli) => {
 
@@ -97,26 +99,4 @@ export function transformRow(data, row, target_ids, source_col_index, config = n
     });
 
     return new AngularSvgNodeRow({ columns });
-}
-
-/**
- * getValuesForKeyByIds
- * returns an array of values for given key, for each item whose id is in given ids array
- *
- * @param data
- * @param ids
- * @param key
- * @returns {Array}
- */
-export function getValuesForKeyByIds(data, ids, key) {
-
-    return _.reduce(data, (result, item) => {
-        if (_.has(item, 'id') && _.has(item, key) && _.includes(ids, item.id)) {
-            result = [
-                ...result,
-                ...[ item[ key ] ]
-            ];
-        }
-        return result;
-    }, []);
 }

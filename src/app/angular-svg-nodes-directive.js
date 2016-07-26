@@ -23,33 +23,21 @@ export default {
         onNodeConnectionChangeCallback:         "&onNodeConnectionChange",
         onNodeAddedCallback:                    "&onNodeAdded"
     },
-    controller:     _controller,
-    controllerAs:   "AngularSvgNodes",
-    bindToController: true,
-    template:       _template,
-    link: function(scope, element, attrs, controller) {
+    controller:         _controller,
+    controllerAs:       "AngularSvgNodes",
+    bindToController:   true,
+    template:           _template,
+    link: (scope, element, attrs, controller) => {
 
         controller.parent_coords = element[0].getBoundingClientRect();
 
         element.addClass('angular-svg-nodes');
 
-        ////////////////////////////////////////////////
-        //
-        // handlers
-        //
-        ////////////////////////////////////////////////
-
         //----------------------------------
-        // mouse up
+        // handlers
         //----------------------------------
 
         element[0].addEventListener("mouseup", controller.onRootDeselect.bind(controller));
-
-        //----------------------------------
-        // mouse leave
-        //----------------------------------
-
         element[0].addEventListener("mouseleave", controller.onRootMouseLeave.bind(controller));
-
     }
 };

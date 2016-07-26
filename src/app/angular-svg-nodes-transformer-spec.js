@@ -1,10 +1,10 @@
 import deepFreeze from 'deep-freeze';
 
-import AngularSvgNodeRow from '../row/row-model';
-import AngularSvgNode from '../node/node-model';
-import AngularSvgNodeTransformerConfig from './transformer-config-model';
+import AngularSvgNodeRow from './row/row-model';
+import AngularSvgNode from './node/node-model';
+import AngularSvgNodeTransformerConfig from './transformer-config/transformer-config-model';
 
-import * as Transformer from "./transformer";
+import * as Transformer from './angular-svg-nodes-transformer';
 
 describe("AngularSvgNodes Transformer", () => {
 
@@ -458,42 +458,6 @@ describe("AngularSvgNodes Transformer", () => {
             expect(_result.columns[0].join).toEqual([]);
             expect(_result.columns[1].join).toEqual([ 444, 666 ]);
             expect(_result.columns[2].join).toEqual([ 666 ]);
-        });
-
-    });
-
-    //------------------------------------------------------------
-    // getValuesForKeyByIds
-    //------------------------------------------------------------
-
-    describe("getValuesForKeyByIds", () => {
-
-        it("return an array of values for given key, for each item whose id is in given ids array", () => {
-
-            let _ids = [ 11, 22 ];
-            let _custom_data = [
-                {
-                    id: 11,
-                    col_index: 111
-                },
-                {
-                    id: 33,
-                    col_index: 333
-                },
-                {
-                    id: 22,
-                    col_index: 222
-                }
-            ];
-
-            deepFreeze(_ids);
-            deepFreeze(_custom_data);
-
-            let _result = Transformer.getValuesForKeyByIds(_custom_data, _ids, 'col_index');
-
-            let _expected_result = [ 111, 222 ];
-
-            expect(_result).toEqual(_expected_result);
         });
 
     });

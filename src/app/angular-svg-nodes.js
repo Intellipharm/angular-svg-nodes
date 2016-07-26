@@ -16,10 +16,10 @@ module.directive('svgVbox', () => _svg_vbox_directive);
 
 // relays
 
-import * as Transformer from './transformer/transformer';
-import AngularSvgNodeTransformerConfig from './transformer/transformer-config-model';
+import * as Transformer from './angular-svg-nodes-transformer';
+import AngularSvgNodesTransformerConfig from './transformer-config/transformer-config-model';
 
 export { 
     Transformer,
-    AngularSvgNodeTransformerConfig as TransformerConfig
+    AngularSvgNodesTransformerConfig as TransformerConfig
 };

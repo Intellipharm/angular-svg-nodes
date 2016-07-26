@@ -16,7 +16,8 @@
                   class="angular-svg-nodes-bg-col-grid-col"
                   angular-svg-nodes-bg-col-grid
                   angular-svg-nodes-bg-col-grid-index="{{col.index}}"
-                  angular-svg-nodes-bg-col-grid-on-mouse-over="AngularSvgNodes.onBgColGridMouseOver(index)"></rect>
+                  angular-svg-nodes-bg-col-grid-on-mouse-over="AngularSvgNodes.onBgColGridMouseOver(index)"
+            ></rect>
         </svg>
 
         <!-- rows -->
@@ -43,7 +44,8 @@
                       angular-svg-nodes-line-row-index="{{col.row_index}}"
                       angular-svg-nodes-line-line-index="{{$index}}"
                       angular-svg-nodes-line-on-remove-complete="AngularSvgNodes.onLineRemoveComplete(source_coords, target_coords, line_index)"
-                      angular-svg-nodes-line-on-draw-complete="AngularSvgNodes.onLineDrawComplete(source_coords, target_coords, line_index)"></line>
+                      angular-svg-nodes-line-on-draw-complete="AngularSvgNodes.onLineDrawComplete(source_coords, target_coords, line_index)"
+                ></line>
 
                 <!-- blocks -->
 
@@ -70,7 +72,8 @@
                       angular-svg-nodes-node-on-select="AngularSvgNodes.onNodeSelect(col_index, row_index)"
                       angular-svg-nodes-node-on-deselect="AngularSvgNodes.onNodeDeselect(col_index, row_index)"
                       angular-svg-nodes-node-on-mouse-out="AngularSvgNodes.onNodeMouseOut(col_index, row_index, exit_side)"
-                      angular-svg-nodes-node-on-mouse-over="AngularSvgNodes.onNodeMouseOver(col_index, row_index)"></rect>
+                      angular-svg-nodes-node-on-mouse-over="AngularSvgNodes.onNodeMouseOver(col_index, row_index)"
+                ></rect>
 
                 <!-- control label -->
 
@@ -81,7 +84,8 @@
                       'control_hover': col.control_hover,
                       }"
                       ng-attr-x="{{col.label_x}}" ng-attr-y="{{col.label_y}}"
-                      text-anchor="middle" alignment-baseline="middle">+</text>
+                      text-anchor="middle" alignment-baseline="middle"
+                >+</text>
 
                 <!-- label -->
 
@@ -89,15 +93,13 @@
                                ng-attr-x="{{col.label_x}}" ng-attr-y="{{col.label_y}}"
                                ng-attr-width="{{AngularSvgNodes.label_width}}" ng-attr-height="{{AngularSvgNodes.label_height}}"
                                class="angular-svg-nodes-node-label-foreign-object">
+
                     <div xmlns="http://www.w3.org/1999/xhtml" class="angular-svg-nodes-node-label noselect">{{col.label}}</div>
+
                 </foreignObject>
 
             </svg>
         </svg>
-
-        <!--<text x="600" y="200"
-              style="font-size: 20px; color: #000;"
-              text-anchor="middle" alignment-baseline="middle">{{AngularSvgNodes.selection}}</text>-->
 
     </svg>
 </div>
