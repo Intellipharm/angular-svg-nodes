@@ -24,7 +24,7 @@ exports.default = {
             var col_index = _.parseInt(scope.col_index);
             var row_index = _.parseInt(scope.row_index);
 
-            scope.onSelect({ col_index: col_index, row_index: row_index });
+            scope.onSelect({ row_index: row_index, col_index: col_index });
         });
 
         element[0].addEventListener("mouseover", function () {
@@ -32,7 +32,7 @@ exports.default = {
             var col_index = _.parseInt(scope.col_index);
             var row_index = _.parseInt(scope.row_index);
 
-            scope.onMouseOver({ col_index: col_index, row_index: row_index });
+            scope.onMouseOver({ row_index: row_index, col_index: col_index });
         });
 
         element[0].addEventListener("mouseout", function (e) {
@@ -46,7 +46,7 @@ exports.default = {
             var row_index = _.parseInt(scope.row_index);
             var exit_side = mouse_y < element_center ? 'top' : 'bottom';
 
-            scope.onMouseOut({ col_index: col_index, row_index: row_index, exit_side: exit_side });
+            scope.onMouseOut({ row_index: row_index, col_index: col_index, exit_side: exit_side });
         });
 
         element[0].addEventListener("mouseup", function () {
@@ -54,7 +54,7 @@ exports.default = {
             var col_index = _.parseInt(scope.col_index);
             var row_index = _.parseInt(scope.row_index);
 
-            scope.onDeselect({ col_index: col_index, row_index: row_index });
+            scope.onDeselect({ row_index: row_index, col_index: col_index });
         });
 
         var onPositionComplete = function onPositionComplete() {};

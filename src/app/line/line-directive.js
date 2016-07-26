@@ -11,14 +11,14 @@ export default {
     },
     link: function (scope, element) {
 
-        var ANIM_DURATION = 0.5;
+        let ANIM_DURATION = 0.5;
 
         // control
 
-        var is_initialized = false;
-        var source_coords;
-        var target_coords;
-        var previous_target_coords; // TODO: this feels hacky
+        let is_initialized = false;
+        let source_coords;
+        let target_coords;
+        let previous_target_coords; // TODO: this feels hacky
 
         ////////////////////////////////////////////////
         //
@@ -30,9 +30,9 @@ export default {
         // remove complete
         //----------------------------------
 
-        var onRemoveComplete = function() {
+        let onRemoveComplete = function() {
 
-            var line_index = _.parseInt(scope.line_index);
+            let line_index = _.parseInt(scope.line_index);
 
             scope.onRemoveComplete({source_coords: source_coords, target_coords: previous_target_coords, line_index: line_index});
         };
@@ -41,9 +41,9 @@ export default {
         // move line target complete
         //----------------------------------
 
-        var onMoveLineTargetComplete = function() {
+        let onMoveLineTargetComplete = function() {
 
-            var line_index = _.parseInt(scope.line_index);
+            let line_index = _.parseInt(scope.line_index);
 
             scope.onMoveLineTargetComplete({source_coords: source_coords, target_coords: target_coords, line_index: line_index});
         };
@@ -52,9 +52,9 @@ export default {
         // move line source complete
         //----------------------------------
 
-        var onMoveLineSourceComplete = function() {
+        let onMoveLineSourceComplete = function() {
 
-            // var line_index = _.parseInt(scope.line_index);
+            // let line_index = _.parseInt(scope.line_index);
             //
             // scope.onMoveLineTargetComplete({source_coords: source_coords, target_coords: target_coords, line_index: line_index});
         };
@@ -63,9 +63,9 @@ export default {
         // draw complete
         //----------------------------------
 
-        var onDrawComplete = function() {
+        let onDrawComplete = function() {
 
-            var line_index = _.parseInt(scope.line_index);
+            let line_index = _.parseInt(scope.line_index);
 
             scope.onDrawComplete({source_coords: source_coords, target_coords: target_coords, line_index: line_index});
         };

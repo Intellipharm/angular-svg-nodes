@@ -19,9 +19,9 @@ exports.default = {
         var ANIM_DURATION = 0.5;
 
         var is_initialized = false;
-        var source_coords;
-        var target_coords;
-        var previous_target_coords;
+        var source_coords = void 0;
+        var target_coords = void 0;
+        var previous_target_coords = void 0;
 
         var onRemoveComplete = function onRemoveComplete() {
 

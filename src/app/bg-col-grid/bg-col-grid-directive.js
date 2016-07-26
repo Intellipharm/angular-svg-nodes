@@ -18,7 +18,7 @@ export default {
 
         element[0].addEventListener("mouseover", function() {
 
-            var index = _.parseInt(scope.index);
+            let index = _.parseInt(scope.index);
 
             // call external handler
             scope.onMouseOver({index: index});

@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -6,13 +6,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _angularSvgNodesSettings = require('./angular-svg-nodes-settings');
+var _angularSvgNodesSettings = require("./angular-svg-nodes-settings");
 
-var _angularSvgNodesUtils = require('./angular-svg-nodes-utils');
+var _nodeSettings = require("./node/node-settings");
+
+var _angularSvgNodesUtils = require("./angular-svg-nodes-utils");
 
 var Utils = _interopRequireWildcard(_angularSvgNodesUtils);
 
-var _apiValidator = require('./api/api-validator');
+var _nodeUtils = require("./node/node-utils");
+
+var NodeUtils = _interopRequireWildcard(_nodeUtils);
+
+var _apiValidator = require("./api/api-validator");
 
 var ApiValidator = _interopRequireWildcard(_apiValidator);
 
@@ -37,7 +43,7 @@ var AngularSvgNodesController = function () {
         this.state = [];
 
         this.config = {
-            new_node_label: !_.isUndefined(this.config_new_node_label) ? this.config_new_node_label : _angularSvgNodesSettings.DEFAULT_NEW_NODE_LABEL,
+            new_node_label: !_.isUndefined(this.config_new_node_label) ? this.config_new_node_label : _nodeSettings.DEFAULT_NEW_NODE_LABEL,
             initial_grid_cols: !_.isUndefined(this.config_initial_grid_cols) ? this.config_initial_grid_cols : _angularSvgNodesSettings.DEFAULT_INITIAL_GRID_COLS,
             initial_grid_rows: !_.isUndefined(this.config_initial_grid_rows) ? this.config_initial_grid_rows : _angularSvgNodesSettings.DEFAULT_INITIAL_GRID_ROWS,
             highlight_node_on: !_.isUndefined(this.config_highlight_node_on) ? this.config_highlight_node_on : _angularSvgNodesSettings.DEFAULT_HIGHLIGHT_NODE_ON,
@@ -114,8 +120,8 @@ var AngularSvgNodesController = function () {
             var _row_index = _this.nodes.length;
             var _col_index = 0;
 
-            _this.addNode(_col_index, _row_index, label, []);
-            _this.addControl(_row_index);
+            _this.addNode(_row_index, _col_index, label, []);
+            _this.addControlNode(_row_index);
         };
 
         this.api.removeNode = function (row_index, col_index) {
@@ -124,7 +130,7 @@ var AngularSvgNodesController = function () {
                 return;
             }
 
-            _this.removeNode(col_index, row_index);
+            _this.removeNode(row_index, col_index);
         };
 
         this.api.insertNode = function (row_index, col_index, label, connections) {
@@ -177,7 +183,7 @@ var AngularSvgNodesController = function () {
     }
 
     _createClass(AngularSvgNodesController, [{
-        key: 'init',
+        key: "init",
         value: function init() {
             var _this2 = this;
 
@@ -188,12 +194,6 @@ var AngularSvgNodesController = function () {
             var _column_property_name = 'columns';
             var _data = !_.isUndefined(this.initial_state) ? this.initial_state : [];
 
-            for (var row_index = 0; row_index < this.config.initial_grid_rows; row_index++) {
-                if (row_index >= _data.length) {
-                    _data.push({ columns: [] });
-                }
-            }
-
             _.forEach(_data, function (row, row_index) {
 
                 _.forEach(row[_column_property_name], function (col, col_index) {
@@ -201,7 +201,7 @@ var AngularSvgNodesController = function () {
                     _this2.addNode(row_index, col_index, col.label, col.join, col);
                 });
 
-                _this2.addControl(row_index);
+                _this2.addControlNode(row_index);
             });
 
             _.map(new Array(this.grid_col_count), function (col, index) {
@@ -217,16 +217,16 @@ var AngularSvgNodesController = function () {
             this.is_initialising = false;
         }
     }, {
-        key: 'onNodeSelect',
-        value: function onNodeSelect(col_index, row_index) {
+        key: "onNodeSelect",
+        value: function onNodeSelect(row_index, col_index) {
             if (this.nodes[row_index].columns[col_index].control) {
                 if (!this.config.disable_control_nodes) {
-                    this.onControlNodeSelect(col_index, row_index);
+                    this.onControlNodeSelect(row_index, col_index);
                 }
                 return true;
             }
 
-            this.onNodeNodeSelect(col_index, row_index);
+            this.onNodeNodeSelect(row_index, col_index);
 
             if (_.includes(this.config.highlight_node_on, _angularSvgNodesSettings.HIGHLIGHT_NODE_ON_SELECT)) {
                 if (_.has(this.highlight_selected_node, 'row_index')) {
@@ -240,17 +240,17 @@ var AngularSvgNodesController = function () {
             }
 
             if (!_.isUndefined(this.onNodeSelectionCallback)) {
-                this.onNodeSelectionCallback({ col_index: col_index, row_index: row_index });
+                this.onNodeSelectionCallback({ row_index: row_index, col_index: col_index });
             }
         }
     }, {
-        key: 'onNodeDeselect',
-        value: function onNodeDeselect(col_index, row_index) {
+        key: "onNodeDeselect",
+        value: function onNodeDeselect(row_index, col_index) {
             if (this.nodes[row_index].columns[col_index].control) {
                 return false;
             }
 
-            this.onNodeNodeDeselect(col_index, row_index);
+            this.onNodeNodeDeselect(row_index, col_index);
 
             var _is_new_node = _.isEqual(this.new_node, { row_index: row_index, col_index: col_index });
 
@@ -266,35 +266,35 @@ var AngularSvgNodesController = function () {
             }
 
             if (!_.isUndefined(this.onNodeDeselectionCallback) && !_is_new_node && !this.was_connection_change_called && !this.is_connection_change_busy) {
-                this.onNodeDeselectionCallback({ col_index: col_index, row_index: row_index });
+                this.onNodeDeselectionCallback({ row_index: row_index, col_index: col_index });
             }
 
             this.new_node = {};
             this.was_connection_change_called = false;
         }
     }, {
-        key: 'onNodeMouseOver',
-        value: function onNodeMouseOver(col_index, row_index) {
+        key: "onNodeMouseOver",
+        value: function onNodeMouseOver(row_index, col_index) {
             if (this.nodes[row_index].columns[col_index].control) {
-                this.onControlNodeMouseOver(col_index, row_index);
+                this.onControlNodeMouseOver(row_index, col_index);
                 return true;
             }
 
-            this.onNodeNodeMouseOver(col_index, row_index);
+            this.onNodeNodeMouseOver(row_index, col_index);
         }
     }, {
-        key: 'onNodeMouseOut',
+        key: "onNodeMouseOut",
         value: function onNodeMouseOut(row_index, col_index, exit_side) {
             if (this.nodes[row_index].columns[col_index].control) {
-                this.onControlNodeMouseOut(col_index, row_index);
+                this.onControlNodeMouseOut(row_index, col_index);
                 return true;
             }
 
             this.onNodeNodeMouseOut(row_index, col_index, exit_side);
         }
     }, {
-        key: 'onControlNodeSelect',
-        value: function onControlNodeSelect(col_index, row_index) {
+        key: "onControlNodeSelect",
+        value: function onControlNodeSelect(row_index, col_index) {
 
             var _label = _.isFunction(this.config.new_node_label) ? this.config.new_node_label(row_index, col_index) : this.config.new_node_label;
 
@@ -303,8 +303,8 @@ var AngularSvgNodesController = function () {
             this.$s.$apply();
         }
     }, {
-        key: 'onControlNodeMouseOver',
-        value: function onControlNodeMouseOver(col_index, row_index) {
+        key: "onControlNodeMouseOver",
+        value: function onControlNodeMouseOver(row_index, col_index) {
             if (this.selection.length > 0) {
                 return false;
             }
@@ -314,8 +314,8 @@ var AngularSvgNodesController = function () {
             this.$s.$apply();
         }
     }, {
-        key: 'onControlNodeMouseOut',
-        value: function onControlNodeMouseOut(col_index, row_index) {
+        key: "onControlNodeMouseOut",
+        value: function onControlNodeMouseOut(row_index, col_index) {
             if (this.selection.length > 0) {
                 return false;
             }
@@ -325,8 +325,8 @@ var AngularSvgNodesController = function () {
             this.$s.$apply();
         }
     }, {
-        key: 'onNodeNodeSelect',
-        value: function onNodeNodeSelect(col_index, row_index) {
+        key: "onNodeNodeSelect",
+        value: function onNodeNodeSelect(row_index, col_index) {
 
             this.setNodeClass(row_index, col_index, 'source_hover', false);
             this.setNodeClass(row_index, col_index, 'source', true);
@@ -339,8 +339,8 @@ var AngularSvgNodesController = function () {
             this.$s.$apply();
         }
     }, {
-        key: 'onNodeNodeDeselect',
-        value: function onNodeNodeDeselect(col_index, row_index) {
+        key: "onNodeNodeDeselect",
+        value: function onNodeNodeDeselect(row_index, col_index) {
             this.source_exit_side = null;
 
             if (this.selection.length === 1) {
@@ -356,7 +356,7 @@ var AngularSvgNodesController = function () {
 
                         this.setNodeClass(row_index, col_index, 'target', false);
 
-                        if (!this.doesNodeHaveConnectedParents(col_index, row_index)) {
+                        if (!this.doesNodeHaveConnectedParents(row_index, col_index)) {
                             this.setPotentialNodeClasses(row_index, col_index, 'potential_target', false);
                         }
 
@@ -372,7 +372,7 @@ var AngularSvgNodesController = function () {
                     if (is_target_parent) {
                         this.removeLine(this.selection[1], this.selection[0]);
                     } else {
-                            this.setAsConnectedLines(this.selection, "A");
+                            this.setAsConnectedLines(this.selection);
 
                             this.checkActive();
                         }
@@ -380,8 +380,8 @@ var AngularSvgNodesController = function () {
             }
         }
     }, {
-        key: 'onNodeNodeMouseOver',
-        value: function onNodeNodeMouseOver(col_index, row_index) {
+        key: "onNodeNodeMouseOver",
+        value: function onNodeNodeMouseOver(row_index, col_index) {
             if (this.selection.length === 0) {
 
                 this.setNodeClass(row_index, col_index, 'source_hover', true);
@@ -402,7 +402,7 @@ var AngularSvgNodesController = function () {
             this.$s.$apply();
         }
     }, {
-        key: 'onNodeNodeMouseOut',
+        key: "onNodeNodeMouseOut",
         value: function onNodeNodeMouseOut(row_index, col_index, exit_side) {
             if (this.selection.length === 0) {
 
@@ -430,7 +430,7 @@ var AngularSvgNodesController = function () {
                     this.source_exit_side = exit_side;
                 }
 
-                var target_coords;
+                var target_coords = void 0;
 
                 if (exit_side === 'top') {
 
@@ -454,7 +454,7 @@ var AngularSvgNodesController = function () {
             this.$s.$apply();
         }
     }, {
-        key: 'onRootDeselect',
+        key: "onRootDeselect",
         value: function onRootDeselect() {
             this.source_exit_side = null;
 
@@ -464,9 +464,9 @@ var AngularSvgNodesController = function () {
 
             if (this.selection.length > 0) {
 
-                this.setNodeClass(this.selection[0][0], this.selection[0][1], 'source', false);
-                this.setPotentialNodeClasses(this.selection[0][0], this.selection[0][1], 'target', false);
-                this.setPotentialNodeClasses(this.selection[0][0], this.selection[0][1], 'potential_target', false);
+                this.setNodeClass(this.selection[0][1], this.selection[0][0], 'source', false);
+                this.setPotentialNodeClasses(this.selection[0][1], this.selection[0][0], 'target', false);
+                this.setPotentialNodeClasses(this.selection[0][1], this.selection[0][0], 'potential_target', false);
             }
 
             if (this.selection.length === 2) {
@@ -480,7 +480,7 @@ var AngularSvgNodesController = function () {
             this.$s.$apply();
         }
     }, {
-        key: 'onBgColGridMouseOver',
+        key: "onBgColGridMouseOver",
         value: function onBgColGridMouseOver(index) {
             if (this.bg_col_grid_hover_index === index) {
                 return true;
@@ -502,17 +502,17 @@ var AngularSvgNodesController = function () {
             this.$s.$apply();
         }
     }, {
-        key: 'onRootMouseLeave',
+        key: "onRootMouseLeave",
         value: function onRootMouseLeave() {
             if (this.selection.length === 1) {
 
-                this.setNodeClass(this.selection[0][0], this.selection[0][1], 'source', false);
-                this.setPotentialNodeClasses(this.selection[0][0], this.selection[0][1], 'potential_target', false);
+                this.setNodeClass(this.selection[0][1], this.selection[0][0], 'source', false);
+                this.setPotentialNodeClasses(this.selection[0][1], this.selection[0][0], 'potential_target', false);
             } else if (this.selection.length === 2) {
 
-                    this.setNodeClass(this.selection[0][0], this.selection[0][1], 'source', false);
-                    this.setNodeClass(this.selection[1][0], this.selection[1][1], 'target', false);
-                    this.setPotentialNodeClasses(this.selection[0][0], this.selection[0][1], 'potential_target', false);
+                    this.setNodeClass(this.selection[0][1], this.selection[0][0], 'source', false);
+                    this.setNodeClass(this.selection[1][1], this.selection[1][0], 'target', false);
+                    this.setPotentialNodeClasses(this.selection[0][1], this.selection[0][0], 'potential_target', false);
                 }
 
             if (this.selection.length === 2) {
@@ -524,7 +524,7 @@ var AngularSvgNodesController = function () {
             this.$s.$apply();
         }
     }, {
-        key: 'onLineRemoveComplete',
+        key: "onLineRemoveComplete",
         value: function onLineRemoveComplete(source_coords, target_coords, line_index) {
             var source = this.nodes[source_coords[1]].columns[source_coords[0]];
 
@@ -533,7 +533,7 @@ var AngularSvgNodesController = function () {
             source.lines.splice(line_index, 1);
 
             if (source.lines.length === 0) {
-                if (!this.doesNodeHaveConnectedParents(source_coords[0], source_coords[1])) {
+                if (!this.doesNodeHaveConnectedParents(source_coords[1], source_coords[0])) {
                     this.setAsNotConnectedNode([source_coords[0], source_coords[1]]);
                 }
             }
@@ -555,7 +555,7 @@ var AngularSvgNodesController = function () {
             this.$s.$apply();
         }
     }, {
-        key: 'onLineDrawComplete',
+        key: "onLineDrawComplete",
         value: function onLineDrawComplete(source_coords, target_coords) {
             var _this3 = this;
 
@@ -578,7 +578,7 @@ var AngularSvgNodesController = function () {
             this.$s.$apply();
         }
     }, {
-        key: 'checkActive',
+        key: "checkActive",
         value: function checkActive() {
             var _this4 = this;
 
@@ -588,13 +588,13 @@ var AngularSvgNodesController = function () {
 
             _.forEach(this.nodes[0].columns, function (col, col_index) {
                 if (col.lines.length > 0) {
-                    _this4.activateNode(col_index, 0);
+                    _this4.activateNode(0, col_index);
                 }
             });
         }
     }, {
-        key: 'activateNode',
-        value: function activateNode(col_index, row_index) {
+        key: "activateNode",
+        value: function activateNode(row_index, col_index) {
             var _this5 = this;
 
             var node = this.nodes[row_index].columns[col_index];
@@ -605,13 +605,13 @@ var AngularSvgNodesController = function () {
                 _.forEach(node.lines, function (line) {
                     line.active = true;
 
-                    _this5.activateNode(line.to[0], line.to[1]);
+                    _this5.activateNode(line.to[1], line.to[0]);
                 });
             }
         }
     }, {
-        key: 'deactivateNode',
-        value: function deactivateNode(col_index, row_index) {
+        key: "deactivateNode",
+        value: function deactivateNode(row_index, col_index) {
             var _this6 = this;
 
             var node = this.nodes[row_index].columns[col_index];
@@ -621,16 +621,16 @@ var AngularSvgNodesController = function () {
                 _.forEach(node.lines, function (line) {
                     line.active = false;
 
-                    var does_parent_have_active_nodes = _this6.doesNodeHaveActiveParents(line.to[0], line.to[1]);
+                    var does_parent_have_active_nodes = _this6.doesNodeHaveActiveParents(line.to[1], line.to[0]);
 
                     if (!does_parent_have_active_nodes) {
-                        _this6.deactivateNode(line.to[0], line.to[1]);
+                        _this6.deactivateNode(line.to[1], line.to[0]);
                     }
                 });
             }
         }
     }, {
-        key: 'doesNodeHaveActiveParents',
+        key: "doesNodeHaveActiveParents",
         value: function doesNodeHaveActiveParents(row_index, col_index, exclude_coords) {
 
             if (row_index === 0) {
@@ -652,7 +652,7 @@ var AngularSvgNodesController = function () {
             return result;
         }
     }, {
-        key: 'doesNodeHaveConnectedParents',
+        key: "doesNodeHaveConnectedParents",
         value: function doesNodeHaveConnectedParents(row_index, col_index, exclude_coords) {
             var _this7 = this;
 
@@ -679,7 +679,7 @@ var AngularSvgNodesController = function () {
             return result;
         }
     }, {
-        key: 'isNodePotential',
+        key: "isNodePotential",
         value: function isNodePotential(source_coords, target_coords) {
             if (_.isUndefined(this.nodes[target_coords[1]])) {
                 return false;
@@ -711,7 +711,7 @@ var AngularSvgNodesController = function () {
             var is_target_parent = target_coords[1] < source_coords[1];
             var source = this.nodes[source_coords[1]].columns[source_coords[0]];
             var target = this.nodes[target_coords[1]].columns[target_coords[0]];
-            var result;
+            var result = void 0;
 
             if (is_target_parent) {
 
@@ -746,7 +746,7 @@ var AngularSvgNodesController = function () {
             return result;
         }
     }, {
-        key: 'setLineClass',
+        key: "setLineClass",
         value: function setLineClass(source_coords, target_coords, key, value) {
             _.forEach(this.nodes[source_coords[1]].columns[source_coords[0]].lines, function (line) {
                 if (_.isEqual(line.to, target_coords)) {
@@ -755,21 +755,20 @@ var AngularSvgNodesController = function () {
             });
         }
     }, {
-        key: 'setNodeClass',
+        key: "setNodeClass",
         value: function setNodeClass(row_index, col_index, key, value) {
-            if (_.has(this.nodes[row_index].columns[col_index], key)) {
-                this.nodes[row_index].columns[col_index][key] = value;
-            }
+
+            this.nodes[row_index].columns[col_index][key] = value;
         }
     }, {
-        key: 'setPotentialNodeClasses',
+        key: "setPotentialNodeClasses",
         value: function setPotentialNodeClasses(row_index, col_index, key, value) {
 
             this.setPotentialChildNodeClasses(row_index, col_index, key, value);
             this.setPotentialParentNodeClasses(row_index, col_index, key, value);
         }
     }, {
-        key: 'setPotentialChildNodeClasses',
+        key: "setPotentialChildNodeClasses",
         value: function setPotentialChildNodeClasses(row_index, col_index, key, value) {
             var _this8 = this;
 
@@ -782,7 +781,7 @@ var AngularSvgNodesController = function () {
             }
         }
     }, {
-        key: 'setPotentialParentNodeClasses',
+        key: "setPotentialParentNodeClasses",
         value: function setPotentialParentNodeClasses(row_index, col_index, key, value) {
             var _this9 = this;
 
@@ -795,7 +794,7 @@ var AngularSvgNodesController = function () {
             }
         }
     }, {
-        key: 'setViewport',
+        key: "setViewport",
         value: function setViewport(cols, rows) {
 
             var total_item_width = this.config.node_width + this.config.col_spacing;
@@ -820,7 +819,7 @@ var AngularSvgNodesController = function () {
             this.viewport_viewbox = " 0 0 " + this.viewport_width + " " + this.viewport_height;
         }
     }, {
-        key: 'checkViewport',
+        key: "checkViewport",
         value: function checkViewport(col_index, row_index) {
 
             var should_update_viewport = false;
@@ -842,7 +841,7 @@ var AngularSvgNodesController = function () {
             }
         }
     }, {
-        key: 'calculateColX',
+        key: "calculateColX",
         value: function calculateColX(index) {
             if (index === 0) {
                 return 0;
@@ -852,31 +851,31 @@ var AngularSvgNodesController = function () {
             return first_col_width + (index - 1) * col_width;
         }
     }, {
-        key: 'calculateColWidth',
+        key: "calculateColWidth",
         value: function calculateColWidth(index) {
             var total_item_width = index === 0 ? this.config.node_width + this.config.col_spacing / 2 : this.config.node_width + this.config.col_spacing;
             return total_item_width;
         }
     }, {
-        key: 'calculateRowY',
+        key: "calculateRowY",
         value: function calculateRowY(index) {
             var row_height = this.config.node_height + this.config.row_spacing;
             return index * row_height;
         }
     }, {
-        key: 'calculateRowHeight',
+        key: "calculateRowHeight",
         value: function calculateRowHeight() {
             return this.config.node_height + this.config.row_spacing;
         }
     }, {
-        key: 'addLine',
+        key: "addLine",
         value: function addLine(source_coords, target_coords, connected) {
             if (target_coords[1] >= this.nodes.length) {
                 return false;
             }
 
-            var source_lock_coords = Utils.getNodeCoords(source_coords[1], source_coords[0], _angularSvgNodesSettings.NODE_BOTTOM, this.config);
-            var target_lock_coords = Utils.getNodeCoords(target_coords[1], target_coords[0], _angularSvgNodesSettings.NODE_TOP, this.config);
+            var source_lock_coords = NodeUtils.getNodeCoords(source_coords[1], source_coords[0], _nodeSettings.NODE_BOTTOM, this.config);
+            var target_lock_coords = NodeUtils.getNodeCoords(target_coords[1], target_coords[0], _nodeSettings.NODE_TOP, this.config);
 
             this.nodes[source_coords[1]].columns[source_coords[0]].lines.push({
                 connected: !_.isUndefined(connected) ? connected : false,
@@ -891,9 +890,9 @@ var AngularSvgNodesController = function () {
             if (connected) {}
         }
     }, {
-        key: 'updateLineTarget',
+        key: "updateLineTarget",
         value: function updateLineTarget(source_coords, target_coords) {
-            var target_lock_coords = Utils.getNodeCoords(target_coords[1], target_coords[0], _angularSvgNodesSettings.NODE_TOP, this.config);
+            var target_lock_coords = NodeUtils.getNodeCoords(target_coords[1], target_coords[0], _nodeSettings.NODE_TOP, this.config);
 
             _.forEach(this.nodes[source_coords[1]].columns[source_coords[0]].lines, function (line) {
 
@@ -907,7 +906,7 @@ var AngularSvgNodesController = function () {
             });
         }
     }, {
-        key: 'removeLine',
+        key: "removeLine",
         value: function removeLine(source_coords, target_coords, set_as_busy) {
             var _this10 = this;
 
@@ -915,23 +914,23 @@ var AngularSvgNodesController = function () {
                 this.is_connection_change_busy = true;
             }
 
-            var target_lock_coords = Utils.getNodeCoords(source_coords[1], source_coords[0], _angularSvgNodesSettings.NODE_BOTTOM, this.config);
+            var target_lock_coords = NodeUtils.getNodeCoords(source_coords[1], source_coords[0], _nodeSettings.NODE_BOTTOM, this.config);
 
             _.forEach(this.nodes[source_coords[1]].columns[source_coords[0]].lines, function (line) {
 
                 if (_.isEqual(line.from, source_coords) && _.isEqual(line.to, target_coords)) {
 
                     var node = _this10.nodes[target_coords[1]].columns[target_coords[0]];
-                    var node_has_connected_parents = _this10.doesNodeHaveConnectedParents(target_coords[0], target_coords[1], source_coords);
+                    var node_has_connected_parents = _this10.doesNodeHaveConnectedParents(target_coords[1], target_coords[0], source_coords);
 
                     if (node.lines.length === 0 && !node_has_connected_parents) {
                         _this10.setAsNotConnectedNode(target_coords);
                     }
 
-                    var node_has_active_parents = _this10.doesNodeHaveActiveParents(target_coords[0], target_coords[1], source_coords);
+                    var node_has_active_parents = _this10.doesNodeHaveActiveParents(target_coords[1], target_coords[0], source_coords);
 
                     if (!node_has_active_parents) {
-                        _this10.deactivateNode(target_coords[0], target_coords[1]);
+                        _this10.deactivateNode(target_coords[1], target_coords[0]);
                     }
 
                     line.x2 = target_lock_coords[0];
@@ -943,7 +942,7 @@ var AngularSvgNodesController = function () {
             });
         }
     }, {
-        key: 'removeUnconnectedLines',
+        key: "removeUnconnectedLines",
         value: function removeUnconnectedLines(selection) {
             var _this11 = this;
 
@@ -954,7 +953,7 @@ var AngularSvgNodesController = function () {
             });
         }
     }, {
-        key: 'setAsConnectedLines',
+        key: "setAsConnectedLines",
         value: function setAsConnectedLines(selection) {
             var _this12 = this;
 
@@ -981,17 +980,17 @@ var AngularSvgNodesController = function () {
             });
         }
     }, {
-        key: 'setAsConnectedNode',
+        key: "setAsConnectedNode",
         value: function setAsConnectedNode(coords) {
             this.nodes[coords[1]].columns[coords[0]].connected = true;
         }
     }, {
-        key: 'setAsNotConnectedNode',
+        key: "setAsNotConnectedNode",
         value: function setAsNotConnectedNode(coords) {
             this.nodes[coords[1]].columns[coords[0]].connected = false;
         }
     }, {
-        key: 'addNode',
+        key: "addNode",
         value: function addNode(row_index, col_index, label, lines, data) {
             var _this13 = this;
 
@@ -999,21 +998,21 @@ var AngularSvgNodesController = function () {
                 this.nodes.push({ columns: [] });
             }
 
-            var removed_node;
+            var removed_node = void 0;
 
             if (!_.isUndefined(this.nodes[row_index].columns[col_index])) {
                 removed_node = this.nodes[row_index].columns.splice(col_index, 1);
             }
 
-            var top_left_coords = Utils.getNodeCoords(row_index, col_index, _angularSvgNodesSettings.NODE_TOP_LEFT, this.config);
+            var top_left_coords = NodeUtils.getNodeCoords(row_index, col_index, _nodeSettings.NODE_TOP_LEFT, this.config);
 
             var node_lines = [];
-            var line_source_lock_coords = Utils.getNodeCoords(row_index, col_index, _angularSvgNodesSettings.NODE_BOTTOM, this.config);
+            var line_source_lock_coords = NodeUtils.getNodeCoords(row_index, col_index, _nodeSettings.NODE_BOTTOM, this.config);
 
             _.forEach(lines, function (line_target_col_index) {
 
                 var line_target_coords = [line_target_col_index, row_index + 1];
-                var line_target_lock_coords = Utils.getNodeCoords(line_target_coords[1], line_target_coords[0], _angularSvgNodesSettings.NODE_TOP, _this13.config);
+                var line_target_lock_coords = NodeUtils.getNodeCoords(line_target_coords[1], line_target_coords[0], _nodeSettings.NODE_TOP, _this13.config);
 
                 node_lines.push({
                     connected: true,
@@ -1058,7 +1057,7 @@ var AngularSvgNodesController = function () {
             this.checkViewport(col_index, row_index);
 
             if (!_.isUndefined(removed_node)) {
-                this.addControl(removed_node[0].row_index);
+                this.addControlNode(removed_node[0].row_index);
             }
 
             this.new_node = { row_index: row_index, col_index: col_index };
@@ -1079,7 +1078,7 @@ var AngularSvgNodesController = function () {
             }
         }
     }, {
-        key: 'updateNode',
+        key: "updateNode",
         value: function updateNode(row_index, col_index, label) {
             var _this14 = this;
 
@@ -1090,39 +1089,41 @@ var AngularSvgNodesController = function () {
             }
 
             if (!_.isUndefined(lines)) {
+                (function () {
 
-                var line_source_lock_coords = Utils.getNodeCoords(row_index, col_index, _angularSvgNodesSettings.NODE_BOTTOM, this.config);
+                    var line_source_lock_coords = NodeUtils.getNodeCoords(row_index, col_index, _nodeSettings.NODE_BOTTOM, _this14.config);
 
-                _.forEach(lines, function (line_target_col_index) {
+                    _.forEach(lines, function (line_target_col_index) {
 
-                    var line_target_coords = [line_target_col_index, row_index + 1];
-                    var line_target_lock_coords = Utils.getNodeCoords(line_target_coords[1], line_target_coords[0], _angularSvgNodesSettings.NODE_TOP, _this14.config);
+                        var line_target_coords = [line_target_col_index, row_index + 1];
+                        var line_target_lock_coords = NodeUtils.getNodeCoords(line_target_coords[1], line_target_coords[0], _nodeSettings.NODE_TOP, _this14.config);
 
-                    if (_.includes(_.map(_this14.nodes[row_index].columns[col_index].lines, function (line) {
-                        return line.to[0];
-                    }), line_target_col_index)) {
-                        return;
-                    }
+                        if (_.includes(_.map(_this14.nodes[row_index].columns[col_index].lines, function (line) {
+                            return line.to[0];
+                        }), line_target_col_index)) {
+                            return;
+                        }
 
-                    _this14.nodes[row_index].columns[col_index].lines.push({
-                        connected: true,
-                        from: [col_index, row_index],
-                        to: line_target_coords,
-                        x1: line_source_lock_coords[0],
-                        y1: line_source_lock_coords[1],
-                        x2: line_target_lock_coords[0],
-                        y2: line_target_lock_coords[1]
+                        _this14.nodes[row_index].columns[col_index].lines.push({
+                            connected: true,
+                            from: [col_index, row_index],
+                            to: line_target_coords,
+                            x1: line_source_lock_coords[0],
+                            y1: line_source_lock_coords[1],
+                            x2: line_target_lock_coords[0],
+                            y2: line_target_lock_coords[1]
+                        });
+
+                        _this14.setNodeClass(row_index, col_index, 'connected', true);
+
+                        _this14.nodes_waiting_for_connection.push(line_target_coords);
                     });
-
-                    _this14.setNodeClass(row_index, col_index, 'connected', true);
-
-                    _this14.nodes_waiting_for_connection.push(line_target_coords);
-                });
+                })();
             }
         }
     }, {
-        key: 'removeNode',
-        value: function removeNode(col_index, row_index) {
+        key: "removeNode",
+        value: function removeNode(row_index, col_index) {
             var _this15 = this;
 
             var _set_as_busy = false;
@@ -1133,17 +1134,14 @@ var AngularSvgNodesController = function () {
             this.nodes[row_index].columns.splice(col_index, 1);
 
             for (var i = col_index; i < this.nodes[row_index].columns.length; i++) {
-                this.updateNodeAfterSiblingAddedOrRemoved(i, row_index);
+                this.updateNodeAfterSiblingAddedOrRemoved(row_index, i);
 
                 if (i < this.nodes[row_index].columns.length - 1) {}
             }
 
             if (row_index !== 0) {
-                var parent_row_index;
-
                 (function () {
-                    parent_row_index = row_index - 1;
-
+                    var parent_row_index = row_index - 1;
                     var remove_lines = [];
 
                     _.forEach(_this15.nodes[parent_row_index].columns, function (column, parent_col_index) {
@@ -1163,7 +1161,7 @@ var AngularSvgNodesController = function () {
                             if (line.to[0] > col_index) {
                                 var new_line_to = [line.to[0] - 1, line.to[1]];
 
-                                var target_lock_coords = Utils.getNodeCoords(new_line_to[1], new_line_to[0], _angularSvgNodesSettings.NODE_TOP, _this15.config);
+                                var target_lock_coords = NodeUtils.getNodeCoords(new_line_to[1], new_line_to[0], _nodeSettings.NODE_TOP, _this15.config);
 
                                 line.to = [new_line_to[0], new_line_to[1]];
                                 line.x2 = target_lock_coords[0];
@@ -1179,28 +1177,30 @@ var AngularSvgNodesController = function () {
             }
 
             if (row_index !== this.nodes.length - 1) {
-                var children_row_index = row_index + 1;
-                _.forEach(this.nodes[children_row_index].columns, function (column, children_col_index) {
-                    if (!_this15.doesNodeHaveConnectedParents(children_col_index, children_row_index)) {
-                        _this15.setAsNotConnectedNode([children_col_index, children_row_index]);
-                    }
-                });
+                (function () {
+                    var children_row_index = row_index + 1;
+                    _.forEach(_this15.nodes[children_row_index].columns, function (column, children_col_index) {
+                        if (!_this15.doesNodeHaveConnectedParents(children_row_index, children_col_index)) {
+                            _this15.setAsNotConnectedNode([children_col_index, children_row_index]);
+                        }
+                    });
+                })();
             }
         }
     }, {
-        key: 'insertNode',
+        key: "insertNode",
         value: function insertNode(row_index, col_index, label, joins) {
             var _this16 = this;
 
-            var top_left_coords = Utils.getNodeCoords(row_index, col_index, _angularSvgNodesSettings.NODE_TOP_LEFT, this.config);
+            var top_left_coords = NodeUtils.getNodeCoords(row_index, col_index, _nodeSettings.NODE_TOP_LEFT, this.config);
 
             var node_lines = [];
-            var line_source_lock_coords = Utils.getNodeCoords(row_index, col_index, _angularSvgNodesSettings.NODE_BOTTOM, this.config);
+            var line_source_lock_coords = NodeUtils.getNodeCoords(row_index, col_index, _nodeSettings.NODE_BOTTOM, this.config);
 
             _.forEach(joins, function (line_target_col_index) {
 
                 var line_target_coords = [line_target_col_index, row_index + 1];
-                var line_target_lock_coords = Utils.getNodeCoords(line_target_coords[1], line_target_coords[0], _angularSvgNodesSettings.NODE_TOP, _this16.config);
+                var line_target_lock_coords = NodeUtils.getNodeCoords(line_target_coords[1], line_target_coords[0], _nodeSettings.NODE_TOP, _this16.config);
 
                 node_lines.push({
                     connected: true,
@@ -1233,7 +1233,7 @@ var AngularSvgNodesController = function () {
 
             for (var i = col_index + 1; i < this.nodes[row_index].columns.length; i++) {
 
-                this.updateNodeAfterSiblingAddedOrRemoved(i, row_index);
+                this.updateNodeAfterSiblingAddedOrRemoved(row_index, i);
             }
 
             if (row_index !== 0) {
@@ -1243,7 +1243,7 @@ var AngularSvgNodesController = function () {
                         if (line.to[0] >= col_index) {
                             var new_line_to = [line.to[0] + 1, line.to[1]];
 
-                            var target_lock_coords = Utils.getNodeCoords(new_line_to[1], new_line_to[0], _angularSvgNodesSettings.NODE_TOP, _this16.config);
+                            var target_lock_coords = NodeUtils.getNodeCoords(new_line_to[1], new_line_to[0], _nodeSettings.NODE_TOP, _this16.config);
 
                             line.to = [new_line_to[0], new_line_to[1]];
                             line.x2 = target_lock_coords[0];
@@ -1254,12 +1254,12 @@ var AngularSvgNodesController = function () {
             }
         }
     }, {
-        key: 'updateNodeAfterSiblingAddedOrRemoved',
-        value: function updateNodeAfterSiblingAddedOrRemoved(col_index, row_index) {
+        key: "updateNodeAfterSiblingAddedOrRemoved",
+        value: function updateNodeAfterSiblingAddedOrRemoved(row_index, col_index) {
             var _this17 = this;
 
-            var top_left_coords = Utils.getNodeCoords(row_index, col_index, _angularSvgNodesSettings.NODE_TOP_LEFT, this.config);
-            var center_coords = Utils.getNodeCoords(row_index, col_index, _angularSvgNodesSettings.NODE_CENTER, this.config);
+            var top_left_coords = NodeUtils.getNodeCoords(row_index, col_index, _nodeSettings.NODE_TOP_LEFT, this.config);
+            var center_coords = NodeUtils.getNodeCoords(row_index, col_index, _nodeSettings.NODE_CENTER, this.config);
 
             this.nodes[row_index].columns[col_index].col_index = col_index;
             this.nodes[row_index].columns[col_index].coords = top_left_coords;
@@ -1275,7 +1275,7 @@ var AngularSvgNodesController = function () {
             }
 
             _.forEach(this.nodes[row_index].columns[col_index].lines, function (line) {
-                var source_lock_coords = Utils.getNodeCoords(row_index, col_index, _angularSvgNodesSettings.NODE_TOP, _this17.config);
+                var source_lock_coords = NodeUtils.getNodeCoords(row_index, col_index, _nodeSettings.NODE_TOP, _this17.config);
 
                 line.from = [col_index, row_index];
                 line.x1 = source_lock_coords[0];
@@ -1285,12 +1285,12 @@ var AngularSvgNodesController = function () {
             this.checkViewport(col_index, row_index);
         }
     }, {
-        key: 'updateNodeAfterChildAddedOrRemoved',
-        value: function updateNodeAfterChildAddedOrRemoved(col_index, row_index) {
+        key: "updateNodeAfterChildAddedOrRemoved",
+        value: function updateNodeAfterChildAddedOrRemoved(row_index, col_index) {
             var _this18 = this;
 
-            var top_left_coords = Utils.getNodeCoords(row_index, col_index, _angularSvgNodesSettings.NODE_TOP_LEFT, this.config);
-            var center_coords = Utils.getNodeCoords(row_index, col_index, _angularSvgNodesSettings.NODE_CENTER, this.config);
+            var top_left_coords = NodeUtils.getNodeCoords(row_index, col_index, _nodeSettings.NODE_TOP_LEFT, this.config);
+            var center_coords = NodeUtils.getNodeCoords(row_index, col_index, _nodeSettings.NODE_CENTER, this.config);
 
             this.nodes[row_index].columns[col_index].col_index = col_index;
             this.nodes[row_index].columns[col_index].coords = top_left_coords;
@@ -1306,18 +1306,18 @@ var AngularSvgNodesController = function () {
             }
 
             _.forEach(this.nodes[row_index].columns[col_index].lines, function (line) {
-                var source_lock_coords = Utils.getNodeCoords(row_index, col_index, _angularSvgNodesSettings.NODE_TOP, _this18.config);
+                var source_lock_coords = NodeUtils.getNodeCoords(row_index, col_index, _nodeSettings.NODE_TOP, _this18.config);
 
                 line.from = [col_index, row_index];
                 line.x1 = source_lock_coords[0];
                 line.y1 = source_lock_coords[1];
             });
 
-            this.checkViewport(col_index, row_index);
+            this.checkViewport(row_index, col_index);
         }
     }, {
-        key: 'addControl',
-        value: function addControl(row_index) {
+        key: "addControlNode",
+        value: function addControlNode(row_index) {
             if (row_index === this.nodes.length) {
                 this.nodes.push({ columns: [] });
             }
@@ -1328,8 +1328,8 @@ var AngularSvgNodesController = function () {
 
             var col_index = this.nodes[row_index].columns.length;
 
-            var top_left_coords = Utils.getNodeCoords(row_index, col_index, _angularSvgNodesSettings.NODE_TOP_LEFT, this.config);
-            var center_coords = Utils.getNodeCoords(row_index, col_index, _angularSvgNodesSettings.NODE_CENTER, this.config);
+            var top_left_coords = NodeUtils.getNodeCoords(row_index, col_index, _nodeSettings.NODE_TOP_LEFT, this.config);
+            var center_coords = NodeUtils.getNodeCoords(row_index, col_index, _nodeSettings.NODE_CENTER, this.config);
 
             var node = {
                 coords: top_left_coords,
@@ -1350,7 +1350,7 @@ var AngularSvgNodesController = function () {
             this.checkViewport(col_index, row_index);
         }
     }, {
-        key: 'addBgGridCol',
+        key: "addBgGridCol",
         value: function addBgGridCol(index) {
 
             this.bg_col_grid.push({
@@ -1360,13 +1360,13 @@ var AngularSvgNodesController = function () {
             });
         }
     }, {
-        key: 'update',
+        key: "update",
         value: function update(data, column_property_name) {
             var _this19 = this;
 
             _.forEach(data, function (row, row_index) {
                 if (row_index >= _this19.nodes.length) {
-                    _this19.addControl(row_index);
+                    _this19.addControlNode(row_index);
                 }
             });
 

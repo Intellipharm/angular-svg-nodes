@@ -55,9 +55,20 @@ export default class AppController {
             }
         ];
 
+        // completely empty
+
         this.svg_nodes_initial_state = [];
 
         $timeout(() => {
+
+            // empty 2 rows
+
+            // this.svg_nodes_initial_state = [
+            //     { columns: [] },
+            //     { columns: [] }
+            // ];
+
+            // nodes
 
             this.svg_nodes_initial_state = [
                 {columns: [

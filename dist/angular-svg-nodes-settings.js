@@ -3,15 +3,10 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var NODE_TOP_LEFT = exports.NODE_TOP_LEFT = 0;
-var NODE_TOP = exports.NODE_TOP = 1;
-var NODE_CENTER = exports.NODE_CENTER = 2;
-var NODE_BOTTOM = exports.NODE_BOTTOM = 3;
 var HIGHLIGHT_NODE_ON_SELECT = exports.HIGHLIGHT_NODE_ON_SELECT = "select";
 var HIGHLIGHT_NODE_ON_DESELECT = exports.HIGHLIGHT_NODE_ON_DESELECT = "deselect";
 var HIGHLIGHT_NODE_ON_ADD = exports.HIGHLIGHT_NODE_ON_ADD = "add";
 
-var DEFAULT_NEW_NODE_LABEL = exports.DEFAULT_NEW_NODE_LABEL = "New Node";
 var DEFAULT_INITIAL_GRID_COLS = exports.DEFAULT_INITIAL_GRID_COLS = 4;
 var DEFAULT_INITIAL_GRID_ROWS = exports.DEFAULT_INITIAL_GRID_ROWS = 2;
 var DEFAULT_NODE_WIDTH = exports.DEFAULT_NODE_WIDTH = 80;

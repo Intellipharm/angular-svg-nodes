@@ -3,9 +3,14 @@ export default class Controller {
 
         this.svg_nodes_initial_state = undefined;
 
-        this.svg_nodes_state1 = [];
+        this.svg_nodes_state1 = []
 
         this.svg_nodes_state2 = [
+            {columns: []},
+            {columns: []}
+        ];
+
+        this.svg_nodes_state3 = [
             {columns: [
                 {join: [], label: "A1"},
                 {join: [0], label: "A2"},
@@ -16,7 +21,7 @@ export default class Controller {
             ]}
         ];
 
-        this.svg_nodes_state3 = [
+        this.svg_nodes_state4 = [
             {columns: [
                 {join: [0], label: "A1"},
                 {join: [], label: "A2"},
@@ -50,6 +55,11 @@ export default class Controller {
 
                     this.svg_nodes_initial_state = this.svg_nodes_state3;
 
+                    $timeout(() => {
+
+                        this.svg_nodes_initial_state = this.svg_nodes_state4;
+
+                    }, 2000);
                 }, 2000);
             }, 2000);
         }, 2000);

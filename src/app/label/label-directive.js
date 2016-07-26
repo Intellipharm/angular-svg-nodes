@@ -5,8 +5,8 @@ export default {
     },
     link: function (scope, element) {
 
-        var curr_x = null;
-        var ANIM_DURATION = 0.5;
+        let curr_x = null;
+        let ANIM_DURATION = 0.5;
 
         ////////////////////////////////////////////////
         //
@@ -18,7 +18,7 @@ export default {
         // position complete
         //----------------------------------
 
-        var onPositionComplete = function() {
+        let onPositionComplete = function() {
         };
 
         ////////////////////////////////////////////////
@@ -31,7 +31,7 @@ export default {
 
             if (!_.isUndefined(newValue)) {
 
-                var duration = _.isNull(curr_x) ? 0 : ANIM_DURATION;
+                let duration = _.isNull(curr_x) ? 0 : ANIM_DURATION;
 
                 // TODO: not working
                 TweenLite.to(element, duration, {
