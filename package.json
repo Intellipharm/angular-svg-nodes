@@ -68,6 +68,7 @@
       "babel-polyfill": "npm:babel-polyfill@^6.6.1",
       "blob.js": "github:eligrey/blob.js@master",
       "css": "github:systemjs/plugin-css@^0.1.16",
+      "d3": "npm:d3@^4.1.1",
       "json": "github:systemjs/plugin-json@^0.1.0",
       "lodash": "github:lodash/lodash@^4.0.0",
       "text": "github:systemjs/plugin-text@^0.0.8",
