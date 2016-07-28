@@ -190,13 +190,13 @@ describe("AngularSvgNodes Transformer", () => {
             expect(_labels).toEqual(_expected_labels);
         });
 
-        it("should sort columns correctly and set joins correctly with default data/config", () => {
+        it("should sort columns correctly and set connections correctly with default data/config", () => {
 
             let _result = Transformer.transformIn(_data);
 
             let _joins = _.reduce(_result, (result, row) => {
                 return [ ...result, ..._.map(row.columns, (col) => {
-                    return col.join;
+                    return col.connections;
                 }) ];
             }, []);
 
@@ -205,7 +205,7 @@ describe("AngularSvgNodes Transformer", () => {
             expect(_joins).toEqual(_expected_joins);
         });
 
-        it("should sort columns correctly and set joins correctly with custom data/config", () => {
+        it("should sort columns correctly and set connections correctly with custom data/config", () => {
 
             let _custom_data = [
                 {
@@ -273,7 +273,7 @@ describe("AngularSvgNodes Transformer", () => {
 
             let _joins = _.reduce(_result, (result, row) => {
                 return [ ...result, ..._.map(row.columns, (col) => {
-                    return col.join;
+                    return col.connections;
                 }) ];
             }, []);
 
@@ -289,21 +289,21 @@ describe("AngularSvgNodes Transformer", () => {
             let _expected_result = [
                 new AngularSvgNodeRow({
                     columns: [
-                        new AngularSvgNode({ join: [ 0 ], label: "A1" }),
-                        new AngularSvgNode({ join: [], label: "A2" }),
-                        new AngularSvgNode({ join: [ 0, 2 ], label: "A3" })
+                        new AngularSvgNode({ connections: [ 0 ], label: "A1" }),
+                        new AngularSvgNode({ connections: [], label: "A2" }),
+                        new AngularSvgNode({ connections: [ 0, 2 ], label: "A3" })
                     ]
                 }),
                 new AngularSvgNodeRow({
                     columns: [
-                        new AngularSvgNode({ join: [], label: "B1" }),
-                        new AngularSvgNode({ join: [ 0 ], label: "B2" }),
-                        new AngularSvgNode({ join: [], label: "B3" })
+                        new AngularSvgNode({ connections: [], label: "B1" }),
+                        new AngularSvgNode({ connections: [ 0 ], label: "B2" }),
+                        new AngularSvgNode({ connections: [], label: "B3" })
                     ]
                 }),
                 new AngularSvgNodeRow({
                     columns: [
-                        new AngularSvgNode({ join: [], label: "C1" })
+                        new AngularSvgNode({ connections: [], label: "C1" })
                     ]
                 })
             ];
@@ -379,21 +379,21 @@ describe("AngularSvgNodes Transformer", () => {
             let _expected_result = [
                 new AngularSvgNodeRow({
                     columns: [
-                        new AngularSvgNode({ join: [ 0 ], label: "A1" }),
-                        new AngularSvgNode({ join: [], label: "A2" }),
-                        new AngularSvgNode({ join: [ 0, 2 ], label: "A3" })
+                        new AngularSvgNode({ connections: [ 0 ], label: "A1" }),
+                        new AngularSvgNode({ connections: [], label: "A2" }),
+                        new AngularSvgNode({ connections: [ 0, 2 ], label: "A3" })
                     ]
                 }),
                 new AngularSvgNodeRow({
                     columns: [
-                        new AngularSvgNode({ join: [], label: "B1" }),
-                        new AngularSvgNode({ join: [ 0 ], label: "B2" }),
-                        new AngularSvgNode({ join: [], label: "B3" })
+                        new AngularSvgNode({ connections: [], label: "B1" }),
+                        new AngularSvgNode({ connections: [ 0 ], label: "B2" }),
+                        new AngularSvgNode({ connections: [], label: "B3" })
                     ]
                 }),
                 new AngularSvgNodeRow({
                     columns: [
-                        new AngularSvgNode({ join: [], label: "C1" })
+                        new AngularSvgNode({ connections: [], label: "C1" })
                     ]
                 })
             ];
@@ -408,7 +408,7 @@ describe("AngularSvgNodes Transformer", () => {
 
     describe("transformRow", () => {
 
-        it("should return new AngularSvgNodeRow with updated column joins by appending source_col_index to columns that match target_ids", () => {
+        it("should return new AngularSvgNodeRow with updated column connections by appending source_col_index to columns that match target_ids", () => {
 
             let _custom_data = [
                 {
@@ -429,9 +429,9 @@ describe("AngularSvgNodes Transformer", () => {
             ];
             let _row = new AngularSvgNodeRow({
                 columns: [
-                    new AngularSvgNode({ label: "BBB", join: [] }), // 22
-                    new AngularSvgNode({ label: "AAA", join: [ 444 ] }), // 11
-                    new AngularSvgNode({ label: "CCC", join: [] }) // 33
+                    new AngularSvgNode({ label: "BBB", connections: [] }), // 22
+                    new AngularSvgNode({ label: "AAA", connections: [ 444 ] }), // 11
+                    new AngularSvgNode({ label: "CCC", connections: [] }) // 33
                 ]
             });
             let _target_ids = [ 11, 33 ];
@@ -454,10 +454,10 @@ describe("AngularSvgNodes Transformer", () => {
             expect(_result.columns[1] instanceof AngularSvgNode).toBe(true);
             expect(_result.columns[2] instanceof AngularSvgNode).toBe(true);
 
-            // ... should correctly update each node's join property
-            expect(_result.columns[0].join).toEqual([]);
-            expect(_result.columns[1].join).toEqual([ 444, 666 ]);
-            expect(_result.columns[2].join).toEqual([ 666 ]);
+            // ... should correctly update each node's connections property
+            expect(_result.columns[0].connections).toEqual([]);
+            expect(_result.columns[1].connections).toEqual([ 444, 666 ]);
+            expect(_result.columns[2].connections).toEqual([ 666 ]);
         });
 
     });

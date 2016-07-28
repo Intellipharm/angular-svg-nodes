@@ -105,18 +105,18 @@
     stroke-dasharray: 3, 3;
 }
 .angular-svg-nodes .angular-svg-nodes-node.connected.target {
-    fill: #c6e0a4;
-    stroke: transparent;
-    stroke-width: 0;
+    fill: red;/*#c6e0a4;*/
+    stroke: #6a8a44;
+    stroke-width: 1;
     stroke-dasharray: 0;
 }
 .angular-svg-nodes .angular-svg-nodes-node.connected.highlight {
-    stroke: green;
+    stroke: #0066ff;
     stroke-width: 1;
     stroke-dasharray: 0;
 }
 .angular-svg-nodes .angular-svg-nodes-node.connected.selected {
-    stroke: red;
+    stroke: #0066ff;
     stroke-width: 1;
     stroke-dasharray: 0;
 }
@@ -138,6 +138,12 @@
     stroke-width: 0;
     stroke-dasharray: 0;
 }
+.angular-svg-nodes .angular-svg-nodes-node.connected.active.target {
+    fill: #c6e0a4;
+    stroke: #6a8a44;
+    stroke-width: 1;
+    stroke-dasharray: 0;
+}
 .angular-svg-nodes .angular-svg-nodes-node.connected.active.potential-target {
     fill: #d2e6af;
     stroke: #9ab86d;
@@ -151,12 +157,12 @@
     stroke-dasharray: 3, 3;
 }
 .angular-svg-nodes .angular-svg-nodes-node.connected.active.highlight {
-    stroke: green;
+    stroke: #990000;
     stroke-width: 1;
     stroke-dasharray: 0;
 }
 .angular-svg-nodes .angular-svg-nodes-node.connected.active.selected {
-    stroke: red;
+    stroke: #0066ff;
     stroke-width: 1;
     stroke-dasharray: 0;
 }
@@ -173,12 +179,12 @@
     stroke-dasharray: 0;
 }
 .angular-svg-nodes .angular-svg-nodes-node.highlight {
-    stroke: green;
+    stroke: #990000;
     stroke-width: 1;
     stroke-dasharray: 0;
 }
 .angular-svg-nodes .angular-svg-nodes-node.selected {
-    stroke: red;
+    stroke: #0066ff;
     stroke-width: 1;
     stroke-dasharray: 0;
 }

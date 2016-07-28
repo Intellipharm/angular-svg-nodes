@@ -1,13 +1,13 @@
 export default {
     restrict: 'A',
     scope: {
-        coords:     "=angularSvgNodesLineCoords",
-        col_index:  "@angularSvgNodesLineColIndex",
-        row_index:  "@angularSvgNodesLineRowIndex",
-        line_index: "@angularSvgNodesLineLineIndex",
-        onRemoveComplete:   "&angularSvgNodesLineOnRemoveComplete",
-        onMoveLineTargetComplete:     "&angularSvgNodesLineonMoveLineTargetComplete",
-        onDrawComplete:     "&angularSvgNodesLineOnDrawComplete"
+        coords:                     "=angularSvgNodesLineCoords",
+        col_index:                  "@angularSvgNodesLineColIndex",
+        row_index:                  "@angularSvgNodesLineRowIndex",
+        line_index:                 "@angularSvgNodesLineLineIndex",
+        onRemoveComplete:           "&angularSvgNodesLineOnRemoveComplete",
+        onMoveLineTargetComplete:   "&angularSvgNodesLineonMoveLineTargetComplete",
+        onDrawComplete:             "&angularSvgNodesLineOnDrawComplete"
     },
     link: function (scope, element) {
 
@@ -84,6 +84,8 @@ export default {
          */
         scope.removeLineTarget = function(x, y) {
 
+            // console.log(scope.$id+" ::: removeLineTarget "+scope.coords.from[1]+" "+scope.coords.from[0]);
+
             TweenLite.to(element, ANIM_DURATION, {
                 attr: {x2: x, y2: y},
                 ease: Power4.easeOut,
@@ -97,6 +99,8 @@ export default {
          * @param x
          */
         scope.moveLineTarget = function(x) {
+
+            // console.log(scope.$id+" ::: moveLineTarget "+scope.coords.from[1]+" "+scope.coords.from[0]);
 
             TweenLite.to(element, ANIM_DURATION, {
                 attr: {x2: x},
@@ -112,6 +116,8 @@ export default {
          */
         scope.moveLineSource = function(x) {
 
+            // console.log(scope.$id+" ::: moveLineSource "+scope.coords.from[1]+" "+scope.coords.from[0]);
+
             TweenLite.to(element, ANIM_DURATION, {
                 attr: {x1: x},
                 ease: Power4.easeOut,
@@ -126,15 +132,28 @@ export default {
          * @param y1
          * @param x2
          * @param y2
+         * @param should_animate
          */
-        scope.drawLine = function(x1, y1, x2, y2) {
+        scope.drawLine = function(x1, y1, x2, y2, should_animate = false) {
 
-            TweenLite.set(element, {attr: {x1: x1, y1: y1, x2: x1, y2: y1}});
-            TweenLite.to(element, ANIM_DURATION, {
-                attr: {x2: x2, y2: y2},
-                ease: Power4.easeOut,
-                onComplete: onDrawComplete
-            });
+            // console.log(scope.$id+" ::: drawLine "+scope.coords.from[1]+" "+scope.coords.from[0]+" "+should_animate);
+
+            // draw with animation
+
+            // if (should_animate) {
+                TweenLite.set(element, {attr: {x1: x1, y1: y1, x2: x1, y2: y1}});
+                TweenLite.to(element, ANIM_DURATION, {
+                    attr: {x2: x2, y2: y2},
+                    ease: Power4.easeOut,
+                    onComplete: onDrawComplete
+                });
+            //     return;
+            // }
+            //
+            // // draw without animation
+            //
+            // TweenLite.set(element, {attr: {x1: x1, y1: y1, x2: x2, y2: y2}});
+            // window.setTimeout(onDrawComplete.bind(this), 1); // hack because external handler does $s.$apply TODO: remove when we can remove handler $s.$apply
         };
 
         ////////////////////////////////////////////////
@@ -142,6 +161,13 @@ export default {
         // watchers
         //
         ////////////////////////////////////////////////
+
+        // scope.$watch('coords.active', function(newValue, oldValue) {
+        //
+        //     console.log(_.cloneDeep(newValue));
+        //     console.log(_.cloneDeep(oldValue));
+        //     console.log("----------------------------");
+        // }, true);
 
         scope.$watch('coords', function(newValue, oldValue) {
 
@@ -151,13 +177,10 @@ export default {
                 target_coords = newValue.to;
                 previous_target_coords = newValue.previous_to;
 
-                //console.log("COL: "+oldValue.to[0] +" === "+ newValue.to[0]);
-                //console.log("ROW: "+oldValue.to[1] +" === "+ newValue.to[1]);
-                //console.log("ROW: "+oldValue.y2 +" === "+ newValue.y2);
-
                 // init
                 if (!is_initialized) {
-                    scope.drawLine(newValue.x1, newValue.y1, newValue.x2, newValue.y2);
+                    scope.drawLine(newValue.x1, newValue.y1, newValue.x2, newValue.y2, newValue.should_animate);
+                    // newValue.should_animate = false;
                     is_initialized = true;
                 }
 

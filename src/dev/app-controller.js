@@ -57,9 +57,9 @@ export default class AppController {
 
         // completely empty
 
-        this.svg_nodes_initial_state = [];
-
-        $timeout(() => {
+        // this.svg_nodes_initial_state = [];
+        //
+        // $timeout(() => {
 
             // empty 2 rows
 
@@ -72,21 +72,21 @@ export default class AppController {
 
             this.svg_nodes_initial_state = [
                 {columns: [
-                    {join: [0], label: "A1", highlight: true},
-                    {join: [1], label: "A2", selected: true},
-                    {join: [], label: "A3"}
+                    {connections: [0], label: "A1", highlight: true},
+                    {connections: [1], label: "A2", selected: true},
+                    {connections: [], label: "A3"}
                 ]},
                 {columns: [
-                    {join: [], label: "B1"},
-                    {join: [0], label: "B2"},
-                    {join: [], label: "B3"}
+                    {connections: [], label: "B1"},
+                    {connections: [0], label: "B2"},
+                    {connections: [], label: "B3"}
                 ]},
                 {columns: [
-                    {join: [], label: "C1"}
+                    {connections: [], label: "C1"}
                 ]}
             ];
-
-        }, 1);
+        //
+        // }, 1);
 
         this.svg_nodes_config = {
             block_width:                    40,
@@ -108,19 +108,19 @@ export default class AppController {
     }
 
     onNodeSelection(row_index, col_index) {
-        console.log("onNodeSelection", row_index, col_index);
+        // console.log("onNodeSelection", row_index, col_index);
     }
 
     onNodeDeselection(row_index, col_index) {
-        console.log("onNodeDeselection", row_index, col_index);
+        // console.log("onNodeDeselection", row_index, col_index);
     }
 
     onNodeConnectionChange(source_row_index, source_col_index, target_row_index, target_col_index, is_connected) {
-        console.log("onNodeConnectionChange", source_row_index, source_col_index, target_row_index, target_col_index, is_connected);
+        // console.log("onNodeConnectionChange", source_row_index, source_col_index, target_row_index, target_col_index, is_connected);
     }
 
     onNodeAdded(row_index, col_index) {
-        console.log("onNodeAdded", row_index, col_index);
+        // console.log("onNodeAdded", row_index, col_index);
     }
 
     addRows() {

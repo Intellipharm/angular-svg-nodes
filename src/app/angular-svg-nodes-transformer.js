@@ -13,7 +13,7 @@ import * as Utils from './angular-svg-nodes-utils';
  *
  * @param data
  * @param config
- * @returns {*}
+ * @returns {*} 
  */
 export function transformIn(data, config = new AngularSvgNodeTransformerConfig({})) {
 
@@ -59,7 +59,7 @@ export function transformIn(data, config = new AngularSvgNodeTransformerConfig({
 }
 
 /**
- * returns new AngularSvgNodeRow with updated column joins by appending source_col_index to columns that match target_ids
+ * returns new AngularSvgNodeRow with updated column connections by appending source_col_index to columns that match target_ids
  *
  * @param data (the database data we will use to find target col index using target_ids)
  * @param row (the row we are updating)
@@ -86,12 +86,12 @@ export function transformRow(data, row, target_ids, source_col_index, config = n
 
         if (_.includes(_target_col_indices, coli)) {
 
-            let join = [
-                ...col.join,
+            let connections = [
+                ...col.connections,
                 ...[ source_col_index ]
             ];
 
-            let _node_data = Object.assign({}, col, { join } );
+            let _node_data = Object.assign({}, col, { connections } );
 
             return new AngularSvgNode( _node_data );
         }

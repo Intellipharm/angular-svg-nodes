@@ -28,6 +28,11 @@ import * as Utils from './angular-svg-nodes-utils';
 import * as NodeUtils from './node/node-utils';
 import * as ApiValidator from './api/api-validator';
 
+// local: models
+import AngularSvgNode from './node/node-model';
+import AngularSvgNodeRow from './row/row-model';
+import AngularSvgNodeLine from './line/line-model';
+
 export default class AngularSvgNodesController {
 
     constructor($s) {
@@ -131,35 +136,8 @@ export default class AngularSvgNodesController {
         //
         ////////////////////////////////////////////////
 
-        this.$s.$watch('AngularSvgNodes.selection', (newValue, oldValue) => {
-
-            if (_.isUndefined(newValue)) {
-                return;
-            }
-
-            // two selected & target is child of source
-            if (newValue.length === 2 && newValue[1][1] > newValue[0][1]) {
-
-                // new target selection
-                if (newValue.length > oldValue.length) {
-
-                    // add line
-                    this.addLine(this.selection[0], this.selection[1]);
-                }
-
-                // updated target selection
-                else {
-
-                    // update line
-                    this.updateLineTarget(this.selection[0], this.selection[1]);
-                }
-            }
-        }, true);
-
-        this.$s.$watch('AngularSvgNodes.initial_state', (newValue, oldValue) => {
-
-            this.init();
-        });
+        this.$s.$watch('AngularSvgNodes.selection', this.onSelectionChange.bind(this), true);
+        this.$s.$watch('AngularSvgNodes.initial_state', this.onInitialStateChange.bind(this));
 
         ////////////////////////////////////////////////
         //
@@ -298,7 +276,7 @@ export default class AngularSvgNodesController {
 
             _.forEach(row[ _column_property_name ], (col, col_index) => {
 
-                this.addNode(row_index, col_index, col.label, col.join, col);
+                this.addNode(row_index, col_index, col.label, col.connections, col);
             });
 
             this.addControlNode(row_index);
@@ -320,7 +298,54 @@ export default class AngularSvgNodesController {
 
     ////////////////////////////////////////////////
     //
-    // handlers
+    // watcher handlers
+    //
+    ////////////////////////////////////////////////
+
+    /**
+     * handles changes to the this.selection property
+     *
+     * @param newValue
+     * @param oldValue
+     */
+    onSelectionChange (newValue, oldValue) {
+
+        if (_.isUndefined(newValue)) {
+            return;
+        }
+
+        // two selected & target is child of source
+        if (newValue.length === 2 && newValue[1][1] > newValue[0][1]) {
+
+            // new target selection
+            if (newValue.length > oldValue.length) {
+
+                // add line
+                this.addLine(this.selection[0], this.selection[1]);
+            }
+
+            // updated target selection
+            else {
+
+                // update line
+                this.updateLineTarget(this.selection[0], this.selection[1]);
+            }
+        }
+    }
+
+    /**
+     * handles changes to initial_state property
+     *
+     * @param newValue
+     * @param oldValue
+     */
+    onInitialStateChange (newValue, oldValue) {
+        this.init();
+    }
+
+    ////////////////////////////////////////////////
+    //
+    // view handlers
     //
     ////////////////////////////////////////////////
 
@@ -650,7 +675,6 @@ export default class AngularSvgNodesController {
 
             // if potential
             if (this.isNodePotential(this.selection[0], [ col_index, row_index ])) {
-
                 this.setNodeClass(row_index, col_index, 'potential_target', false);
                 this.setNodeClass(row_index, col_index, 'target', true);
                 this.setLineClass(this.selection[0], [ col_index, row_index ], 'target', true);
@@ -915,7 +939,7 @@ export default class AngularSvgNodesController {
     onLineRemoveComplete(source_coords, target_coords, line_index) {
 
         // update data
-        //this.state[source_coords[1]].columns[source_coords[0]].join.splice(line_index, 1);
+        //this.state[source_coords[1]].columns[source_coords[0]].connections.splice(line_index, 1);
 
         // update nodes
         let source = this.nodes[source_coords[1]].columns[source_coords[0]];
@@ -1001,7 +1025,9 @@ export default class AngularSvgNodesController {
     /**
      * checkActive
      */
-    checkActive() {
+    checkActive () {
+
+        this.count = 0;
 
         if (this.nodes.length === 0) {
             return false;
@@ -1022,7 +1048,10 @@ export default class AngularSvgNodesController {
      */
     activateNode(row_index, col_index) {
 
-        let node = this.nodes[ row_index ].columns[ col_index ];
+        // console.log("activateNode: "+row_index+" "+col_index);
+
+        let node = Object.assign({}, this.nodes[ row_index ].columns[ col_index ]);
+
         node.active = true;
 
         if (node.lines.length > 0) {
@@ -1036,6 +1065,12 @@ export default class AngularSvgNodesController {
                 this.activateNode(line.to[1], line.to[0]);
             });
         }
+
+        // TODO: assigning new values for each node causes new instances of nodes (with new angular scope) to be created which causes all the line to redraw
+        this.nodes[ row_index ].columns[ col_index ] = node;
+        // this.nodes[ row_index ].columns[ col_index ] = new AngularSvgNode(node);
+
+        // this.nodes = NodeUtils.updateNodesActivateNode(this.nodes, row_index, col_index);
     }
 
     /**
@@ -1449,8 +1484,8 @@ export default class AngularSvgNodesController {
     /**
      * addLine
      *
-     * @param source_coords
-     * @param target_coords
+     * @param source_coords [col, row]
+     * @param target_coords [col, row]
      * @param connected
      */
     addLine(source_coords, target_coords, connected) {
@@ -1472,12 +1507,27 @@ export default class AngularSvgNodesController {
             x1: source_lock_coords[0],
             y1: source_lock_coords[1],
             x2: target_lock_coords[0],
-            y2: target_lock_coords[1]
+            y2: target_lock_coords[1],
+            init: true
         });
+
+        // // add line properties
+        // let _line = new AngularSvgNodeLine({
+        //     connected: !_.isUndefined(connected) ? connected : false,
+        //     from: source_coords,
+        //     to: target_coords,
+        //     x1: source_lock_coords[0],
+        //     y1: source_lock_coords[1],
+        //     x2: target_lock_coords[0],
+        //     y2: target_lock_coords[1],
+        //     should_animate: true
+        // });
+        //
+        // this.nodes[ source_coords[1] ].columns[ source_coords[0] ].lines.push(_line);
 
         if (connected) {
             // update data
-            // this.state[source_coords[1]].columns[source_coords[0]].join.push(target_coords[0]);
+            // this.state[source_coords[1]].columns[source_coords[0]].connections.push(target_coords[0]);
         }
     }
 
@@ -1627,11 +1677,11 @@ export default class AngularSvgNodesController {
      * @param row_index
      * @param col_index
      * @param label
-     * @param lines
+     * @param connections
      * @param data
      * @returns {boolean}
      */
-    addNode(row_index, col_index, label, lines, data) {
+    addNode(row_index, col_index, label, connections, data) {
 
         // create row if it doesn't exist
         if (row_index === this.nodes.length) {
@@ -1652,7 +1702,7 @@ export default class AngularSvgNodesController {
         let node_lines = [];
         let line_source_lock_coords = NodeUtils.getNodeCoords(row_index, col_index, NODE_BOTTOM, this.config);
 
-        _.forEach(lines, (line_target_col_index) => {
+        _.forEach(connections, (line_target_col_index) => {
 
             let line_target_coords = [ line_target_col_index, row_index + 1 ];
             let line_target_lock_coords = NodeUtils.getNodeCoords(line_target_coords[1], line_target_coords[0], NODE_TOP, this.config);
@@ -1842,7 +1892,7 @@ export default class AngularSvgNodesController {
                         });
 
                         // update data
-                        //this.state[parent_row_index].columns[parent_col_index].join.splice(line_index, 1);
+                        //this.state[parent_row_index].columns[parent_col_index].connections.splice(line_index, 1);
 
                         // if parent no longer has any lines
                         if (column.lines.length === 0) {
@@ -2161,7 +2211,7 @@ export default class AngularSvgNodesController {
                 // ... if column index exceeds or equals current UI cols (excluding control)
                 if (col_index >= this.nodes[ row_index ].columns.length - 1) {
                     let label = _.has(col, 'label') ? col.label : "";
-                    let lines = _.has(col, 'join') ? col.join : [];
+                    let lines = _.has(col, 'connections') ? col.connections : [];
                     this.addNode(row_index, col_index, label, lines);
                 }
             });
