@@ -105,7 +105,7 @@
     stroke-dasharray: 3, 3;
 }
 .angular-svg-nodes .angular-svg-nodes-node.connected.target {
-    fill: red;/*#c6e0a4;*/
+    fill: #c6e0a4;
     stroke: #6a8a44;
     stroke-width: 1;
     stroke-dasharray: 0;

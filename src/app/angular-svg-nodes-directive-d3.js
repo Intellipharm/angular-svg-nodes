@@ -64,7 +64,7 @@ export default {
     controller: () => {
 
     },
-    controllerAs:       "AngularSvgNodes",
+    controllerAs:       "AngularSvgNodesD3",
     bindToController:   true,
     template: '<div id="angular-svg-nodes-wrapper" class="angular-svg-nodes-wrapper" ng-style="AngularSvgNodes.wrapper_style">',
     link: (scope, element, attrs, controller) => {

@@ -1,5 +1,5 @@
 import _directive from "./angular-svg-nodes-directive";
-// import _directive from "./angular-svg-nodes-directive-d3";
+import _directive_d3 from "./angular-svg-nodes-directive-d3";
 import _bg_col_grid_directive from "./bg-col-grid/bg-col-grid-directive";
 import _label_directive from "./label/label-directive";
 import _line_directive from "./line/line-directive";
@@ -9,6 +9,7 @@ import _svg_vbox_directive from "./svg-box/svg-vbox-directive";
 export let module = angular.module('AngularSvgNodes', []);
 
 module.directive('angularSvgNodes', () => _directive);
+module.directive('angularSvgNodesD3', () => _directive_d3);
 module.directive('angularSvgNodesBgColGrid', () => _bg_col_grid_directive);
 module.directive('angularSvgNodesLabel', () => _label_directive);
 module.directive('angularSvgNodesLine', () => _line_directive);
