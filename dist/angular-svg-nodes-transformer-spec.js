@@ -184,13 +184,13 @@ describe("AngularSvgNodes Transformer", function () {
             expect(_labels).toEqual(_expected_labels);
         });
 
-        it("should sort columns correctly and set joins correctly with default data/config", function () {
+        it("should sort columns correctly and set connections correctly with default data/config", function () {
 
             var _result = Transformer.transformIn(_data);
 
             var _joins = _.reduce(_result, function (result, row) {
                 return [].concat(_toConsumableArray(result), _toConsumableArray(_.map(row.columns, function (col) {
-                    return col.join;
+                    return col.connections;
                 })));
             }, []);
 
@@ -199,7 +199,7 @@ describe("AngularSvgNodes Transformer", function () {
             expect(_joins).toEqual(_expected_joins);
         });
 
-        it("should sort columns correctly and set joins correctly with custom data/config", function () {
+        it("should sort columns correctly and set connections correctly with custom data/config", function () {
 
             var _custom_data = [{
                 id: 1,
@@ -259,7 +259,7 @@ describe("AngularSvgNodes Transformer", function () {
 
             var _joins = _.reduce(_result, function (result, row) {
                 return [].concat(_toConsumableArray(result), _toConsumableArray(_.map(row.columns, function (col) {
-                    return col.join;
+                    return col.connections;
                 })));
             }, []);
 
@@ -273,11 +273,11 @@ describe("AngularSvgNodes Transformer", function () {
             var _result = Transformer.transformIn(_data);
 
             var _expected_result = [new _rowModel2.default({
-                columns: [new _nodeModel2.default({ join: [0], label: "A1" }), new _nodeModel2.default({ join: [], label: "A2" }), new _nodeModel2.default({ join: [0, 2], label: "A3" })]
+                columns: [new _nodeModel2.default({ connections: [0], label: "A1" }), new _nodeModel2.default({ connections: [], label: "A2" }), new _nodeModel2.default({ connections: [0, 2], label: "A3" })]
             }), new _rowModel2.default({
-                columns: [new _nodeModel2.default({ join: [], label: "B1" }), new _nodeModel2.default({ join: [0], label: "B2" }), new _nodeModel2.default({ join: [], label: "B3" })]
+                columns: [new _nodeModel2.default({ connections: [], label: "B1" }), new _nodeModel2.default({ connections: [0], label: "B2" }), new _nodeModel2.default({ connections: [], label: "B3" })]
             }), new _rowModel2.default({
-                columns: [new _nodeModel2.default({ join: [], label: "C1" })]
+                columns: [new _nodeModel2.default({ connections: [], label: "C1" })]
             })];
 
             expect(_result).toEqual(_expected_result);
@@ -341,11 +341,11 @@ describe("AngularSvgNodes Transformer", function () {
             var _result = Transformer.transformIn(_custom_data, _config);
 
             var _expected_result = [new _rowModel2.default({
-                columns: [new _nodeModel2.default({ join: [0], label: "A1" }), new _nodeModel2.default({ join: [], label: "A2" }), new _nodeModel2.default({ join: [0, 2], label: "A3" })]
+                columns: [new _nodeModel2.default({ connections: [0], label: "A1" }), new _nodeModel2.default({ connections: [], label: "A2" }), new _nodeModel2.default({ connections: [0, 2], label: "A3" })]
             }), new _rowModel2.default({
-                columns: [new _nodeModel2.default({ join: [], label: "B1" }), new _nodeModel2.default({ join: [0], label: "B2" }), new _nodeModel2.default({ join: [], label: "B3" })]
+                columns: [new _nodeModel2.default({ connections: [], label: "B1" }), new _nodeModel2.default({ connections: [0], label: "B2" }), new _nodeModel2.default({ connections: [], label: "B3" })]
             }), new _rowModel2.default({
-                columns: [new _nodeModel2.default({ join: [], label: "C1" })]
+                columns: [new _nodeModel2.default({ connections: [], label: "C1" })]
             })];
 
             expect(_result).toEqual(_expected_result);
@@ -354,7 +354,7 @@ describe("AngularSvgNodes Transformer", function () {
 
     describe("transformRow", function () {
 
-        it("should return new AngularSvgNodeRow with updated column joins by appending source_col_index to columns that match target_ids", function () {
+        it("should return new AngularSvgNodeRow with updated column connections by appending source_col_index to columns that match target_ids", function () {
 
             var _custom_data = [{
                 id: 11,
@@ -370,7 +370,7 @@ describe("AngularSvgNodes Transformer", function () {
                 col_index: 2
             }];
             var _row = new _rowModel2.default({
-                columns: [new _nodeModel2.default({ label: "BBB", join: [] }), new _nodeModel2.default({ label: "AAA", join: [444] }), new _nodeModel2.default({ label: "CCC", join: [] })]
+                columns: [new _nodeModel2.default({ label: "BBB", connections: [] }), new _nodeModel2.default({ label: "AAA", connections: [444] }), new _nodeModel2.default({ label: "CCC", connections: [] })]
             });
             var _target_ids = [11, 33];
             var _source_col_index = 666;
@@ -389,9 +389,9 @@ describe("AngularSvgNodes Transformer", function () {
             expect(_result.columns[1] instanceof _nodeModel2.default).toBe(true);
             expect(_result.columns[2] instanceof _nodeModel2.default).toBe(true);
 
-            expect(_result.columns[0].join).toEqual([]);
-            expect(_result.columns[1].join).toEqual([444, 666]);
-            expect(_result.columns[2].join).toEqual([666]);
+            expect(_result.columns[0].connections).toEqual([]);
+            expect(_result.columns[1].connections).toEqual([444, 666]);
+            expect(_result.columns[2].connections).toEqual([666]);
         });
     });
 });

@@ -9,6 +9,10 @@ var _angularSvgNodesDirective = require("./angular-svg-nodes-directive");
 
 var _angularSvgNodesDirective2 = _interopRequireDefault(_angularSvgNodesDirective);
 
+var _angularSvgNodesDirectiveD = require("./angular-svg-nodes-directive-d3");
+
+var _angularSvgNodesDirectiveD2 = _interopRequireDefault(_angularSvgNodesDirectiveD);
+
 var _bgColGridDirective = require("./bg-col-grid/bg-col-grid-directive");
 
 var _bgColGridDirective2 = _interopRequireDefault(_bgColGridDirective);
@@ -46,6 +50,9 @@ var _module = angular.module('AngularSvgNodes', []);
 exports.module = _module;
 _module.directive('angularSvgNodes', function () {
     return _angularSvgNodesDirective2.default;
+});
+_module.directive('angularSvgNodesD3', function () {
+    return _angularSvgNodesDirectiveD2.default;
 });
 _module.directive('angularSvgNodesBgColGrid', function () {
     return _bgColGridDirective2.default;

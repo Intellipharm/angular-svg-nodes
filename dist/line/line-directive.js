@@ -74,6 +74,7 @@ exports.default = {
         };
 
         scope.drawLine = function (x1, y1, x2, y2) {
+            var should_animate = arguments.length <= 4 || arguments[4] === undefined ? false : arguments[4];
 
             TweenLite.set(element, { attr: { x1: x1, y1: y1, x2: x1, y2: y1 } });
             TweenLite.to(element, ANIM_DURATION, {
@@ -92,7 +93,8 @@ exports.default = {
                 previous_target_coords = newValue.previous_to;
 
                 if (!is_initialized) {
-                    scope.drawLine(newValue.x1, newValue.y1, newValue.x2, newValue.y2);
+                    scope.drawLine(newValue.x1, newValue.y1, newValue.x2, newValue.y2, newValue.should_animate);
+
                     is_initialized = true;
                 } else if (oldValue.to[1] === newValue.to[1] && oldValue.to[0] !== newValue.to[0]) {
                         scope.moveLineTarget(newValue.x2);

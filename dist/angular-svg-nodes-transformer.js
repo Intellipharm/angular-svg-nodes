@@ -92,9 +92,9 @@ function transformRow(data, row, target_ids, source_col_index) {
 
         if (_lodash2.default.includes(_target_col_indices, coli)) {
 
-            var join = [].concat(_toConsumableArray(col.join), [source_col_index]);
+            var connections = [].concat(_toConsumableArray(col.connections), [source_col_index]);
 
-            var _node_data = Object.assign({}, col, { join: join });
+            var _node_data = Object.assign({}, col, { connections: connections });
 
             return new _nodeModel2.default(_node_data);
         }

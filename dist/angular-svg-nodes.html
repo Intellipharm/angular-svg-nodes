@@ -18,6 +18,7 @@
                   angular-svg-nodes-bg-col-grid-index="{{col.index}}"
                   angular-svg-nodes-bg-col-grid-on-mouse-over="AngularSvgNodes.onBgColGridMouseOver(index)"
             ></rect>
+
         </svg>
 
         <!-- rows -->
@@ -45,6 +46,7 @@
                       angular-svg-nodes-line-line-index="{{$index}}"
                       angular-svg-nodes-line-on-remove-complete="AngularSvgNodes.onLineRemoveComplete(source_coords, target_coords, line_index)"
                       angular-svg-nodes-line-on-draw-complete="AngularSvgNodes.onLineDrawComplete(source_coords, target_coords, line_index)"
+                      angular-svg-nodes-line-api="AngularSvgNodes.onLineDrawComplete(source_coords, target_coords, line_index)"
                 ></line>
 
                 <!-- nodes -->
