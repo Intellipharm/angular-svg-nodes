@@ -62,7 +62,8 @@ function transformIn(data) {
             }
 
             var _result = new _nodeModel2.default({
-                label: col[config.label_field]
+                label: col[config.label_field],
+                disabled: col.disabled
             });
 
             return _result;
