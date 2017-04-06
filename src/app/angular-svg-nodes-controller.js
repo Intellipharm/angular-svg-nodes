@@ -1735,7 +1735,8 @@ export default class AngularSvgNodesController {
             col_index: col_index,
             lines: node_lines,
             selected: _.has(data, "selected") ? data.selected : false,
-            highlight: _.has(data, "highlight") ? data.highlight : false
+            highlight: _.has(data, "highlight") ? data.highlight : false,
+            disabled: _.has(data, "disabled") ? data.disabled : false,
         };
 
         // if this node is selected

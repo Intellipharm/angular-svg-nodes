@@ -15,6 +15,7 @@ export default class AngularSvgNode {
         this.row_index              = !_.isUndefined(data.row_index)                ? data.row_index                : null;
         this.selected               = !_.isUndefined(data.selected)                 ? data.selected                 : false;
         this.source_hover           = !_.isUndefined(data.source_hover)             ? data.source_hover             : false;
+        this.disabled               = !_.isUndefined(data.disabled)                 ? data.disabled                 : false;
         this.x                      = !_.isUndefined(data.x)                        ? data.x                        : [];
         this.y                      = !_.isUndefined(data.y)                        ? data.y                        : [];
     }

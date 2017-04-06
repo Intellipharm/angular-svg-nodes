@@ -43,7 +43,8 @@ export function transformIn(data, config = new AngularSvgNodeTransformerConfig({
             }
 
             let _result = new AngularSvgNode({
-                label: col[ config.label_field ]
+                label: col[ config.label_field ],
+                disabled: col.disabled,
             });
 
             return _result;
